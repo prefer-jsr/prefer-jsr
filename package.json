@@ -4,7 +4,6 @@
   "license": "MIT",
   "scripts": {},
   "private": true,
-  "dependencies": {},
   "devDependencies": {
     "@eslint/js": "^9.8.0",
     "@nx/eslint": "21.6.4",
@@ -22,6 +21,7 @@
     "eslint-config-prettier": "^10.0.0",
     "jiti": "2.4.2",
     "jsonc-eslint-parser": "^2.1.0",
+    "knip": "^5.64.3",
     "nx": "21.6.4",
     "prettier": "^2.6.2",
     "tslib": "^2.3.0",
