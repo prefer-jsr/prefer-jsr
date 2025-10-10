@@ -1,7 +1,12 @@
 import baseConfig from '../../eslint.config.mjs';
+import eslintPlugin from 'eslint-plugin-eslint-plugin';
 
 export default [
   ...baseConfig,
+  {
+    files: ['**/*.ts', '**/*.js'],
+    ...eslintPlugin.configs['rules-recommended'],
+  },
   {
     files: ['**/*.json'],
     rules: {
