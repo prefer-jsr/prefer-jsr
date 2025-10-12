@@ -23,7 +23,10 @@ export interface JsrPackageInfo {
  *   sourceUrl: 'https://github.com/author/repo',
  * }]
  */
-export const npmToJsrMapping = new Map<string, JsrPackageInfo>([
+export const npmToJsrMapping: Map<string, JsrPackageInfo> = new Map<
+  string,
+  JsrPackageInfo
+>([
   // ESLint packages
   [
     '@eslint/markdown',
