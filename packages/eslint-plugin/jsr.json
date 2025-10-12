@@ -10,5 +10,8 @@
       "vite.config.ts",
       "eslint.config.mjs"
     ]
+  },
+  "imports": {
+    "@prefer-jsr/npm2jsr": "jsr:@prefer-jsr/npm2jsr@^0.1.0"
   }
 }
