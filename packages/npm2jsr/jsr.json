@@ -1,0 +1,14 @@
+{
+  "name": "@prefer-jsr/npm2jsr",
+  "version": "0.0.1",
+  "exports": "./src/index.ts",
+  "publish": {
+    "exclude": [
+      "**/*.spec.ts",
+      "**/*.test.ts",
+      "tsconfig.*.json",
+      "vite.config.ts",
+      "eslint.config.mjs"
+    ]
+  }
+}
