@@ -43,7 +43,7 @@ jobs:
       # - run: pnpm exec nx-cloud record -- echo Hello World
 
       - name: '✂️ Knip'
-        run: pnpm exec knip
+        run: pnpm exec knip --reporter github-actions
 
       - name: 🎨 Check Format
         run: pnpm exec nx format:check
