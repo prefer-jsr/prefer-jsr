@@ -1,14 +1,11 @@
 {
-  "name": "@prefer-jsr/eslint-plugin-prefer-jsr",
+  "name": "@prefer-jsr/npm2jsr",
   "version": "0.0.1",
-  "description": "ESLint plugin that suggests using JSR packages over NPM when available",
+  "description": "Mapping of NPM packages to their JSR equivalents",
   "keywords": [
-    "eslint",
-    "eslint-plugin",
     "jsr",
     "npm",
     "npm2jsr",
-    "lint",
     "prefer-jsr"
   ],
   "homepage": "https://github.com/prefer-jsr/prefer-jsr#readme",
@@ -18,7 +15,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/prefer-jsr/prefer-jsr.git",
-    "directory": "packages/eslint-plugin"
+    "directory": "packages/npm2jsr"
   },
   "license": "MIT",
   "author": {
@@ -42,22 +39,10 @@
     "dist",
     "!**/*.tsbuildinfo"
   ],
-  "dependencies": {
-    "@prefer-jsr/npm2jsr": "workspace:*"
-  },
-  "devDependencies": {
-    "@eslint/json": "^0.13.2",
-    "@humanwhocodes/momoa": "^3.3.9",
-    "eslint-plugin-eslint-plugin": "^7.0.0"
-  },
-  "peerDependencies": {
-    "@eslint/json": ">=0.13.0",
-    "eslint": ">=9.15.0"
-  },
   "engines": {
     "node": ">=20.9.0"
   },
   "nx": {
-    "name": "eslint-plugin"
+    "name": "npm2jsr"
   }
 }

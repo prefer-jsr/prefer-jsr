@@ -1,0 +1,6 @@
+{
+  // Disable markdown linting in this workspace
+  "markdownlint.config": {
+    "default": false
+  }
+}

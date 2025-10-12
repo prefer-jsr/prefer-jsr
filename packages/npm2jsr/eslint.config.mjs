@@ -1,12 +1,8 @@
+import { defineConfig } from 'eslint/config';
 import baseConfig from '../../eslint.config.mjs';
-import eslintPlugin from 'eslint-plugin-eslint-plugin';
 
-export default [
+export default defineConfig([
   ...baseConfig,
-  {
-    files: ['**/*.ts', '**/*.js'],
-    ...eslintPlugin.configs['rules-recommended'],
-  },
   {
     files: ['**/*.json'],
     rules: {
@@ -17,12 +13,7 @@ export default [
             '{projectRoot}/eslint.config.{js,cjs,mjs,ts,cts,mts}',
             '{projectRoot}/vite.config.{js,ts,mjs,mts}',
           ],
-          ignoredDependencies: [
-            'tslib',
-            '@eslint/json',
-            '@humanwhocodes/momoa',
-          ],
-          checkMissingDependencies: true,
+          ignoredDependencies: ['tslib'],
         },
       ],
     },
@@ -33,4 +24,4 @@ export default [
   {
     ignores: ['**/out-tsc'],
   },
-];
+]);

@@ -7,9 +7,6 @@
   "include": [],
   "references": [
     {
-      "path": "../npm2jsr"
-    },
-    {
       "path": "./tsconfig.lib.json"
     },
     {

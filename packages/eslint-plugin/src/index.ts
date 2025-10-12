@@ -1,1 +1,1 @@
-export * from './lib/eslint-plugin.js';
+export { default } from './lib/eslint-plugin.js';
