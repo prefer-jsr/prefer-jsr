@@ -65,6 +65,7 @@ After the first release is done manually, subsequent releases are automatically 
 ### How it works
 
 1. **CI runs first** (`.github/workflows/ci.yml`) on every push to main:
+
    - Runs lint, test, build, typecheck
    - Ensures quality before release
 
@@ -103,12 +104,14 @@ Before automated releases work:
    This creates the initial git tags that CI relies on.
 
 2. **Configure NPM_TOKEN secret**:
+
    - Go to [npm Access Tokens](https://www.npmjs.com/settings/tokens)
    - Create an "Automation" token
    - Add to GitHub: Settings → Secrets and variables → Actions → New repository secret
    - Name: `NPM_TOKEN`, Value: your token
 
 3. **Configure JSR_TOKEN secret**:
+
    - Go to [JSR](https://jsr.io/) and sign in with GitHub
    - Navigate to your account settings → Access Tokens
    - Create a new token with publish permissions

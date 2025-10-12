@@ -1,109 +1,127 @@
-# PreferJsr
+# Prefer JSR
 
-<a alt="Nx logo" href="https://nx.dev" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="45"></a>
+A collection of tools to help JavaScript/TypeScript projects prefer [JSR](https://jsr.io/) packages over npm when available.
 
-✨ Your new, shiny [Nx workspace](https://nx.dev) is ready ✨.
+## Packages
 
-[Learn more about this workspace setup and its capabilities](https://nx.dev/nx-api/js?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects) or run `npx nx graph` to visually explore what was created. Now, let's get you up to speed!
+This monorepo contains two packages:
 
-## Generate a library
+### [@prefer-jsr/eslint-plugin-prefer-jsr](./packages/eslint-plugin)
 
-```sh
-npx nx g @nx/js:lib packages/pkg1 --publishable --importPath=@my-org/pkg1
-```
+ESLint plugin that suggests using JSR packages over npm when JSR alternatives are available.
 
-## Run tasks
-
-To build the library use:
+**Installation:**
 
 ```sh
-npx nx build pkg1
+npm install --save-dev @prefer-jsr/eslint-plugin-prefer-jsr
+# or
+pnpm add -D @prefer-jsr/eslint-plugin-prefer-jsr
 ```
 
-To run any task with Nx use:
+### [@prefer-jsr/npm2jsr](./packages/npm2jsr)
+
+Mapping library that provides data about npm packages and their JSR equivalents.
+
+**Installation:**
 
 ```sh
-npx nx <target> <project-name>
+npm install @prefer-jsr/npm2jsr
+# or
+pnpm add @prefer-jsr/npm2jsr
 ```
 
-These targets are either [inferred automatically](https://nx.dev/concepts/inferred-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) or defined in the `project.json` or `package.json` files.
+## Development
 
-[More about running tasks in the docs &raquo;](https://nx.dev/features/run-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+This project uses [Nx](https://nx.dev) for monorepo management and [pnpm](https://pnpm.io) as the package manager.
 
-## Versioning and releasing
+### Prerequisites
 
-To version and release the library use
+- Node.js 20.9.0 or higher
+- pnpm 10.18.2 or higher
 
-```
-npx nx release
-```
-
-Pass `--dry-run` to see what would happen without actually releasing the library.
-
-[Learn more about Nx release &raquo;](https://nx.dev/features/manage-releases?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Keep TypeScript project references up to date
-
-Nx automatically updates TypeScript [project references](https://www.typescriptlang.org/docs/handbook/project-references.html) in `tsconfig.json` files to ensure they remain accurate based on your project dependencies (`import` or `require` statements). This sync is automatically done when running tasks such as `build` or `typecheck`, which require updated references to function correctly.
-
-To manually trigger the process to sync the project graph dependencies information to the TypeScript project references, run the following command:
+### Installation
 
 ```sh
-npx nx sync
+pnpm install
 ```
 
-You can enforce that the TypeScript project references are always in the correct state when running in CI by adding a step to your CI job configuration that runs the following command:
+### Running Tasks
+
+Build all packages:
 
 ```sh
-npx nx sync:check
+pnpm exec nx run-many -t build
 ```
 
-[Learn more about nx sync](https://nx.dev/reference/nx-commands#sync)
-
-## Set up CI!
-
-### Step 1
-
-To connect to Nx Cloud, run the following command:
+Run tests:
 
 ```sh
-npx nx connect
+pnpm exec nx run-many -t test
 ```
 
-Connecting to Nx Cloud ensures a [fast and scalable CI](https://nx.dev/ci/intro/why-nx-cloud?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) pipeline. It includes features such as:
-
-- [Remote caching](https://nx.dev/ci/features/remote-cache?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Task distribution across multiple machines](https://nx.dev/ci/features/distribute-task-execution?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Automated e2e test splitting](https://nx.dev/ci/features/split-e2e-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Task flakiness detection and rerunning](https://nx.dev/ci/features/flaky-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-### Step 2
-
-Use the following command to configure a CI workflow for your workspace:
+Lint code:
 
 ```sh
-npx nx g ci-workflow
+pnpm exec nx run-many -t lint
 ```
 
-[Learn more about Nx on CI](https://nx.dev/ci/intro/ci-with-nx#ready-get-started-with-your-provider?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+Type check:
 
-## Install Nx Console
+```sh
+pnpm exec nx run-many -t typecheck
+```
 
-Nx Console is an editor extension that enriches your developer experience. It lets you run tasks, generate code, and improves code autocompletion in your IDE. It is available for VSCode and IntelliJ.
+Run all checks (lint, test, build, typecheck):
 
-[Install Nx Console &raquo;](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+```sh
+pnpm exec nx run-many -t lint test build typecheck
+```
 
-## Useful links
+## Publishing
 
-Learn more:
+Releases are automated via GitHub Actions and published to both npm and JSR.
 
-- [Learn more about this workspace setup](https://nx.dev/nx-api/js?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects)
-- [Learn about Nx on CI](https://nx.dev/ci/intro/ci-with-nx?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Releasing Packages with Nx release](https://nx.dev/features/manage-releases?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [What are Nx plugins?](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+- Versions are determined from conventional commits
+- Each package has independent versioning
+- Releases are triggered automatically on push to `main`
 
-And join the Nx community:
-- [Discord](https://go.nx.dev/community)
-- [Follow us on X](https://twitter.com/nxdevtools) or [LinkedIn](https://www.linkedin.com/company/nrwl)
-- [Our Youtube channel](https://www.youtube.com/@nxdevtools)
-- [Our blog](https://nx.dev/blog?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+For more information, see [RELEASING.md](./RELEASING.md).
+
+## Code Quality
+
+This project uses several tools to maintain code quality:
+
+- **ESLint**: Linting with typescript-eslint and type-aware rules
+- **Prettier**: Code formatting
+- **Knip**: Unused dependency detection
+- **TypeScript**: Strict type checking with project references
+- **Vitest**: Unit testing
+
+Run all quality checks:
+
+```sh
+pnpm exec nx run-many -t lint test typecheck
+pnpm exec nx format:check
+pnpm knip
+```
+
+## CI/CD
+
+GitHub Actions workflows automatically run on every push:
+
+- **CI** (`.github/workflows/ci.yml`): Runs lint, test, build, typecheck, format check, and knip
+- **Release** (`.github/workflows/release.yml`): Automatically versions and publishes packages on push to `main`
+
+## Contributing
+
+Contributions are welcome! Please ensure:
+
+1. All tests pass: `pnpm exec nx run-many -t test`
+2. Code is properly formatted: `pnpm exec nx format:write`
+3. No lint errors: `pnpm exec nx run-many -t lint`
+4. No type errors: `pnpm exec nx run-many -t typecheck`
+5. Use conventional commits for your commit messages
+
+## License
+
+MIT - See [LICENSE](./LICENSE) for details.
