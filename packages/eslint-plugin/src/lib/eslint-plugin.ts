@@ -1,6 +1,29 @@
 import type { ESLint } from 'eslint';
 import { preferJsrRule } from './rules/prefer-jsr.js';
 
+/**
+ * ESLint plugin that suggests using JSR packages over npm when available.
+ *
+ * This plugin provides the `prefer-jsr` rule that checks your dependencies
+ * and suggests JSR alternatives when they exist.
+ *
+ * @example
+ * ```js
+ * // eslint.config.js
+ * import preferJsr from '@prefer-jsr/eslint-plugin-prefer-jsr';
+ *
+ * export default [
+ *   {
+ *     plugins: {
+ *       'prefer-jsr': preferJsr,
+ *     },
+ *     rules: {
+ *       'prefer-jsr/prefer-jsr': 'error',
+ *     },
+ *   },
+ * ];
+ * ```
+ */
 const plugin: ESLint.Plugin = {
   meta: {
     name: '@prefer-jsr/eslint-plugin-prefer-jsr',
