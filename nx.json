@@ -56,7 +56,12 @@
     "projectsRelationship": "independent",
     "version": {
       "preVersionCommand": "pnpm exec nx run-many -t build test lint typecheck",
-      "conventionalCommits": true
+      "conventionalCommits": true,
+      "git": {
+        "commit": true,
+        "tag": true,
+        "commitMessage": "chore(release): publish {version}"
+      }
     },
     "changelog": {
       "projectChangelogs": {
@@ -67,12 +72,10 @@
           "versionTitleDate": true
         }
       },
-      "workspaceChangelog": false
-    },
-    "git": {
-      "commit": true,
-      "tag": true,
-      "commitMessage": "chore(release): publish {version}"
+      "workspaceChangelog": false,
+      "git": {
+        "commit": false
+      }
     }
   },
   "targetDefaults": {
