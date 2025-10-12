@@ -57,6 +57,9 @@
   "engines": {
     "node": ">=20.9.0"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "nx": {
     "name": "eslint-plugin"
   }

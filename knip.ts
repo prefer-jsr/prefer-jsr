@@ -12,4 +12,8 @@ export default {
     // (not just for types - the package imports it directly)
     'typescript-eslint',
   ],
+  ignoreBinaries: [
+    // Used in CI via npx for JSR publishing
+    'jsr',
+  ],
 } satisfies KnipConfig;
