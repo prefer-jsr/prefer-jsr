@@ -7,7 +7,6 @@ on:
 
 permissions:
   contents: write # for creating releases and pushing tags
-  id-token: write # for npm provenance
   pull-requests: write # for commenting on PRs
 
 jobs:
@@ -26,9 +25,8 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: 'pnpm'
-          registry-url: 'https://registry.npmjs.org'
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -38,23 +36,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Configure npm authentication
-        run: |
-          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
-
-      - name: Version
-        run: pnpm exec nx release version
+      - name: Version packages and create releases
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Publish to npm
-        run: pnpm exec nx release publish
-        env:
-          NPM_CONFIG_PROVENANCE: true
-
-      - name: Publish to JSR
-        run: |
-          npx jsr publish --allow-dirty ./packages/eslint-plugin
-          npx jsr publish --allow-dirty ./packages/npm2jsr
-        env:
-          JSR_TOKEN: ${{ secrets.JSR_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node --experimental-strip-types tools/scripts/version.ts
