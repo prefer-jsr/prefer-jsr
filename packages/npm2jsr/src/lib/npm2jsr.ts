@@ -27,7 +27,54 @@ export const npmToJsrMapping: Map<string, JsrPackageInfo> = new Map<
   string,
   JsrPackageInfo
 >([
-  // ESLint packages
+  [
+    '@eslint/compat',
+    {
+      jsrPackage: '@eslint/compat',
+      minimumVersion: '1.0.3',
+      sourceUrl: 'https://github.com/eslint/rewrite',
+    },
+  ],
+  [
+    '@eslint/config-array',
+    {
+      jsrPackage: '@eslint/config-array',
+      minimumVersion: '0.15.1',
+      sourceUrl: 'https://github.com/eslint/rewrite',
+    },
+  ],
+  [
+    '@eslint/config-helpers',
+    {
+      jsrPackage: '@eslint/config-helpers',
+      minimumVersion: '0.1.0',
+      sourceUrl: 'https://github.com/eslint/rewrite',
+    },
+  ],
+  [
+    '@eslint/core',
+    {
+      jsrPackage: '@eslint/core',
+      minimumVersion: '0.1.0',
+      sourceUrl: 'https://github.com/eslint/rewrite',
+    },
+  ],
+  [
+    '@eslint/css',
+    {
+      jsrPackage: '@eslint/css',
+      minimumVersion: '0.2.0',
+      sourceUrl: 'https://github.com/eslint/css',
+    },
+  ],
+  [
+    '@eslint/json',
+    {
+      jsrPackage: '@eslint/json',
+      minimumVersion: '0.2.0',
+      sourceUrl: 'https://github.com/eslint/json',
+    },
+  ],
   [
     '@eslint/markdown',
     {
@@ -36,8 +83,22 @@ export const npmToJsrMapping: Map<string, JsrPackageInfo> = new Map<
       sourceUrl: 'https://github.com/eslint/markdown',
     },
   ],
-
-  // Validation libraries
+  [
+    '@eslint/object-schema',
+    {
+      jsrPackage: '@eslint/object-schema',
+      minimumVersion: '2.1.3',
+      sourceUrl: 'https://github.com/eslint/rewrite',
+    },
+  ],
+  [
+    '@eslint/plugin-kit',
+    {
+      jsrPackage: '@eslint/plugin-kit',
+      minimumVersion: '0.2.1',
+      sourceUrl: 'https://github.com/eslint/rewrite',
+    },
+  ],
   [
     'zod',
     {
@@ -49,11 +110,19 @@ export const npmToJsrMapping: Map<string, JsrPackageInfo> = new Map<
 ]);
 
 /**
+ * Get all available NPM packages that have JSR equivalents
+ * @returns Array of NPM package names that have JSR mappings
+ */
+export function getAvailableNpmPackages(): string[] {
+  return Array.from(npmToJsrMapping.keys());
+}
+
+/**
  * Get the JSR package name for an NPM package
  * @param npmPackage The NPM package name
  * @returns The JSR package name (without jsr: prefix) or null if no mapping exists
  */
-export function getJsrEquivalent(npmPackage: string): string | null {
+export function getJsrEquivalent(npmPackage: string): null | string {
   const info = npmToJsrMapping.get(npmPackage);
   return info ? info.jsrPackage : null;
 }
@@ -68,27 +137,19 @@ export function getJsrPackageInfo(npmPackage: string): JsrPackageInfo | null {
 }
 
 /**
- * Convert a version range to JSR format
- * @param version The NPM version range (e.g., "^4.1.12")
- * @returns The complete JSR dependency string (e.g., "jsr:^4.1.12")
- */
-export function toJsrDependency(version: string): string {
-  return `jsr:${version}`;
-}
-
-/**
- * Get all available NPM packages that have JSR equivalents
- * @returns Array of NPM package names that have JSR mappings
- */
-export function getAvailableNpmPackages(): string[] {
-  return Array.from(npmToJsrMapping.keys());
-}
-
-/**
  * Check if an NPM package has a JSR equivalent
  * @param npmPackage The NPM package name
  * @returns True if a JSR equivalent exists
  */
 export function hasJsrEquivalent(npmPackage: string): boolean {
   return npmToJsrMapping.has(npmPackage);
+}
+
+/**
+ * Convert a version range to JSR format
+ * @param version The NPM version range (e.g., "^4.1.12")
+ * @returns The complete JSR dependency string (e.g., "jsr:^4.1.12")
+ */
+export function toJsrDependency(version: string): string {
+  return `jsr:${version}`;
 }

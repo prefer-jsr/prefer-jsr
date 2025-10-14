@@ -25,11 +25,11 @@
  */
 
 export {
-  npmToJsrMapping,
+  getAvailableNpmPackages,
   getJsrEquivalent,
   getJsrPackageInfo,
-  toJsrDependency,
-  getAvailableNpmPackages,
   hasJsrEquivalent,
   type JsrPackageInfo,
+  npmToJsrMapping,
+  toJsrDependency,
 } from './lib/npm2jsr.js';

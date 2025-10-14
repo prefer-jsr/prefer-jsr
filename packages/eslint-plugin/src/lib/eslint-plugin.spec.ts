@@ -1,67 +1,20 @@
-import { RuleTester } from 'eslint';
-import { preferJsrRule } from './rules/prefer-jsr.js';
 import json from '@eslint/json';
+import { RuleTester } from 'eslint';
+
+import { preferJsrRule } from './rules/prefer-jsr.js';
 
 const ruleTester = new RuleTester({
+  language: 'json/json',
   plugins: {
     json,
   },
-  language: 'json/json',
 });
 
 describe('prefer-jsr rule', () => {
   ruleTester.run('prefer-jsr', preferJsrRule, {
-    valid: [
-      // Already using JSR
-      {
-        filename: 'package.json',
-        code: JSON.stringify({
-          dependencies: {
-            '@zod/zod': 'jsr:^4.1.12',
-          },
-        }),
-      },
-      // Package not in mapping
-      {
-        filename: 'package.json',
-        code: JSON.stringify({
-          dependencies: {
-            'some-other-package': '^1.0.0',
-          },
-        }),
-      },
-      // Not a package.json file
-      {
-        filename: 'other.json',
-        code: JSON.stringify({
-          dependencies: {
-            zod: '^4.1.12',
-          },
-        }),
-      },
-      // Npm version below minimum - should not warn
-      {
-        filename: 'package.json',
-        code: JSON.stringify({
-          dependencies: {
-            zod: '^2.9.0',
-          },
-        }),
-      },
-      // Npm @eslint/markdown version below minimum - should not warn
-      {
-        filename: 'package.json',
-        code: JSON.stringify({
-          devDependencies: {
-            '@eslint/markdown': '^5.0.0',
-          },
-        }),
-      },
-    ],
     invalid: [
       // Simple mapping: zod -> @zod/zod
       {
-        filename: 'package.json',
         code: JSON.stringify({
           dependencies: {
             zod: '^4.1.12',
@@ -69,14 +22,15 @@ describe('prefer-jsr rule', () => {
         }),
         errors: [
           {
-            messageId: 'preferJsr',
             data: {
-              npmPackage: 'zod',
-              jsrPackage: '@zod/zod',
               jsrDependency: 'jsr:^4.1.12',
+              jsrPackage: '@zod/zod',
+              npmPackage: 'zod',
             },
+            messageId: 'preferJsr',
           },
         ],
+        filename: 'package.json',
         output: JSON.stringify({
           dependencies: {
             '@zod/zod': 'jsr:^4.1.12',
@@ -85,7 +39,6 @@ describe('prefer-jsr rule', () => {
       },
       // Direct mapping: @eslint/markdown -> @eslint/markdown
       {
-        filename: 'package.json',
         code: JSON.stringify({
           devDependencies: {
             '@eslint/markdown': '^7.4.0',
@@ -93,14 +46,15 @@ describe('prefer-jsr rule', () => {
         }),
         errors: [
           {
-            messageId: 'preferJsr',
             data: {
-              npmPackage: '@eslint/markdown',
-              jsrPackage: '@eslint/markdown',
               jsrDependency: 'jsr:^7.4.0',
+              jsrPackage: '@eslint/markdown',
+              npmPackage: '@eslint/markdown',
             },
+            messageId: 'preferJsr',
           },
         ],
+        filename: 'package.json',
         output: JSON.stringify({
           devDependencies: {
             '@eslint/markdown': 'jsr:^7.4.0',
@@ -109,43 +63,42 @@ describe('prefer-jsr rule', () => {
       },
       // Multiple dependencies with mixed scenarios
       {
-        filename: 'package.json',
         code: JSON.stringify({
           dependencies: {
-            zod: '^4.1.12',
-            'some-other-package': '^1.0.0',
             '@eslint/markdown': '^7.4.0',
+            'some-other-package': '^1.0.0',
+            zod: '^4.1.12',
           },
         }),
         errors: [
           {
-            messageId: 'preferJsr',
             data: {
-              npmPackage: 'zod',
-              jsrPackage: '@zod/zod',
               jsrDependency: 'jsr:^4.1.12',
+              jsrPackage: '@zod/zod',
+              npmPackage: 'zod',
             },
+            messageId: 'preferJsr',
           },
           {
-            messageId: 'preferJsr',
             data: {
-              npmPackage: '@eslint/markdown',
-              jsrPackage: '@eslint/markdown',
               jsrDependency: 'jsr:^7.4.0',
+              jsrPackage: '@eslint/markdown',
+              npmPackage: '@eslint/markdown',
             },
+            messageId: 'preferJsr',
           },
         ],
+        filename: 'package.json',
         output: JSON.stringify({
           dependencies: {
+            '@eslint/markdown': 'jsr:^7.4.0',
             '@zod/zod': 'jsr:^4.1.12',
             'some-other-package': '^1.0.0',
-            '@eslint/markdown': 'jsr:^7.4.0',
           },
         }),
       },
       // Test with peerDependencies
       {
-        filename: 'package.json',
         code: JSON.stringify({
           peerDependencies: {
             zod: '>=4.0.0',
@@ -153,14 +106,15 @@ describe('prefer-jsr rule', () => {
         }),
         errors: [
           {
-            messageId: 'preferJsr',
             data: {
-              npmPackage: 'zod',
-              jsrPackage: '@zod/zod',
               jsrDependency: 'jsr:>=4.0.0',
+              jsrPackage: '@zod/zod',
+              npmPackage: 'zod',
             },
+            messageId: 'preferJsr',
           },
         ],
+        filename: 'package.json',
         output: JSON.stringify({
           peerDependencies: {
             '@zod/zod': 'jsr:>=4.0.0',
@@ -168,49 +122,79 @@ describe('prefer-jsr rule', () => {
         }),
       },
     ],
+    valid: [
+      // Already using JSR
+      {
+        code: JSON.stringify({
+          dependencies: {
+            '@zod/zod': 'jsr:^4.1.12',
+          },
+        }),
+        filename: 'package.json',
+      },
+      // Package not in mapping
+      {
+        code: JSON.stringify({
+          dependencies: {
+            'some-other-package': '^1.0.0',
+          },
+        }),
+        filename: 'package.json',
+      },
+      // Not a package.json file
+      {
+        code: JSON.stringify({
+          dependencies: {
+            zod: '^4.1.12',
+          },
+        }),
+        filename: 'other.json',
+      },
+      // Npm version below minimum - should not warn
+      {
+        code: JSON.stringify({
+          dependencies: {
+            zod: '^2.9.0',
+          },
+        }),
+        filename: 'package.json',
+      },
+      // Npm @eslint/markdown version below minimum - should not warn
+      {
+        code: JSON.stringify({
+          devDependencies: {
+            '@eslint/markdown': '^5.0.0',
+          },
+        }),
+        filename: 'package.json',
+      },
+    ],
   });
 
   // Test with custom mappings
   ruleTester.run('prefer-jsr with custom mappings', preferJsrRule, {
-    valid: [
-      {
-        filename: 'package.json',
-        code: JSON.stringify({
-          dependencies: {
-            'my-custom-package': '^1.0.0',
-          },
-        }),
-        options: [
-          {
-            customMappings: {
-              'other-package': '@other/package',
-            },
-          },
-        ],
-      },
-    ],
     invalid: [
       {
-        filename: 'package.json',
         code: JSON.stringify({
           dependencies: {
             'my-custom-package': '^1.0.0',
           },
         }),
+        errors: [
+          {
+            data: {
+              jsrDependency: 'jsr:^1.0.0',
+              jsrPackage: '@my/custom-package',
+              npmPackage: 'my-custom-package',
+            },
+            messageId: 'preferJsr',
+          },
+        ],
+        filename: 'package.json',
         options: [
           {
             customMappings: {
               'my-custom-package': '@my/custom-package',
-            },
-          },
-        ],
-        errors: [
-          {
-            messageId: 'preferJsr',
-            data: {
-              npmPackage: 'my-custom-package',
-              jsrPackage: '@my/custom-package',
-              jsrDependency: 'jsr:^1.0.0',
             },
           },
         ],
@@ -221,55 +205,72 @@ describe('prefer-jsr rule', () => {
         }),
       },
     ],
-  });
-
-  // Test with ignore option
-  ruleTester.run('prefer-jsr with ignore option', preferJsrRule, {
     valid: [
       {
-        filename: 'package.json',
         code: JSON.stringify({
           dependencies: {
-            zod: '^3.21.4',
+            'my-custom-package': '^1.0.0',
           },
         }),
+        filename: 'package.json',
         options: [
           {
-            ignore: ['zod'],
+            customMappings: {
+              'other-package': '@other/package',
+            },
           },
         ],
       },
     ],
+  });
+
+  // Test with ignore option
+  ruleTester.run('prefer-jsr with ignore option', preferJsrRule, {
     invalid: [
       {
-        filename: 'package.json',
         code: JSON.stringify({
           dependencies: {
-            zod: '^3.21.4',
             '@eslint/markdown': '^5.0.0',
+            zod: '^3.21.4',
           },
         }),
+        errors: [
+          {
+            data: {
+              jsrDependency: 'jsr:^3.21.4',
+              jsrPackage: '@zod/zod',
+              npmPackage: 'zod',
+            },
+            messageId: 'preferJsr',
+          },
+        ],
+        filename: 'package.json',
         options: [
           {
             ignore: ['@eslint/markdown'],
           },
         ],
-        errors: [
-          {
-            messageId: 'preferJsr',
-            data: {
-              npmPackage: 'zod',
-              jsrPackage: '@zod/zod',
-              jsrDependency: 'jsr:^3.21.4',
-            },
-          },
-        ],
         output: JSON.stringify({
           dependencies: {
-            '@zod/zod': 'jsr:^3.21.4',
             '@eslint/markdown': '^5.0.0',
+            '@zod/zod': 'jsr:^3.21.4',
           },
         }),
+      },
+    ],
+    valid: [
+      {
+        code: JSON.stringify({
+          dependencies: {
+            zod: '^3.21.4',
+          },
+        }),
+        filename: 'package.json',
+        options: [
+          {
+            ignore: ['zod'],
+          },
+        ],
       },
     ],
   });

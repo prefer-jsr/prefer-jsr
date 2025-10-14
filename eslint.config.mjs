@@ -1,6 +1,7 @@
-import { defineConfig } from 'eslint/config';
 import nx from '@nx/eslint-plugin';
 import packageJson from 'eslint-plugin-package-json';
+import perfectionist from 'eslint-plugin-perfectionist';
+import { defineConfig } from 'eslint/config';
 
 // @ts-expect-error - TS2742: Known issue with defineConfig and pnpm, tracked at https://github.com/eslint/rewrite/issues/283
 export default defineConfig([
@@ -15,19 +16,32 @@ export default defineConfig([
     ],
   },
   {
-    files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
+    files: [
+      '**/*.ts',
+      '**/*.tsx',
+      '**/*.cts',
+      '**/*.mts',
+      '**/*.js',
+      '**/*.jsx',
+      '**/*.cjs',
+      '**/*.mjs',
+    ],
+    plugins: {
+      perfectionist,
+    },
     rules: {
+      ...perfectionist.configs['recommended-natural'].rules,
       '@nx/enforce-module-boundaries': [
         'error',
         {
-          enforceBuildableLibDependency: true,
           allow: ['^.*/eslint(\\.base)?\\.config\\.[cm]?[jt]s$'],
           depConstraints: [
             {
-              sourceTag: '*',
               onlyDependOnLibsWithTags: ['*'],
+              sourceTag: '*',
             },
           ],
+          enforceBuildableLibDependency: true,
         },
       ],
     },

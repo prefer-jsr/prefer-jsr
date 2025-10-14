@@ -1,4 +1,5 @@
 import type { ESLint } from 'eslint';
+
 import { preferJsrRule } from './rules/prefer-jsr.js';
 
 /**

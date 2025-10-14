@@ -1,16 +1,4 @@
 /**
- * Extract the base version number from a semver range string
- * Handles: ^, ~, >=, >, =, and exact versions
- * @param versionRange The version range (e.g., "^3.21.4", "~2.0.0", ">=1.0.0")
- * @returns The extracted version number (e.g., "3.21.4") or null if invalid
- */
-export function extractVersion(versionRange: string): string | null {
-  // Match semver operators followed by version number
-  const match = versionRange.match(/[\^~>=]*\s*([\d.]+)/);
-  return match ? match[1] : null;
-}
-
-/**
  * Compare two semantic version strings
  * @param v1 First version (e.g., "3.21.4")
  * @param v2 Second version (e.g., "3.0.0")
@@ -29,6 +17,18 @@ export function compareVersions(v1: string, v2: string): number {
   }
 
   return 0;
+}
+
+/**
+ * Extract the base version number from a semver range string
+ * Handles: ^, ~, >=, >, =, and exact versions
+ * @param versionRange The version range (e.g., "^3.21.4", "~2.0.0", ">=1.0.0")
+ * @returns The extracted version number (e.g., "3.21.4") or null if invalid
+ */
+export function extractVersion(versionRange: string): null | string {
+  // Match semver operators followed by version number
+  const match = versionRange.match(/[\^~>=]*\s*([\d.]+)/);
+  return match ? match[1] : null;
 }
 
 /**
