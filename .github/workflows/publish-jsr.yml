@@ -1,0 +1,45 @@
+name: Publish to JSR
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+  id-token: write # for JSR provenance
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v4
+        name: Install pnpm
+        with:
+          run_install: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build packages
+        run: pnpm exec nx run-many -t build
+
+      - name: Publish npm2jsr to JSR
+        run: npx jsr publish
+        working-directory: ./packages/npm2jsr
+        env:
+          JSR_TOKEN: ${{ secrets.JSR_TOKEN }}
+
+      - name: Publish eslint-plugin to JSR
+        run: npx jsr publish
+        working-directory: ./packages/eslint-plugin
+        env:
+          JSR_TOKEN: ${{ secrets.JSR_TOKEN }}

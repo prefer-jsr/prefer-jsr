@@ -1,7 +1,7 @@
 {
   "extends": "./tsconfig.base.json",
   "compileOnSave": false,
-  "files": ["knip.ts"],
+  "files": ["knip.ts", "tools/scripts/version.ts"],
   "references": [
     {
       "path": "./packages/eslint-plugin"

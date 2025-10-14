@@ -87,6 +87,20 @@ Releases are published to two registries:
 
 Each package has a `jsr.json` configuration file for JSR publishing.
 
+#### Version Synchronization
+
+JSR requires an explicit `version` field in `jsr.json` that matches `package.json`. This is automatically kept in sync by our custom release script (`tools/scripts/release.ts`).
+
+The release script uses the **Nx Release programmatic API** to:
+
+1. Call `releaseVersion()` to update package.json files
+2. Sync jsr.json versions to match package.json
+3. Amend the release commit to include jsr.json changes
+4. Call `releaseChangelog()` to generate changelogs
+5. Call `releasePublish()` to publish to npm
+
+This approach provides maximum control over the release process while maintaining integration with Nx Release's conventional commit handling and changelog generation.
+
 ### Setup Requirements
 
 Before automated releases work:
