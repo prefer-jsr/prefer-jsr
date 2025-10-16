@@ -19,6 +19,7 @@
     "eslint": "^9.8.0",
     "eslint-config-prettier": "^10.0.0",
     "eslint-plugin-package-json": "^0.56.3",
+    "eslint-plugin-perfectionist": "^4.15.1",
     "jiti": "2.4.2",
     "jsonc-eslint-parser": "^2.1.0",
     "knip": "^5.64.3",

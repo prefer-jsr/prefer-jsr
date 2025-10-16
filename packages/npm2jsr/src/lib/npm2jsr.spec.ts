@@ -1,12 +1,12 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
 import {
-  npmToJsrMapping,
+  getAvailableNpmPackages,
   getJsrEquivalent,
   getJsrPackageInfo,
-  toJsrDependency,
-  getAvailableNpmPackages,
   hasJsrEquivalent,
+  npmToJsrMapping,
+  toJsrDependency,
 } from './npm2jsr.js';
 
 describe('npm2jsr', () => {

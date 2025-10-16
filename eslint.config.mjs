@@ -1,39 +1,93 @@
-import { defineConfig } from 'eslint/config';
 import nx from '@nx/eslint-plugin';
 import packageJson from 'eslint-plugin-package-json';
+import perfectionist from 'eslint-plugin-perfectionist';
+import { defineConfig, globalIgnores } from 'eslint/config';
 
 // @ts-expect-error - TS2742: Known issue with defineConfig and pnpm, tracked at https://github.com/eslint/rewrite/issues/283
 export default defineConfig([
   ...nx.configs['flat/base'],
   ...nx.configs['flat/typescript'],
   ...nx.configs['flat/javascript'],
+  globalIgnores(
+    ['**/dist', '**/vite.config.*.timestamp*', '**/vitest.config.*.timestamp*'],
+    'Global Ignores'
+  ),
   {
-    ignores: [
-      '**/dist',
-      '**/vite.config.*.timestamp*',
-      '**/vitest.config.*.timestamp*',
+    name: 'Sort All Js and Ts Files Except Tests',
+    files: [
+      '**/*.ts',
+      '**/*.tsx',
+      '**/*.cts',
+      '**/*.mts',
+      '**/*.js',
+      '**/*.jsx',
+      '**/*.cjs',
+      '**/*.mjs',
     ],
+    ignores: ['**/*.spec.ts', '**/*.spec.js', '**/*.test.ts', '**/*.test.js'],
+    plugins: {
+      perfectionist,
+    },
+    rules: {
+      ...perfectionist.configs['recommended-natural'].rules,
+    },
   },
   {
-    files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
+    name: 'Sort Eslint Config Custom Order',
+    files: ['**/eslint.config.{js,cjs,mjs,ts,cts,mts}'],
     rules: {
-      '@nx/enforce-module-boundaries': [
+      'perfectionist/sort-objects': [
         'error',
         {
-          enforceBuildableLibDependency: true,
-          allow: ['^.*/eslint(\\.base)?\\.config\\.[cm]?[jt]s$'],
-          depConstraints: [
-            {
-              sourceTag: '*',
-              onlyDependOnLibsWithTags: ['*'],
-            },
-          ],
+          customGroups: {
+            name: 'name',
+          },
+          groups: ['name', 'unknown'],
+          type: 'natural',
         },
       ],
     },
   },
   {
-    files: ['**/*.ts', '**/*.tsx', '**/*.cts', '**/*.mts'],
+    name: 'Nx module boundaries',
+    files: [
+      '**/*.ts',
+      '**/*.tsx',
+      '**/*.cts',
+      '**/*.mts',
+      '**/*.js',
+      '**/*.jsx',
+      '**/*.cjs',
+      '**/*.mjs',
+    ],
+    rules: {
+      '@nx/enforce-module-boundaries': [
+        'error',
+        {
+          allow: ['^.*/eslint(\\.base)?\\.config\\.[cm]?[jt]s$'],
+          depConstraints: [
+            {
+              onlyDependOnLibsWithTags: ['*'],
+              sourceTag: '*',
+            },
+          ],
+          enforceBuildableLibDependency: true,
+        },
+      ],
+    },
+  },
+  {
+    name: 'Type-Checking Rules for All Files',
+    files: [
+      '**/*.ts',
+      '**/*.tsx',
+      '**/*.cts',
+      '**/*.mts',
+      '**/*.js',
+      '**/*.jsx',
+      '**/*.cjs',
+      '**/*.mjs',
+    ],
     languageOptions: {
       parserOptions: {
         projectService: true,
@@ -45,24 +99,7 @@ export default defineConfig([
     },
   },
   {
-    files: ['**/*.js', '**/*.jsx', '**/*.cjs', '**/*.mjs'],
-    languageOptions: {
-      parserOptions: {
-        projectService: {
-          allowDefaultProject: [
-            'eslint.config.mjs',
-            'packages/*/eslint.config.mjs',
-          ],
-        },
-        tsconfigRootDir: import.meta.dirname,
-      },
-    },
-    rules: {
-      '@typescript-eslint/no-deprecated': 'error',
-    },
-  },
-  // Package.json linting - root package.json (private monorepo)
-  {
+    name: 'Root Package json file',
     ...packageJson.configs.recommended,
     files: ['package.json'],
     rules: {
@@ -70,8 +107,8 @@ export default defineConfig([
       'package-json/require-engines': 'error',
     },
   },
-  // Package.json linting - publishable packages
   {
+    name: 'Publishable Packages Package json files',
     ...packageJson.configs.recommended,
     files: ['packages/*/package.json'],
     rules: {

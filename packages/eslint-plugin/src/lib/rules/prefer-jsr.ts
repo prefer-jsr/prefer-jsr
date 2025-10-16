@@ -1,6 +1,8 @@
-import type { Rule } from 'eslint';
 import type { MemberNode } from '@humanwhocodes/momoa';
-import { toJsrDependency, getJsrPackageInfo } from '@prefer-jsr/npm2jsr';
+import type { Rule } from 'eslint';
+
+import { getJsrPackageInfo, toJsrDependency } from '@prefer-jsr/npm2jsr';
+
 import { meetsMinimumVersion } from '../utils/version-compare.js';
 
 interface PreferJsrOptions {
@@ -15,53 +17,10 @@ interface PreferJsrOptions {
   /**
    * Severity level for the rule
    */
-  severity?: 'warn' | 'error';
+  severity?: 'error' | 'warn';
 }
 
 export const preferJsrRule: Rule.RuleModule = {
-  meta: {
-    type: 'suggestion',
-    docs: {
-      description: 'Prefer JSR packages over NPM when available',
-      category: 'Best Practices',
-      recommended: false,
-    },
-    fixable: 'code',
-    defaultOptions: [{}],
-    schema: [
-      {
-        type: 'object',
-        properties: {
-          customMappings: {
-            type: 'object',
-            description:
-              'Custom mappings from NPM package names to JSR package names',
-            additionalProperties: {
-              type: 'string',
-            },
-          },
-          ignore: {
-            type: 'array',
-            description:
-              "Array of package names to ignore (won't suggest JSR alternatives)",
-            items: {
-              type: 'string',
-            },
-          },
-          severity: {
-            type: 'string',
-            description: 'Severity level for the rule',
-            enum: ['warn', 'error'],
-          },
-        },
-        additionalProperties: false,
-      },
-    ],
-    messages: {
-      preferJsr:
-        'Package "{{npmPackage}}" is available in JSR as "{{jsrPackage}}". Consider using JSR version: {{jsrDependency}}',
-    },
-  },
   create(context) {
     // Only run on package.json files
     const filename = context.filename;
@@ -83,8 +42,8 @@ export const preferJsrRule: Rule.RuleModule = {
           [
             'dependencies',
             'devDependencies',
-            'peerDependencies',
             'optionalDependencies',
+            'peerDependencies',
           ].includes(node.name.value) &&
           node.value?.type === 'Object'
         ) {
@@ -108,7 +67,7 @@ export const preferJsrRule: Rule.RuleModule = {
               }
 
               // Check custom mappings first
-              let jsrEquivalent: string | null =
+              let jsrEquivalent: null | string =
                 customMappings[npmPackage] || null;
               let shouldReport = !!jsrEquivalent;
 
@@ -128,12 +87,10 @@ export const preferJsrRule: Rule.RuleModule = {
                 const jsrDependency = toJsrDependency(version);
 
                 context.report({
-                  node: member.value as unknown as Rule.Node,
-                  messageId: 'preferJsr',
                   data: {
-                    npmPackage,
-                    jsrPackage: jsrEquivalent,
                     jsrDependency,
+                    jsrPackage: jsrEquivalent,
+                    npmPackage,
                   },
                   fix(fixer) {
                     // Auto-fix: replace the NPM version with JSR version
@@ -154,6 +111,8 @@ export const preferJsrRule: Rule.RuleModule = {
                       ),
                     ];
                   },
+                  messageId: 'preferJsr',
+                  node: member.value as unknown as Rule.Node,
                 });
               }
             }
@@ -161,5 +120,48 @@ export const preferJsrRule: Rule.RuleModule = {
         }
       },
     };
+  },
+  meta: {
+    defaultOptions: [{}],
+    docs: {
+      category: 'Best Practices',
+      description: 'Prefer JSR packages over NPM when available',
+      recommended: false,
+    },
+    fixable: 'code',
+    messages: {
+      preferJsr:
+        'Package "{{npmPackage}}" is available in JSR as "{{jsrPackage}}". Consider using JSR version: {{jsrDependency}}',
+    },
+    schema: [
+      {
+        additionalProperties: false,
+        properties: {
+          customMappings: {
+            additionalProperties: {
+              type: 'string',
+            },
+            description:
+              'Custom mappings from NPM package names to JSR package names',
+            type: 'object',
+          },
+          ignore: {
+            description:
+              "Array of package names to ignore (won't suggest JSR alternatives)",
+            items: {
+              type: 'string',
+            },
+            type: 'array',
+          },
+          severity: {
+            description: 'Severity level for the rule',
+            enum: ['warn', 'error'],
+            type: 'string',
+          },
+        },
+        type: 'object',
+      },
+    ],
+    type: 'suggestion',
   },
 };
