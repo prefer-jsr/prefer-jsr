@@ -59,7 +59,7 @@
       "conventionalCommits": true,
       "git": {
         "commit": true,
-        "tag": true,
+        "tag": false,
         "commitMessage": "chore(release): publish {version}"
       }
     },
