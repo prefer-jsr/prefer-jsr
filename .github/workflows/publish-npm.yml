@@ -1,8 +1,9 @@
 name: Publish to npm
 
 on:
-  release:
-    types: [published]
+  push:
+    tags:
+      - '*@*' # matches tags like npm2jsr@0.2.0, eslint-plugin@0.1.0
 
 permissions:
   contents: read
