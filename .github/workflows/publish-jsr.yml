@@ -1,8 +1,9 @@
 name: Publish to JSR
 
 on:
-  release:
-    types: [published]
+  push:
+    tags:
+      - '*-v*.*.*' # matches tags like npm2jsr-v0.2.0, eslint-plugin-v0.1.0
 
 permissions:
   contents: read
