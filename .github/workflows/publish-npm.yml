@@ -1,9 +1,8 @@
 name: Publish to npm
 
 on:
-  push:
-    tags:
-      - '*@*' # matches tags like npm2jsr@0.2.0, eslint-plugin@0.1.0
+  release:
+    types: [published]
 
 permissions:
   contents: read
@@ -34,6 +33,14 @@ jobs:
       - name: Build packages
         run: pnpm exec nx run-many -t build
 
+      - name: Extract project name from release tag
+        id: project
+        run: |
+          # Extract project name from tag (e.g., "npm2jsr@0.2.0" -> "npm2jsr")
+          TAG="${{ github.event.release.tag_name }}"
+          PROJECT="${TAG%@*}"
+          echo "name=${PROJECT}" >> $GITHUB_OUTPUT
+
       - name: Configure npm authentication
         run: |
           echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
@@ -42,4 +49,4 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_CONFIG_PROVENANCE: true
-        run: pnpm exec nx release publish
+        run: pnpm exec nx release publish --projects=${{ steps.project.outputs.name }}

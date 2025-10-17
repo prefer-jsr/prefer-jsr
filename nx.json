@@ -54,7 +54,6 @@
   "release": {
     "projects": ["packages/*"],
     "projectsRelationship": "independent",
-    "releaseTagPattern": "{projectName}-v{version}",
     "version": {
       "preVersionCommand": "pnpm exec nx run-many -t build test lint typecheck",
       "conventionalCommits": true,

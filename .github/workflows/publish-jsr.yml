@@ -1,9 +1,8 @@
 name: Publish to JSR
 
 on:
-  push:
-    tags:
-      - '*-v*.*.*' # matches tags like npm2jsr-v0.2.0, eslint-plugin-v0.1.0
+  release:
+    types: [published]
 
 permissions:
   contents: read
@@ -33,14 +32,14 @@ jobs:
       - name: Build packages
         run: pnpm exec nx run-many -t build
 
-      - name: Publish npm2jsr to JSR
-        run: npx jsr publish
-        working-directory: ./packages/npm2jsr
-        env:
-          JSR_TOKEN: ${{ secrets.JSR_TOKEN }}
+      - name: Extract project name from release tag
+        id: project
+        run: |
+          # Extract project name from tag (e.g., "npm2jsr@0.2.0" -> "npm2jsr")
+          TAG="${{ github.event.release.tag_name }}"
+          PROJECT="${TAG%@*}"
+          echo "name=${PROJECT}" >> $GITHUB_OUTPUT
 
-      - name: Publish eslint-plugin to JSR
+      - name: Publish to JSR
         run: npx jsr publish
-        working-directory: ./packages/eslint-plugin
-        env:
-          JSR_TOKEN: ${{ secrets.JSR_TOKEN }}
+        working-directory: ./packages/${{ steps.project.outputs.name }}
