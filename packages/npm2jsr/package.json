@@ -14,8 +14,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/prefer-jsr/prefer-jsr.git",
-    "directory": "packages/npm2jsr"
+    "url": "https://github.com/prefer-jsr/prefer-jsr.git"
   },
   "license": "MIT",
   "author": {

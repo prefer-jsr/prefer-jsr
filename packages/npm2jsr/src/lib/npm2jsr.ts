@@ -100,6 +100,22 @@ export const npmToJsrMapping: Map<string, JsrPackageInfo> = new Map<
     },
   ],
   [
+    '@prefer-jsr/eslint-plugin-prefer-jsr',
+    {
+      jsrPackage: '@prefer-jsr/eslint-plugin-prefer-jsr',
+      minimumVersion: '0.1.0',
+      sourceUrl: 'https://github.com/prefer-jsr/prefer-jsr',
+    },
+  ],
+  [
+    '@prefer-jsr/npm2jsr',
+    {
+      jsrPackage: '@prefer-jsr/npm2jsr',
+      minimumVersion: '0.1.0',
+      sourceUrl: 'https://github.com/prefer-jsr/prefer-jsr',
+    },
+  ],
+  [
     'zod',
     {
       jsrPackage: '@zod/zod',
