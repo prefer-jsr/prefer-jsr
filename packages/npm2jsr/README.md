@@ -46,11 +46,6 @@ Converts a version string to JSR format by prefixing with `jsr:`.
 
 Returns an array of all NPM packages that have JSR mappings.
 
-## Current Mappings
-
-- `zod` → `@zod/zod`
-- `@eslint/markdown` → `@eslint/markdown`
-
 ## Contributing
 
 This package is part of the prefer-jsr monorepo. The mapping may be updated as new packages become available on JSR.
