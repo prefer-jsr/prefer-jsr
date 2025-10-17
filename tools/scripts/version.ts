@@ -1,16 +1,16 @@
 #!/usr/bin/env node
 
-import { releaseChangelog, releaseVersion } from 'nx/release/index.js';
-import { readFileSync, writeFileSync, readdirSync } from 'node:fs';
-import { join } from 'node:path';
 import { execSync } from 'node:child_process';
+import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { releaseChangelog, releaseVersion } from 'nx/release/index.js';
 
 /**
  * Type guard for exec sync errors with status code
  */
 function isExecError(
   error: unknown
-): error is Error & { status?: number; code?: string } {
+): error is Error & { code?: string; status?: number } {
   return error instanceof Error;
 }
 
@@ -30,20 +30,20 @@ function isExecError(
   // Parse command line arguments
   const args = process.argv.slice(2);
   const options = {
-    version: args.find((arg) => arg.startsWith('--version='))?.split('=')[1],
     dryRun: args.includes('--dry-run') || args.includes('-d'),
-    verbose: args.includes('--verbose'),
     firstRelease: args.includes('--first-release'),
+    verbose: args.includes('--verbose'),
+    version: args.find((arg) => arg.startsWith('--version='))?.split('=')[1],
   };
 
   console.log('\n📦 Starting version and changelog process...\n');
 
   // Step 1: Run nx release version
   console.log('1️⃣  Versioning packages...');
-  const { workspaceVersion, projectsVersionData } = await releaseVersion({
-    specifier: options.version,
-    firstRelease: options.firstRelease,
+  const { projectsVersionData, workspaceVersion } = await releaseVersion({
     dryRun: options.dryRun,
+    firstRelease: options.firstRelease,
+    specifier: options.version,
     verbose: options.verbose,
   });
 
@@ -80,10 +80,10 @@ function isExecError(
   // Step 4: Generate changelogs and create GitHub releases
   console.log('\n4️⃣  Generating changelogs and creating GitHub releases...');
   await releaseChangelog({
-    versionData: projectsVersionData,
-    version: workspaceVersion,
     dryRun: options.dryRun,
     verbose: options.verbose,
+    version: workspaceVersion,
+    versionData: projectsVersionData,
   });
 
   console.log('\n✅ Version and changelog process completed successfully!');
@@ -112,21 +112,52 @@ function syncJsrVersions(dryRun: boolean): void {
     try {
       const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf8'));
       const jsrJson = JSON.parse(readFileSync(jsrJsonPath, 'utf8'));
+      let updated = false;
 
+      // Sync main version
       if (packageJson.version !== jsrJson.version) {
         console.log(
           `   📝 Updating ${pkg}/jsr.json: ${jsrJson.version} → ${packageJson.version}`
         );
+        jsrJson.version = packageJson.version;
+        updated = true;
+      }
 
+      // Sync sub-dependency versions in imports
+      if (jsrJson.imports && typeof jsrJson.imports === 'object') {
+        for (const [dep, jsrImport] of Object.entries(jsrJson.imports)) {
+          // Only handle jsr: imports
+          const match = /^jsr:@prefer-jsr\/(\w+)@\^?[\d\.]+/.exec(jsrImport);
+          if (match) {
+            const depName = match[1];
+            // Find the actual package.json for the dependency
+            const depPkgPath = join(packagesDir, depName, 'package.json');
+            try {
+              const depPkgJson = JSON.parse(readFileSync(depPkgPath, 'utf8'));
+              const currentVersion = depPkgJson.version;
+              const newImport = `jsr:@prefer-jsr/${depName}@^${currentVersion}`;
+              if (jsrJson.imports[dep] !== newImport) {
+                console.log(
+                  `   📝 Updating ${pkg}/jsr.json imports[${dep}]: ${jsrJson.imports[dep]} → ${newImport}`
+                );
+                jsrJson.imports[dep] = newImport;
+                updated = true;
+              }
+            } catch (depErr) {
+              // Ignore if dep package.json doesn't exist
+            }
+          }
+        }
+      }
+
+      if (updated) {
         if (!dryRun) {
-          jsrJson.version = packageJson.version;
           writeFileSync(
             jsrJsonPath,
             JSON.stringify(jsrJson, null, 2) + '\n',
             'utf8'
           );
         }
-
         syncedCount++;
       }
     } catch (error: unknown) {
