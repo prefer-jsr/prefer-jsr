@@ -56,27 +56,27 @@ export const preferJsrRule: Rule.RuleModule = {
       const jsrEquivalent = packageInfo.jsrPackage;
       const jsrDependency = toJsrDependency(version);
 
-        context.report({
-          data: {
-            jsrDependency,
-            jsrPackage: jsrEquivalent,
-            npmPackage,
-          },
-          fix(fixer) {
-            // Auto-fix: replace the NPM version with JSR version
-            return [
-              // Update the package name if it's different
-              ...(npmPackage !== jsrEquivalent
-                ? [fixer.replaceText(packageNameNode, `"${jsrEquivalent}"`)]
-                : []),
-              // Update the version to JSR format
-              fixer.replaceText(versionNode, `"${jsrDependency}"`),
-            ];
-          },
-          messageId: 'preferJsr',
-          node: versionNode,
-        });
-      }
+      context.report({
+        data: {
+          jsrDependency,
+          jsrPackage: jsrEquivalent,
+          npmPackage,
+        },
+        fix(fixer) {
+          // Auto-fix: replace the NPM version with JSR version
+          return [
+            // Update the package name if it's different
+            ...(npmPackage !== jsrEquivalent
+              ? [fixer.replaceText(packageNameNode, `"${jsrEquivalent}"`)]
+              : []),
+            // Update the version to JSR format
+            fixer.replaceText(versionNode, `"${jsrDependency}"`),
+          ];
+        },
+        messageId: 'preferJsr',
+        node: versionNode,
+      });
+    }
 
     return {
       // Handle JSON Document > Object > Member pattern (for @eslint/json)

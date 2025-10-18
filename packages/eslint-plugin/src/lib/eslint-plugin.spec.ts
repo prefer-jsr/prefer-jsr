@@ -391,53 +391,57 @@ describe('prefer-jsr rule with legacy jsonc-eslint-parser', () => {
   });
 
   // Test with ignore option (legacy parser)
-  legacyRuleTester.run('prefer-jsr with ignore option (legacy)', preferJsrRule, {
-    valid: [
-      {
-        filename: 'package.json',
-        code: JSON.stringify({
-          dependencies: {
-            zod: '^3.21.4',
-          },
-        }),
-        options: [
-          {
-            ignore: ['zod'],
-          },
-        ],
-      },
-    ],
-    invalid: [
-      {
-        filename: 'package.json',
-        code: JSON.stringify({
-          dependencies: {
-            zod: '^3.21.4',
-            '@eslint/markdown': '^5.0.0',
-          },
-        }),
-        options: [
-          {
-            ignore: ['@eslint/markdown'],
-          },
-        ],
-        errors: [
-          {
-            messageId: 'preferJsr',
-            data: {
-              npmPackage: 'zod',
-              jsrPackage: '@zod/zod',
-              jsrDependency: 'jsr:^3.21.4',
+  legacyRuleTester.run(
+    'prefer-jsr with ignore option (legacy)',
+    preferJsrRule,
+    {
+      valid: [
+        {
+          filename: 'package.json',
+          code: JSON.stringify({
+            dependencies: {
+              zod: '^3.21.4',
             },
-          },
-        ],
-        output: JSON.stringify({
-          dependencies: {
-            '@zod/zod': 'jsr:^3.21.4',
-            '@eslint/markdown': '^5.0.0',
-          },
-        }),
-      },
-    ],
-  });
+          }),
+          options: [
+            {
+              ignore: ['zod'],
+            },
+          ],
+        },
+      ],
+      invalid: [
+        {
+          filename: 'package.json',
+          code: JSON.stringify({
+            dependencies: {
+              zod: '^3.21.4',
+              '@eslint/markdown': '^5.0.0',
+            },
+          }),
+          options: [
+            {
+              ignore: ['@eslint/markdown'],
+            },
+          ],
+          errors: [
+            {
+              messageId: 'preferJsr',
+              data: {
+                npmPackage: 'zod',
+                jsrPackage: '@zod/zod',
+                jsrDependency: 'jsr:^3.21.4',
+              },
+            },
+          ],
+          output: JSON.stringify({
+            dependencies: {
+              '@zod/zod': 'jsr:^3.21.4',
+              '@eslint/markdown': '^5.0.0',
+            },
+          }),
+        },
+      ],
+    }
+  );
 });
