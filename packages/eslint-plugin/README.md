@@ -5,14 +5,24 @@ An ESLint plugin that suggests using JSR packages over NPM when available.
 ## Installation
 
 ```bash
-npm install --save-dev @prefer-jsr/eslint-plugin-prefer-jsr @eslint/json
+npm install --save-dev @prefer-jsr/eslint-plugin-prefer-jsr
+```
+
+For the new ESLint JSON parser (recommended):
+```bash
+npm install --save-dev @eslint/json
+```
+
+For the legacy JSON parser:
+```bash
+npm install --save-dev jsonc-eslint-parser
 ```
 
 ## Usage
 
-This plugin works with `package.json` files and requires `@eslint/json` for JSON parsing. Add it to your ESLint configuration:
+This plugin works with `package.json` files and supports both the new `@eslint/json` parser and the legacy `jsonc-eslint-parser`.
 
-### Flat Config (ESLint 9+)
+### Flat Config (ESLint 9+) with @eslint/json (recommended)
 
 ```js
 // eslint.config.js
@@ -26,6 +36,29 @@ export default [
     plugins: {
       '@prefer-jsr': preferJsr,
       json,
+    },
+    rules: {
+      '@prefer-jsr/prefer-jsr': 'warn',
+    },
+  },
+];
+```
+
+### Flat Config (ESLint 9+) with jsonc-eslint-parser (legacy)
+
+```js
+// eslint.config.js
+import preferJsr from '@prefer-jsr/eslint-plugin-prefer-jsr';
+import jsoncParser from 'jsonc-eslint-parser';
+
+export default [
+  {
+    files: ['package.json'],
+    languageOptions: {
+      parser: jsoncParser,
+    },
+    plugins: {
+      '@prefer-jsr': preferJsr,
     },
     rules: {
       '@prefer-jsr/prefer-jsr': 'warn',

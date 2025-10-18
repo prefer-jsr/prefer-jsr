@@ -22,6 +22,7 @@ export default [
             'tslib',
             '@eslint/json',
             '@humanwhocodes/momoa',
+            'jsonc-eslint-parser',
           ],
           ignoredFiles: [
             '{projectRoot}/eslint.config.{js,cjs,mjs,ts,cts,mts}',
