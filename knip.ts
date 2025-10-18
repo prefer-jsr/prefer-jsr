@@ -11,9 +11,6 @@ export default {
     // Required at runtime by @nx/eslint-plugin's flat config presets
     // (not just for types - the package imports it directly)
     'typescript-eslint',
-
-    // Optional peer dependency used in tests for testing @eslint/json parser support
-    '@eslint/json',
   ],
   ignoreBinaries: [
     // Used in CI via npx for JSR publishing

@@ -86,9 +86,6 @@ importers:
 
   packages/eslint-plugin:
     dependencies:
-      '@eslint/json':
-        specifier: '>=0.13.0'
-        version: 0.13.2
       '@prefer-jsr/npm2jsr':
         specifier: workspace:*
         version: link:../npm2jsr
@@ -96,6 +93,9 @@ importers:
         specifier: '>=9.15.0'
         version: 9.37.0(jiti@2.6.1)
     devDependencies:
+      '@eslint/json':
+        specifier: ^0.13.2
+        version: 0.13.2
       '@humanwhocodes/momoa':
         specifier: ^3.3.9
         version: 3.3.9
