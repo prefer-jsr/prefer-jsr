@@ -48,10 +48,10 @@
   "devDependencies": {
     "@eslint/json": "^0.13.2",
     "@humanwhocodes/momoa": "^3.3.9",
-    "eslint-plugin-eslint-plugin": "^7.0.0"
+    "eslint-plugin-eslint-plugin": "^7.0.0",
+    "jsonc-eslint-parser": "^2.4.1"
   },
   "peerDependencies": {
-    "@eslint/json": ">=0.13.0",
     "eslint": ">=9.15.0"
   },
   "engines": {

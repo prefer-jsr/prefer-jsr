@@ -5,14 +5,26 @@ An ESLint plugin that suggests using JSR packages over NPM when available.
 ## Installation
 
 ```bash
-npm install --save-dev @prefer-jsr/eslint-plugin-prefer-jsr @eslint/json
+npm install --save-dev @prefer-jsr/eslint-plugin-prefer-jsr
+```
+
+For the new ESLint JSON parser (recommended):
+
+```bash
+npm install --save-dev @eslint/json
+```
+
+For the legacy JSON parser:
+
+```bash
+npm install --save-dev jsonc-eslint-parser
 ```
 
 ## Usage
 
-This plugin works with `package.json` files and requires `@eslint/json` for JSON parsing. Add it to your ESLint configuration:
+This plugin works with `package.json` files and supports both the new `@eslint/json` parser and the legacy `jsonc-eslint-parser`.
 
-### Flat Config (ESLint 9+)
+### Flat Config (ESLint 9+) with @eslint/json (recommended)
 
 ```js
 // eslint.config.js
@@ -28,7 +40,30 @@ export default [
       json,
     },
     rules: {
-      '@prefer-jsr/prefer-jsr': 'warn',
+      '@prefer-jsr/prefer-jsr': 'error',
+    },
+  },
+];
+```
+
+### Flat Config (ESLint 9+) with jsonc-eslint-parser (legacy)
+
+```js
+// eslint.config.js
+import preferJsr from '@prefer-jsr/eslint-plugin-prefer-jsr';
+import jsoncParser from 'jsonc-eslint-parser';
+
+export default [
+  {
+    files: ['package.json'],
+    languageOptions: {
+      parser: jsoncParser,
+    },
+    plugins: {
+      '@prefer-jsr': preferJsr,
+    },
+    rules: {
+      '@prefer-jsr/prefer-jsr': 'error',
     },
   },
 ];
@@ -49,9 +84,7 @@ This rule warns when a dependency in `package.json` has a JSR equivalent availab
 
 The rule accepts an options object with the following properties:
 
-- `customMappings` (object): Additional NPM to JSR package mappings
 - `ignore` (array): List of package names to ignore
-- `severity` (string): Override severity level ('error', 'warn', 'off')
 
 #### Examples
 
@@ -60,22 +93,7 @@ The rule accepts an options object with the following properties:
 ```js
 {
   rules: {
-    '@prefer-jsr/prefer-jsr': 'warn',
-  },
-}
-```
-
-**With custom mappings:**
-
-```js
-{
-  rules: {
-    '@prefer-jsr/prefer-jsr': ['warn', {
-      customMappings: {
-        'my-package': '@my/jsr-package',
-        'another-npm-pkg': '@company/another-pkg'
-      }
-    }],
+    '@prefer-jsr/prefer-jsr': 'error',
   },
 }
 ```
@@ -85,20 +103,8 @@ The rule accepts an options object with the following properties:
 ```js
 {
   rules: {
-    '@prefer-jsr/prefer-jsr': ['warn', {
+    '@prefer-jsr/prefer-jsr': ['error', {
       ignore: ['legacy-package', 'special-case']
-    }],
-  },
-}
-```
-
-**Custom severity:**
-
-```js
-{
-  rules: {
-    '@prefer-jsr/prefer-jsr': ['warn', {
-      severity: 'error'
     }],
   },
 }
