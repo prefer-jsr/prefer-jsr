@@ -38,7 +38,7 @@ export default [
       json,
     },
     rules: {
-      '@prefer-jsr/prefer-jsr': 'warn',
+      '@prefer-jsr/prefer-jsr': 'error',
     },
   },
 ];
@@ -61,7 +61,7 @@ export default [
       '@prefer-jsr': preferJsr,
     },
     rules: {
-      '@prefer-jsr/prefer-jsr': 'warn',
+      '@prefer-jsr/prefer-jsr': 'error',
     },
   },
 ];
@@ -82,9 +82,7 @@ This rule warns when a dependency in `package.json` has a JSR equivalent availab
 
 The rule accepts an options object with the following properties:
 
-- `customMappings` (object): Additional NPM to JSR package mappings
 - `ignore` (array): List of package names to ignore
-- `severity` (string): Override severity level ('error', 'warn', 'off')
 
 #### Examples
 
@@ -93,22 +91,7 @@ The rule accepts an options object with the following properties:
 ```js
 {
   rules: {
-    '@prefer-jsr/prefer-jsr': 'warn',
-  },
-}
-```
-
-**With custom mappings:**
-
-```js
-{
-  rules: {
-    '@prefer-jsr/prefer-jsr': ['warn', {
-      customMappings: {
-        'my-package': '@my/jsr-package',
-        'another-npm-pkg': '@company/another-pkg'
-      }
-    }],
+    '@prefer-jsr/prefer-jsr': 'error',
   },
 }
 ```
@@ -118,20 +101,8 @@ The rule accepts an options object with the following properties:
 ```js
 {
   rules: {
-    '@prefer-jsr/prefer-jsr': ['warn', {
+    '@prefer-jsr/prefer-jsr': ['error', {
       ignore: ['legacy-package', 'special-case']
-    }],
-  },
-}
-```
-
-**Custom severity:**
-
-```js
-{
-  rules: {
-    '@prefer-jsr/prefer-jsr': ['warn', {
-      severity: 'error'
     }],
   },
 }

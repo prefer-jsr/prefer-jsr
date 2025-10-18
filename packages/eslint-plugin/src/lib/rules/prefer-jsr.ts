@@ -8,17 +8,9 @@ import { meetsMinimumVersion } from '../utils/version-compare.js';
 
 interface PreferJsrOptions {
   /**
-   * Custom mappings from NPM package names to JSR package names
-   */
-  customMappings?: Record<string, string>;
-  /**
    * Packages to ignore (won't suggest JSR alternatives)
    */
   ignore?: string[];
-  /**
-   * Severity level for the rule
-   */
-  severity?: 'error' | 'warn';
 }
 
 export const preferJsrRule: Rule.RuleModule = {
@@ -31,7 +23,6 @@ export const preferJsrRule: Rule.RuleModule = {
 
     // Get rule options
     const options: PreferJsrOptions = context.options[0] || {};
-    const customMappings = options.customMappings || {};
     const ignore = new Set(options.ignore || []);
 
     /**
@@ -53,24 +44,17 @@ export const preferJsrRule: Rule.RuleModule = {
         return;
       }
 
-      // Check custom mappings first
-      let jsrEquivalent: null | string = customMappings[npmPackage] || null;
-      let shouldReport = !!jsrEquivalent;
-
-      // If no custom mapping, check built-in mappings with version awareness
-      if (!jsrEquivalent) {
-        const packageInfo = getJsrPackageInfo(npmPackage);
-        if (
-          packageInfo &&
-          meetsMinimumVersion(version, packageInfo.minimumVersion)
-        ) {
-          jsrEquivalent = packageInfo.jsrPackage;
-          shouldReport = true;
-        }
+      // Check built-in mappings with version awareness
+      const packageInfo = getJsrPackageInfo(npmPackage);
+      if (
+        !packageInfo ||
+        !meetsMinimumVersion(version, packageInfo.minimumVersion)
+      ) {
+        return;
       }
 
-      if (shouldReport && jsrEquivalent) {
-        const jsrDependency = toJsrDependency(version);
+      const jsrEquivalent = packageInfo.jsrPackage;
+      const jsrDependency = toJsrDependency(version);
 
         context.report({
           data: {
@@ -93,7 +77,6 @@ export const preferJsrRule: Rule.RuleModule = {
           node: versionNode,
         });
       }
-    }
 
     return {
       // Handle JSON Document > Object > Member pattern (for @eslint/json)
@@ -179,14 +162,6 @@ export const preferJsrRule: Rule.RuleModule = {
       {
         additionalProperties: false,
         properties: {
-          customMappings: {
-            additionalProperties: {
-              type: 'string',
-            },
-            description:
-              'Custom mappings from NPM package names to JSR package names',
-            type: 'object',
-          },
           ignore: {
             description:
               "Array of package names to ignore (won't suggest JSR alternatives)",
@@ -194,11 +169,6 @@ export const preferJsrRule: Rule.RuleModule = {
               type: 'string',
             },
             type: 'array',
-          },
-          severity: {
-            description: 'Severity level for the rule',
-            enum: ['warn', 'error'],
-            type: 'string',
           },
         },
         type: 'object',

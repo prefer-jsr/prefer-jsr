@@ -102,6 +102,9 @@ importers:
       eslint-plugin-eslint-plugin:
         specifier: ^7.0.0
         version: 7.0.0(eslint@9.37.0(jiti@2.6.1))
+      jsonc-eslint-parser:
+        specifier: ^2.4.1
+        version: 2.4.1
 
   packages/npm2jsr: {}
 

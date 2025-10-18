@@ -177,59 +177,6 @@ describe('prefer-jsr rule', () => {
     ],
   });
 
-  // Test with custom mappings
-  ruleTester.run('prefer-jsr with custom mappings', preferJsrRule, {
-    valid: [
-      {
-        filename: 'package.json',
-        code: JSON.stringify({
-          dependencies: {
-            'my-custom-package': '^1.0.0',
-          },
-        }),
-        options: [
-          {
-            customMappings: {
-              'other-package': '@other/package',
-            },
-          },
-        ],
-      },
-    ],
-    invalid: [
-      {
-        filename: 'package.json',
-        code: JSON.stringify({
-          dependencies: {
-            'my-custom-package': '^1.0.0',
-          },
-        }),
-        options: [
-          {
-            customMappings: {
-              'my-custom-package': '@my/custom-package',
-            },
-          },
-        ],
-        errors: [
-          {
-            messageId: 'preferJsr',
-            data: {
-              npmPackage: 'my-custom-package',
-              jsrPackage: '@my/custom-package',
-              jsrDependency: 'jsr:^1.0.0',
-            },
-          },
-        ],
-        output: JSON.stringify({
-          dependencies: {
-            '@my/custom-package': 'jsr:^1.0.0',
-          },
-        }),
-      },
-    ],
-  });
-
   // Test with ignore option
   ruleTester.run('prefer-jsr with ignore option', preferJsrRule, {
     valid: [
@@ -442,63 +389,6 @@ describe('prefer-jsr rule with legacy jsonc-eslint-parser', () => {
       },
     ],
   });
-
-  // Test with custom mappings (legacy parser)
-  legacyRuleTester.run(
-    'prefer-jsr with custom mappings (legacy)',
-    preferJsrRule,
-    {
-      valid: [
-        {
-          filename: 'package.json',
-          code: JSON.stringify({
-            dependencies: {
-              'my-custom-package': '^1.0.0',
-            },
-          }),
-          options: [
-            {
-              customMappings: {
-                'other-package': '@other/package',
-              },
-            },
-          ],
-        },
-      ],
-      invalid: [
-        {
-          filename: 'package.json',
-          code: JSON.stringify({
-            dependencies: {
-              'my-custom-package': '^1.0.0',
-            },
-          }),
-          options: [
-            {
-              customMappings: {
-                'my-custom-package': '@my/custom-package',
-              },
-            },
-          ],
-          errors: [
-            {
-              messageId: 'preferJsr',
-              data: {
-                npmPackage: 'my-custom-package',
-                jsrPackage: '@my/custom-package',
-                jsrDependency: 'jsr:^1.0.0',
-              },
-            },
-          ],
-          output: JSON.stringify({
-            dependencies: {
-              '@my/custom-package': 'jsr:^1.0.0',
-            },
-          }),
-        },
-      ],
-    }
-  );
 
   // Test with ignore option (legacy parser)
   legacyRuleTester.run('prefer-jsr with ignore option (legacy)', preferJsrRule, {
