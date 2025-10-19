@@ -1,5 +1,6 @@
 import { RuleTester } from 'eslint';
 import { preferJsrRule } from './rules/prefer-jsr.js';
+import plugin from './eslint-plugin.js';
 import json from '@eslint/json';
 import * as jsoncParser from 'jsonc-eslint-parser';
 
@@ -444,4 +445,25 @@ describe('prefer-jsr rule with legacy jsonc-eslint-parser', () => {
       ],
     }
   );
+});
+
+describe('plugin structure', () => {
+  it('should have a recommended config', () => {
+    expect(plugin.configs).toBeDefined();
+    expect(plugin.configs?.recommended).toBeDefined();
+  });
+
+  it('recommended config should have a name', () => {
+    expect(plugin.configs?.recommended?.name).toBe('@prefer-jsr/eslint-plugin-prefer-jsr/recommended');
+  });
+
+  it('recommended config should include files field', () => {
+    expect(plugin.configs?.recommended?.files).toBeDefined();
+    expect(plugin.configs?.recommended?.files).toEqual(['**/package.json']);
+  });
+
+  it('recommended config should include the prefer-jsr rule', () => {
+    expect(plugin.configs?.recommended?.rules).toBeDefined();
+    expect(plugin.configs?.recommended?.rules?.['@prefer-jsr/prefer-jsr']).toBe('error');
+  });
 });

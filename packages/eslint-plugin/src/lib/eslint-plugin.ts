@@ -26,6 +26,15 @@ import { preferJsrRule } from './rules/prefer-jsr.js';
  * ```
  */
 const plugin: ESLint.Plugin = {
+  configs: {
+    recommended: {
+      files: ['**/package.json'],
+      name: '@prefer-jsr/eslint-plugin-prefer-jsr/recommended',
+      rules: {
+        '@prefer-jsr/prefer-jsr': 'error',
+      },
+    },
+  },
   meta: {
     name: '@prefer-jsr/eslint-plugin-prefer-jsr',
     version: '0.0.1',
