@@ -100,6 +100,176 @@ export const npmToJsrMapping: Map<string, JsrPackageInfo> = new Map<
     },
   ],
   [
+    '@hono/ajv-validator',
+    {
+      jsrPackage: '@hono/ajv-validator',
+      minimumVersion: '0.0.1',
+      sourceUrl: 'https://github.com/honojs/middleware',
+    },
+  ],
+  [
+    '@hono/arktype-validator',
+    {
+      jsrPackage: '@hono/arktype-validator',
+      minimumVersion: '2.0.1',
+      sourceUrl: 'https://github.com/honojs/middleware',
+    },
+  ],
+  [
+    '@hono/class-validator',
+    {
+      jsrPackage: '@hono/class-validator',
+      minimumVersion: '1.0.0',
+      sourceUrl: 'https://github.com/honojs/middleware',
+    },
+  ],
+  [
+    '@hono/clerk-auth',
+    {
+      jsrPackage: '@hono/clerk-auth',
+      minimumVersion: '3.0.3',
+      sourceUrl: 'https://github.com/honojs/middleware',
+    },
+  ],
+  [
+    '@hono/conform-validator',
+    {
+      jsrPackage: '@hono/conform-validator',
+      minimumVersion: '1.0.0',
+      sourceUrl: 'https://github.com/honojs/middleware',
+    },
+  ],
+
+  [
+    '@hono/effect-validator',
+    {
+      jsrPackage: '@hono/effect-validator',
+      minimumVersion: '1.2.0',
+      sourceUrl: 'https://github.com/honojs/middleware',
+    },
+  ],
+  [
+    '@hono/esbuild-transpiler',
+    {
+      jsrPackage: '@hono/esbuild-transpiler',
+      minimumVersion: '0.1.4',
+      sourceUrl: 'https://github.com/honojs/middleware',
+    },
+  ],
+
+  [
+    '@hono/event-emitter',
+    {
+      jsrPackage: '@hono/event-emitter',
+      minimumVersion: '2.0.0',
+      sourceUrl: 'https://github.com/honojs/middleware',
+    },
+  ],
+  [
+    '@hono/graphql-server',
+    {
+      jsrPackage: '@hono/graphql-server',
+      minimumVersion: '0.6.1',
+      sourceUrl: 'https://github.com/honojs/middleware',
+    },
+  ],
+  [
+    '@hono/hello',
+    {
+      jsrPackage: '@hono/hello',
+      minimumVersion: '0.1.2',
+      sourceUrl: 'https://github.com/honojs/middleware',
+    },
+  ],
+  [
+    '@hono/mcp',
+    {
+      jsrPackage: '@hono/mcp',
+      minimumVersion: '0.1.0',
+      sourceUrl: 'https://github.com/honojs/middleware',
+    },
+  ],
+  [
+    '@hono/otel',
+    {
+      jsrPackage: '@hono/otel',
+      minimumVersion: '0.2.2',
+      sourceUrl: 'https://github.com/honojs/middleware',
+    },
+  ],
+  [
+    '@hono/prometheus',
+    {
+      jsrPackage: '@hono/prometheus',
+      minimumVersion: '1.0.2',
+      sourceUrl: 'https://github.com/honojs/middleware',
+    },
+  ],
+  [
+    '@hono/standard-validator',
+    {
+      jsrPackage: '@hono/standard-validator',
+      minimumVersion: '0.1.2',
+      sourceUrl: 'https://github.com/honojs/middleware',
+    },
+  ],
+  [
+    '@hono/swagger-editor',
+    {
+      jsrPackage: '@hono/swagger-editor',
+      minimumVersion: '1.0.1',
+      sourceUrl: 'https://github.com/honojs/middleware',
+    },
+  ],
+  [
+    '@hono/swagger-ui',
+    {
+      jsrPackage: '@hono/swagger-ui',
+      minimumVersion: '0.5.2',
+      sourceUrl: 'https://github.com/honojs/middleware',
+    },
+  ],
+  [
+    '@hono/trpc-server',
+    {
+      jsrPackage: '@hono/trpc-server',
+      minimumVersion: '0.3.4',
+      sourceUrl: 'https://github.com/honojs/middleware',
+    },
+  ],
+  [
+    '@hono/typebox-validator',
+    {
+      jsrPackage: '@hono/typebox-validator',
+      minimumVersion: '0.3.3',
+      sourceUrl: 'https://github.com/honojs/middleware',
+    },
+  ],
+  [
+    '@hono/typia-validator',
+    {
+      jsrPackage: '@hono/typia-validator',
+      minimumVersion: '0.1.2',
+      sourceUrl: 'https://github.com/honojs/middleware',
+    },
+  ],
+  [
+    '@hono/valibot-validator',
+    {
+      jsrPackage: '@hono/valibot-validator',
+      minimumVersion: '0.5.2',
+      sourceUrl: 'https://github.com/honojs/middleware',
+    },
+  ],
+  [
+    '@hono/zod-validator',
+    {
+      jsrPackage: '@hono/zod-validator',
+      minimumVersion: '0.7.0',
+      sourceUrl: 'https://github.com/honojs/middleware',
+    },
+  ],
+  [
     '@prefer-jsr/eslint-plugin-prefer-jsr',
     {
       jsrPackage: '@prefer-jsr/eslint-plugin-prefer-jsr',
@@ -113,6 +283,14 @@ export const npmToJsrMapping: Map<string, JsrPackageInfo> = new Map<
       jsrPackage: '@prefer-jsr/npm2jsr',
       minimumVersion: '0.1.0',
       sourceUrl: 'https://github.com/prefer-jsr/prefer-jsr',
+    },
+  ],
+  [
+    'hono',
+    {
+      jsrPackage: '@hono/hono',
+      minimumVersion: '4.4.0',
+      sourceUrl: 'https://github.com/honojs/hono',
     },
   ],
   [
