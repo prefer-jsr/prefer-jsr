@@ -1,6 +1,6 @@
 {
   "name": "@prefer-jsr/eslint-plugin-prefer-jsr",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "exports": "./src/index.ts",
   "publish": {
     "exclude": [
@@ -12,6 +12,6 @@
     ]
   },
   "imports": {
-    "@prefer-jsr/npm2jsr": "jsr:@prefer-jsr/npm2jsr@^0.3.0"
+    "@prefer-jsr/npm2jsr": "jsr:@prefer-jsr/npm2jsr@^0.4.0"
   }
 }
