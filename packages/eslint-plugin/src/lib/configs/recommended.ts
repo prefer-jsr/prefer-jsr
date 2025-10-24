@@ -1,6 +1,6 @@
 import { type Linter } from 'eslint';
 
-export function recommendedConfig(): Linter.Config {
+export function recommendedConfig() {
   return {
     files: ['**/package.json'],
     language: 'json/json',
@@ -8,5 +8,5 @@ export function recommendedConfig(): Linter.Config {
     rules: {
       'prefer-jsr/prefer-jsr': 'error',
     },
-  };
+  } satisfies Linter.Config;
 }
