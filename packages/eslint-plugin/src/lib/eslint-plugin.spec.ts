@@ -454,7 +454,9 @@ describe('plugin structure', () => {
   });
 
   it('recommended config should have a name', () => {
-    expect(plugin.configs?.recommended?.name).toBe('@prefer-jsr/eslint-plugin-prefer-jsr/recommended');
+    expect(plugin.configs?.recommended?.name).toBe(
+      '@prefer-jsr/eslint-plugin-prefer-jsr/recommended'
+    );
   });
 
   it('recommended config should include files field', () => {
@@ -464,6 +466,8 @@ describe('plugin structure', () => {
 
   it('recommended config should include the prefer-jsr rule', () => {
     expect(plugin.configs?.recommended?.rules).toBeDefined();
-    expect(plugin.configs?.recommended?.rules?.['@prefer-jsr/prefer-jsr']).toBe('error');
+    expect(plugin.configs?.recommended?.rules?.['@prefer-jsr/prefer-jsr']).toBe(
+      'error'
+    );
   });
 });
