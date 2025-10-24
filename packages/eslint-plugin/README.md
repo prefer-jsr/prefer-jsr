@@ -26,7 +26,7 @@ This plugin works with `package.json` files and supports both the new `@eslint/j
 
 ### Recommended Config
 
-The easiest way to use this plugin is with the recommended config:
+One way to use this plugin is with the recommended config:
 
 ```js
 // eslint.config.js

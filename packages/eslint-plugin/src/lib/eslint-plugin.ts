@@ -29,7 +29,7 @@ const plugin: ESLint.Plugin = {
   configs: {
     recommended: {
       files: ['**/package.json'],
-      name: '@prefer-jsr/eslint-plugin-prefer-jsr/recommended',
+      name: 'prefer-jsr/recommended',
       rules: {
         '@prefer-jsr/prefer-jsr': 'error',
       },
