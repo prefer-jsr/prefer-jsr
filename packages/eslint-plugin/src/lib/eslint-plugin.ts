@@ -1,5 +1,6 @@
 import type { ESLint } from 'eslint';
 
+import { recommendedConfig } from './configs/recommended.js';
 import { preferJsrRule } from './rules/prefer-jsr.js';
 
 /**
@@ -11,30 +12,24 @@ import { preferJsrRule } from './rules/prefer-jsr.js';
  * @example
  * ```js
  * // eslint.config.js
+ * import { defineConfig } from 'eslint/config';
  * import preferJsr from '@prefer-jsr/eslint-plugin-prefer-jsr';
+ * import json from '@eslint/json';
  *
- * export default [
+ * export default defineConfig([
  *   {
+ *     files: ['package.json'],
+ *     language: 'json/json',
  *     plugins: {
- *       'prefer-jsr': preferJsr,
+ *       preferJsr,
+ *       json,
  *     },
- *     rules: {
- *       'prefer-jsr/prefer-jsr': 'error',
- *     },
- *   },
- * ];
+ *     extends: ['prefer-jsr/recommended'],
+ *   }
+ * ]);
  * ```
  */
 const plugin: ESLint.Plugin = {
-  configs: {
-    recommended: {
-      files: ['**/package.json'],
-      name: 'prefer-jsr/recommended',
-      rules: {
-        '@prefer-jsr/prefer-jsr': 'error',
-      },
-    },
-  },
   meta: {
     name: '@prefer-jsr/eslint-plugin-prefer-jsr',
     version: '0.0.1',
@@ -43,5 +38,10 @@ const plugin: ESLint.Plugin = {
     'prefer-jsr': preferJsrRule,
   },
 };
+const configs = {
+  recommended: recommendedConfig(),
+};
+
+plugin.configs = configs;
 
 export default plugin;

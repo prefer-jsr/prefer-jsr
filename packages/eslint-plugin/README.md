@@ -30,25 +30,25 @@ One way to use this plugin is with the recommended config:
 
 ```js
 // eslint.config.js
+import { defineConfig } from 'eslint/config';
 import preferJsr from '@prefer-jsr/eslint-plugin-prefer-jsr';
 import json from '@eslint/json';
 
-export default [
-  json.configs.recommended,
+export default defineConfig([
   {
     plugins: {
-      '@prefer-jsr': preferJsr,
+      preferJsr,
+      json,
     },
+    extends: ['prefer-jsr/recommended'],
   },
-  preferJsr.configs.recommended,
-];
+]);
 ```
 
 The recommended config automatically:
+
 - Applies to `**/package.json` files
 - Enables the `@prefer-jsr/prefer-jsr` rule with `error` severity
-
-Note: You still need to configure a JSON parser (either `@eslint/json` or `jsonc-eslint-parser`) separately. The recommended config works with either parser.
 
 ### Flat Config (ESLint 9+) with @eslint/json
 
