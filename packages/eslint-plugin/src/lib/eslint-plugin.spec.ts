@@ -1,5 +1,6 @@
 import { RuleTester } from 'eslint';
 import { preferJsrRule } from './rules/prefer-jsr.js';
+import plugin from './eslint-plugin.js';
 import json from '@eslint/json';
 import * as jsoncParser from 'jsonc-eslint-parser';
 
@@ -444,4 +445,46 @@ describe('prefer-jsr rule with legacy jsonc-eslint-parser', () => {
       ],
     }
   );
+});
+
+describe('plugin structure', () => {
+  function isFlatConfig(config: unknown): config is {
+    name?: string;
+    files?: unknown;
+    rules?: Record<string, unknown>;
+  } {
+    return typeof config === 'object' && config !== null && 'rules' in config;
+  }
+  it('should have a recommended config', () => {
+    expect(plugin.configs).toBeDefined();
+    expect(plugin.configs?.recommended).toBeDefined();
+  });
+
+  function getRecommendedConfig() {
+    const rec = plugin.configs?.recommended;
+    return Array.isArray(rec) ? rec[0] : rec;
+  }
+
+  it('recommended config should have a name', () => {
+    const recommended = getRecommendedConfig();
+    if (isFlatConfig(recommended)) {
+      expect(recommended.name).toBe('prefer-jsr/recommended');
+    }
+  });
+
+  it('recommended config should include files field', () => {
+    const recommended = getRecommendedConfig();
+    if (isFlatConfig(recommended)) {
+      expect(recommended.files).toBeDefined();
+      expect(recommended.files).toEqual(['**/package.json']);
+    }
+  });
+
+  it('recommended config should include the prefer-jsr rule', () => {
+    const recommended = getRecommendedConfig();
+    if (isFlatConfig(recommended)) {
+      expect(recommended.rules).toBeDefined();
+      expect(recommended.rules?.['prefer-jsr/prefer-jsr']).toBe('error');
+    }
+  });
 });

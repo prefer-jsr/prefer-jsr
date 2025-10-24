@@ -24,7 +24,35 @@ npm install --save-dev jsonc-eslint-parser
 
 This plugin works with `package.json` files and supports both the new `@eslint/json` parser and the legacy `jsonc-eslint-parser`.
 
-### Flat Config (ESLint 9+) with @eslint/json (recommended)
+### Recommended Config
+
+One way to use this plugin is with the recommended config:
+
+```js
+// eslint.config.js
+import { defineConfig } from 'eslint/config';
+import preferJsr from '@prefer-jsr/eslint-plugin-prefer-jsr';
+import json from '@eslint/json';
+
+export default defineConfig([
+  {
+    plugins: {
+      preferJsr,
+      json,
+    },
+    extends: ['prefer-jsr/recommended'],
+  },
+]);
+```
+
+The recommended config automatically:
+
+- Applies to `**/package.json` files
+- Enables the `@prefer-jsr/prefer-jsr` rule with `error` severity
+
+### Flat Config (ESLint 9+) with @eslint/json
+
+For more control, you can configure the plugin manually:
 
 ```js
 // eslint.config.js
