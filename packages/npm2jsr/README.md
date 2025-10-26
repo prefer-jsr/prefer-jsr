@@ -1,3 +1,5 @@
+![npm1jsr](./assets/npm2jsr.svg)
+
 # @prefer-jsr/npm2jsr
 
 A utility package that provides mapping between NPM packages and their JSR equivalents.
