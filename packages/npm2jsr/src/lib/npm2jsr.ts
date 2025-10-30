@@ -270,6 +270,14 @@ export const npmToJsrMapping: Map<string, JsrPackageInfo> = new Map<
     },
   ],
   [
+    '@openai/openai',
+    {
+      jsrPackage: '@openai/openai',
+      minimumVersion: '4.47.1',
+      sourceUrl: 'https://github.com/openai/openai-node',
+    },
+  ],
+  [
     '@prefer-jsr/eslint-plugin-prefer-jsr',
     {
       jsrPackage: '@prefer-jsr/eslint-plugin-prefer-jsr',

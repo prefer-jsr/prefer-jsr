@@ -25,6 +25,11 @@ describe('npm2jsr', () => {
       expect(eslintInfo?.jsrPackage).toBe('@eslint/markdown');
       expect(eslintInfo?.minimumVersion).toBe('6.0.0');
       expect(eslintInfo?.sourceUrl).toBe('https://github.com/eslint/markdown');
+
+      const openaiInfo = npmToJsrMapping.get('@openai/openai');
+      expect(openaiInfo?.jsrPackage).toBe('@openai/openai');
+      expect(openaiInfo?.minimumVersion).toBe('4.47.1');
+      expect(openaiInfo?.sourceUrl).toBe('https://github.com/openai/openai-node');
     });
   });
 
@@ -32,6 +37,7 @@ describe('npm2jsr', () => {
     it('should return JSR equivalent for mapped packages', () => {
       expect(getJsrEquivalent('zod')).toBe('@zod/zod');
       expect(getJsrEquivalent('@eslint/markdown')).toBe('@eslint/markdown');
+      expect(getJsrEquivalent('@openai/openai')).toBe('@openai/openai');
     });
 
     it('should return null for unmapped packages', () => {
@@ -68,6 +74,7 @@ describe('npm2jsr', () => {
       const packages = getAvailableNpmPackages();
       expect(packages).toContain('zod');
       expect(packages).toContain('@eslint/markdown');
+      expect(packages).toContain('@openai/openai');
       expect(packages.length).toBeGreaterThan(0);
     });
   });
@@ -76,6 +83,7 @@ describe('npm2jsr', () => {
     it('should return true for mapped packages', () => {
       expect(hasJsrEquivalent('zod')).toBe(true);
       expect(hasJsrEquivalent('@eslint/markdown')).toBe(true);
+      expect(hasJsrEquivalent('@openai/openai')).toBe(true);
     });
 
     it('should return false for unmapped packages', () => {
