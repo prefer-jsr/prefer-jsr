@@ -3,11 +3,6 @@ import { join } from 'node:path';
 
 export interface SyncJsrJsonOptions {
   /**
-   * The directory containing the packages to sync
-   * @default process.cwd() + '/packages'
-   */
-  packagesDir?: string;
-  /**
    * Whether to run in dry-run mode (don't write files)
    * @default false
    */
@@ -16,6 +11,11 @@ export interface SyncJsrJsonOptions {
    * Custom logger function for output
    */
   log?: (message: string) => void;
+  /**
+   * The directory containing the packages to sync
+   * @default process.cwd() + '/packages'
+   */
+  packagesDir?: string;
 }
 
 export interface SyncResult {
@@ -27,8 +27,8 @@ export interface SyncResult {
    * Details of packages that were synced
    */
   syncedPackages: Array<{
-    packageName: string;
     changes: string[];
+    packageName: string;
   }>;
 }
 
@@ -45,9 +45,9 @@ export interface SyncResult {
  */
 export function syncJsrJson(options: SyncJsrJsonOptions = {}): SyncResult {
   const {
-    packagesDir = join(process.cwd(), 'packages'),
     dryRun = false,
     log = console.log,
+    packagesDir = join(process.cwd(), 'packages'),
   } = options;
 
   const packages = readdirSync(packagesDir, { withFileTypes: true })
@@ -120,7 +120,7 @@ export function syncJsrJson(options: SyncJsrJsonOptions = {}): SyncResult {
           );
         }
         syncedCount++;
-        syncedPackages.push({ packageName: pkg, changes });
+        syncedPackages.push({ changes, packageName: pkg });
       }
     } catch (error: unknown) {
       // Skip if files don't exist

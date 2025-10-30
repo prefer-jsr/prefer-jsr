@@ -11,7 +11,6 @@
     "@nx/eslint-plugin": "21.6.4",
     "@nx/js": "21.6.4",
     "@nx/vite": "21.6.4",
-    "@nx/web": "21.6.4",
     "@swc-node/register": "~1.9.1",
     "@swc/core": "~1.13.3",
     "@swc/helpers": "~0.5.11",

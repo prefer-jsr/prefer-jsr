@@ -1,4 +1,3 @@
-import baseConfig from './eslint.base.config.mjs';
 import nx from '@nx/eslint-plugin';
 import packageJson from 'eslint-plugin-package-json';
 import perfectionist from 'eslint-plugin-perfectionist';
