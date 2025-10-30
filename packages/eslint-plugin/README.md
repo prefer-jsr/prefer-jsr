@@ -28,15 +28,11 @@ npm install --save-dev @prefer-jsr/eslint-plugin-prefer-jsr
 For the new ESLint JSON parser (recommended):
 
 ```bash
-pnpm i @eslint/json
+pnpm add -D @eslint/json
 ```
 
 ```bash
-yarn add @eslint/json
-```
-
-```bash
-npx jsr add @eslint/json
+yarn add -D @eslint/json
 ```
 
 <details>
@@ -51,15 +47,11 @@ npm install --save-dev @eslint/json
 For the legacy JSON parser:
 
 ```bash
-pnpm i jsonc-eslint-parser
+pnpm add -D jsonc-eslint-parser
 ```
 
 ```bash
-yarn add jsonc-eslint-parser
-```
-
-```bash
-npx jsr add jsonc-eslint-parser
+yarn add -D jsonc-eslint-parser
 ```
 
 <details>
