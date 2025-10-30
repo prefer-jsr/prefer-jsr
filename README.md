@@ -122,6 +122,15 @@ Contributions are welcome! Please ensure:
 4. No type errors: `pnpm exec nx run-many -t typecheck`
 5. Use conventional commits for your commit messages
 
+## Acknowledgements
+
+This project was inspired by and draws ideas from other ESLint plugins that help maintain quality in `package.json` files:
+
+- [eslint-plugin-package-json](https://github.com/zetlen/eslint-plugin-package-json) - ESLint rules for package.json files
+- [eslint-plugin-depend](https://github.com/es-tooling/eslint-plugin-depend) - ESLint plugin for managing dependencies
+
+We're grateful to these projects for paving the way and demonstrating effective patterns for linting package.json files.
+
 ## License
 
 MIT - See [LICENSE](./LICENSE) for details.
