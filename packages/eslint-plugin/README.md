@@ -5,16 +5,58 @@ An ESLint plugin that suggests using JSR packages over NPM when available.
 ## Installation
 
 ```bash
+pnpm i jsr:@prefer-jsr/eslint-plugin-prefer-jsr
+```
+
+```bash
+yarn add jsr:@prefer-jsr/eslint-plugin-prefer-jsr
+```
+
+```bash
+npx jsr add @prefer-jsr/eslint-plugin-prefer-jsr
+```
+
+<details>
+<summary>NPM registry (If you really need it for some reason)</summary>
+
+```bash
 npm install --save-dev @prefer-jsr/eslint-plugin-prefer-jsr
 ```
 
-For the new ESLint JSON parser (recommended):
+</details>
+
+### With new ESLint JSON language feature (recommended)
+
+```bash
+pnpm i jsr:@eslint/json
+```
+
+```bash
+yarn add jsr:@eslint/json
+```
+
+```bash
+npx jsr add @eslint/json
+```
+
+<details>
+<summary>NPM registry (If you really need it for some reason)</summary>
 
 ```bash
 npm install --save-dev @eslint/json
 ```
 
-For the legacy JSON parser:
+</details>
+
+### With the legacy JSON parser
+
+```bash
+pnpm add -D jsonc-eslint-parser
+```
+
+```bash
+yarn add -D jsonc-eslint-parser
+```
 
 ```bash
 npm install --save-dev jsonc-eslint-parser
@@ -103,7 +145,7 @@ export default [
 
 This rule warns when a dependency in `package.json` has a JSR equivalent available.
 
-**Current mappings:**
+**example mappings:**
 
 - `zod` → `@zod/zod`
 - `@eslint/markdown` → `@eslint/markdown`

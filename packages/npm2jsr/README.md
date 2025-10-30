@@ -7,8 +7,25 @@ A utility package that provides mapping between NPM packages and their JSR equiv
 ## Installation
 
 ```bash
+pnpm i jsr:@prefer-jsr/npm2jsr
+```
+
+```bash
+yarn add jsr:@prefer-jsr/npm2jsr
+```
+
+```bash
+npx jsr add @prefer-jsr/npm2jsr
+```
+
+<details>
+<summary>NPM registry (If you really need it for some reason)</summary>
+
+```bash
 npm install @prefer-jsr/npm2jsr
 ```
+
+</details>
 
 ## Usage
 
