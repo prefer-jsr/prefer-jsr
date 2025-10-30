@@ -145,7 +145,7 @@ export default [
 
 This rule warns when a dependency in `package.json` has a JSR equivalent available.
 
-**Current mappings:**
+**example mappings:**
 
 - `zod` → `@zod/zod`
 - `@eslint/markdown` → `@eslint/markdown`
