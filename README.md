@@ -124,7 +124,7 @@ Contributions are welcome! Please ensure:
 
 ## Acknowledgements
 
-This project was inspired by and draws ideas from other ESLint plugins that help maintain quality in `package.json` files:
+The lint plugin in this project was inspired by and draws ideas from other ESLint plugins that help maintain quality in `package.json` files:
 
 - [eslint-plugin-package-json](https://github.com/JoshuaKGoldberg/eslint-plugin-package-json)
 - [eslint-plugin-depend](https://github.com/es-tooling/eslint-plugin-depend)
