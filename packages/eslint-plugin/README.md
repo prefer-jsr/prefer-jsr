@@ -5,20 +5,71 @@ An ESLint plugin that suggests using JSR packages over NPM when available.
 ## Installation
 
 ```bash
+pnpm i jsr:@prefer-jsr/eslint-plugin-prefer-jsr
+```
+
+```bash
+yarn add jsr:@prefer-jsr/eslint-plugin-prefer-jsr
+```
+
+```bash
+npx jsr add @prefer-jsr/eslint-plugin-prefer-jsr
+```
+
+<details>
+<summary>NPM Cli (If you really need it for some reason)</summary>
+
+```bash
 npm install --save-dev @prefer-jsr/eslint-plugin-prefer-jsr
 ```
 
+</details>
+
 For the new ESLint JSON parser (recommended):
+
+```bash
+pnpm i @eslint/json
+```
+
+```bash
+yarn add @eslint/json
+```
+
+```bash
+npx jsr add @eslint/json
+```
+
+<details>
+<summary>NPM Cli (If you really need it for some reason)</summary>
 
 ```bash
 npm install --save-dev @eslint/json
 ```
 
+</details>
+
 For the legacy JSON parser:
+
+```bash
+pnpm i jsonc-eslint-parser
+```
+
+```bash
+yarn add jsonc-eslint-parser
+```
+
+```bash
+npx jsr add jsonc-eslint-parser
+```
+
+<details>
+<summary>NPM Cli (If you really need it for some reason)</summary>
 
 ```bash
 npm install --save-dev jsonc-eslint-parser
 ```
+
+</details>
 
 ## Usage
 

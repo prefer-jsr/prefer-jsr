@@ -13,10 +13,25 @@ ESLint plugin that suggests using JSR packages over npm when JSR alternatives ar
 **Installation:**
 
 ```sh
-npm install --save-dev @prefer-jsr/eslint-plugin-prefer-jsr
-# or
-pnpm add -D @prefer-jsr/eslint-plugin-prefer-jsr
+pnpm i jsr:@prefer-jsr/eslint-plugin-prefer-jsr
 ```
+
+```sh
+yarn add jsr:@prefer-jsr/eslint-plugin-prefer-jsr
+```
+
+```sh
+npx jsr add @prefer-jsr/eslint-plugin-prefer-jsr
+```
+
+<details>
+<summary>NPM Cli (If you really need it for some reason)</summary>
+
+```sh
+npm install --save-dev @prefer-jsr/eslint-plugin-prefer-jsr
+```
+
+</details>
 
 ### [@prefer-jsr/npm2jsr](./packages/npm2jsr)
 
@@ -25,10 +40,25 @@ Mapping library that provides data about npm packages and their JSR equivalents.
 **Installation:**
 
 ```sh
-npm install @prefer-jsr/npm2jsr
-# or
-pnpm add @prefer-jsr/npm2jsr
+pnpm i jsr:@prefer-jsr/npm2jsr
 ```
+
+```sh
+yarn add jsr:@prefer-jsr/npm2jsr
+```
+
+```sh
+npx jsr add @prefer-jsr/npm2jsr
+```
+
+<details>
+<summary>NPM Cli (If you really need it for some reason)</summary>
+
+```sh
+npm install @prefer-jsr/npm2jsr
+```
+
+</details>
 
 ## Development
 
