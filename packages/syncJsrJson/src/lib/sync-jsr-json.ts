@@ -83,7 +83,7 @@ export function syncJsrJson(options: SyncJsrJsonOptions = {}): SyncResult {
       if (jsrJson.imports && typeof jsrJson.imports === 'object') {
         for (const [dep, jsrImport] of Object.entries(jsrJson.imports)) {
           // Only handle jsr: imports
-          const match = /^jsr:@prefer-jsr\/(\w+)@\^?[\d\.]+/.exec(
+          const match = /^jsr:@prefer-jsr\/(\w+)@\^?[\d.]+/.exec(
             jsrImport as string
           );
           if (match) {
@@ -104,7 +104,7 @@ export function syncJsrJson(options: SyncJsrJsonOptions = {}): SyncResult {
                 jsrJson.imports[dep] = newImport;
                 updated = true;
               }
-            } catch (depErr) {
+            } catch {
               // Ignore if dep package.json doesn't exist
             }
           }

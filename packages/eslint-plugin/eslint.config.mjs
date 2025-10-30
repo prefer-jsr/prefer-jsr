@@ -1,9 +1,8 @@
-import baseConfig from '../../eslint.base.config.mjs';
 import eslintPlugin from 'eslint-plugin-eslint-plugin';
+
 import baseConfig from '../../eslint.config.mjs';
 
 export default [
-  ...baseConfig,
   ...baseConfig,
   {
     files: ['**/*.ts', '**/*.js'],

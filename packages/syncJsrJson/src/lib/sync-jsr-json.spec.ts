@@ -196,7 +196,7 @@ describe('syncJsrJson', () => {
       );
 
       // Execute
-      const result = syncJsrJson({
+      syncJsrJson({
         packagesDir,
       });
 
@@ -360,13 +360,13 @@ describe('syncJsrJson', () => {
 
       // Execute
       const logs: string[] = [];
-      const result = syncJsrJson({
+      syncJsrJson({
         packagesDir,
         log: (msg) => logs.push(msg),
       });
 
       // Verify - should not error, just skip the missing dependency
-      expect(result.syncedCount).toBe(0);
+      expect(logs.some(log => log.includes('already in sync'))).toBe(true);
     });
   });
 
