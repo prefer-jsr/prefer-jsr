@@ -126,10 +126,10 @@ Contributions are welcome! Please ensure:
 
 This project was inspired by and draws ideas from other ESLint plugins that help maintain quality in `package.json` files:
 
-- [eslint-plugin-package-json](https://github.com/zetlen/eslint-plugin-package-json) - ESLint rules for package.json files
-- [eslint-plugin-depend](https://github.com/es-tooling/eslint-plugin-depend) - ESLint plugin for managing dependencies
+- [eslint-plugin-package-json](https://github.com/zetlen/eslint-plugin-package-json)
+- [eslint-plugin-depend](https://github.com/es-tooling/eslint-plugin-depend)
 
-We're grateful to these projects for paving the way and demonstrating effective patterns for linting package.json files.
+Thank you to these projects for leading the way and demonstrating effective patterns for linting package.json files.
 
 ## License
 
