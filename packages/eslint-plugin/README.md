@@ -17,7 +17,7 @@ npx jsr add @prefer-jsr/eslint-plugin-prefer-jsr
 ```
 
 <details>
-<summary>NPM Cli (If you really need it for some reason)</summary>
+<summary>NPM registry (If you really need it for some reason)</summary>
 
 ```bash
 npm install --save-dev @prefer-jsr/eslint-plugin-prefer-jsr
@@ -28,15 +28,19 @@ npm install --save-dev @prefer-jsr/eslint-plugin-prefer-jsr
 For the new ESLint JSON parser (recommended):
 
 ```bash
-pnpm add -D @eslint/json
+pnpm i jsr:@eslint/json
 ```
 
 ```bash
-yarn add -D @eslint/json
+yarn add jsr:@eslint/json
+```
+
+```bash
+npx jsr add @eslint/json
 ```
 
 <details>
-<summary>NPM Cli (If you really need it for some reason)</summary>
+<summary>NPM registry (If you really need it for some reason)</summary>
 
 ```bash
 npm install --save-dev @eslint/json
@@ -54,14 +58,9 @@ pnpm add -D jsonc-eslint-parser
 yarn add -D jsonc-eslint-parser
 ```
 
-<details>
-<summary>NPM Cli (If you really need it for some reason)</summary>
-
 ```bash
 npm install --save-dev jsonc-eslint-parser
 ```
-
-</details>
 
 ## Usage
 

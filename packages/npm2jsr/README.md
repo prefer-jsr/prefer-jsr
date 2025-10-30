@@ -19,7 +19,7 @@ npx jsr add @prefer-jsr/npm2jsr
 ```
 
 <details>
-<summary>NPM Cli (If you really need it for some reason)</summary>
+<summary>NPM registry (If you really need it for some reason)</summary>
 
 ```bash
 npm install @prefer-jsr/npm2jsr

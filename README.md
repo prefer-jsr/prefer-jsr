@@ -25,7 +25,7 @@ npx jsr add @prefer-jsr/eslint-plugin-prefer-jsr
 ```
 
 <details>
-<summary>NPM Cli (If you really need it for some reason)</summary>
+<summary>NPM registry (If you really need it for some reason)</summary>
 
 ```sh
 npm install --save-dev @prefer-jsr/eslint-plugin-prefer-jsr
@@ -52,7 +52,7 @@ npx jsr add @prefer-jsr/npm2jsr
 ```
 
 <details>
-<summary>NPM Cli (If you really need it for some reason)</summary>
+<summary>NPM registry (If you really need it for some reason)</summary>
 
 ```sh
 npm install @prefer-jsr/npm2jsr
