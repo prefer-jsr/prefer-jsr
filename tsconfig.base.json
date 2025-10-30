@@ -16,6 +16,9 @@
     "skipLibCheck": true,
     "strict": true,
     "target": "es2022",
-    "customConditions": ["@prefer-jsr/source"]
+    "customConditions": ["@prefer-jsr/source"],
+    "paths": {
+      "@prefer-jsr/syncJsrJson": ["packages/syncJsrJson/src/index.ts"]
+    }
   }
 }
