@@ -572,4 +572,141 @@ describe('syncJsrJson', () => {
       expect(updatedJsrJson.imports.pkg1).toBe('jsr:@prefer-jsr/pkg1@^3.0.0');
     });
   });
+
+  describe('version constraint handling', () => {
+    it('should preserve tilde (~) version prefix', () => {
+      // Setup
+      const pkg1Dir = join(packagesDir, 'pkg1');
+      const pkg2Dir = join(packagesDir, 'pkg2');
+      mkdirSync(pkg1Dir, { recursive: true });
+      mkdirSync(pkg2Dir, { recursive: true });
+
+      writeFileSync(
+        join(pkg1Dir, 'package.json'),
+        JSON.stringify({ name: '@my-org/pkg1', version: '2.5.0' }, null, 2)
+      );
+      writeFileSync(
+        join(pkg1Dir, 'jsr.json'),
+        JSON.stringify({ name: '@my-org/pkg1', version: '2.5.0' }, null, 2)
+      );
+
+      writeFileSync(
+        join(pkg2Dir, 'package.json'),
+        JSON.stringify({ name: '@my-org/pkg2', version: '1.0.0' }, null, 2)
+      );
+      writeFileSync(
+        join(pkg2Dir, 'jsr.json'),
+        JSON.stringify(
+          {
+            name: '@my-org/pkg2',
+            version: '1.0.0',
+            imports: {
+              pkg1: 'jsr:@my-org/pkg1@~2.0.0',
+            },
+          },
+          null,
+          2
+        )
+      );
+
+      // Execute
+      syncJsrJson({ packagesDir });
+
+      // Verify - should preserve tilde prefix
+      const updatedJsrJson = JSON.parse(
+        readFileSync(join(pkg2Dir, 'jsr.json'), 'utf8')
+      );
+      expect(updatedJsrJson.imports.pkg1).toBe('jsr:@my-org/pkg1@~2.5.0');
+    });
+
+    it('should handle exact version (no prefix)', () => {
+      // Setup
+      const pkg1Dir = join(packagesDir, 'pkg1');
+      const pkg2Dir = join(packagesDir, 'pkg2');
+      mkdirSync(pkg1Dir, { recursive: true });
+      mkdirSync(pkg2Dir, { recursive: true });
+
+      writeFileSync(
+        join(pkg1Dir, 'package.json'),
+        JSON.stringify({ name: '@my-org/pkg1', version: '3.0.0' }, null, 2)
+      );
+      writeFileSync(
+        join(pkg1Dir, 'jsr.json'),
+        JSON.stringify({ name: '@my-org/pkg1', version: '3.0.0' }, null, 2)
+      );
+
+      writeFileSync(
+        join(pkg2Dir, 'package.json'),
+        JSON.stringify({ name: '@my-org/pkg2', version: '1.0.0' }, null, 2)
+      );
+      writeFileSync(
+        join(pkg2Dir, 'jsr.json'),
+        JSON.stringify(
+          {
+            name: '@my-org/pkg2',
+            version: '1.0.0',
+            imports: {
+              pkg1: 'jsr:@my-org/pkg1@2.0.0',
+            },
+          },
+          null,
+          2
+        )
+      );
+
+      // Execute
+      syncJsrJson({ packagesDir });
+
+      // Verify - should add default caret prefix
+      const updatedJsrJson = JSON.parse(
+        readFileSync(join(pkg2Dir, 'jsr.json'), 'utf8')
+      );
+      expect(updatedJsrJson.imports.pkg1).toBe('jsr:@my-org/pkg1@^3.0.0');
+    });
+
+    it('should preserve caret (^) version prefix', () => {
+      // Setup
+      const pkg1Dir = join(packagesDir, 'pkg1');
+      const pkg2Dir = join(packagesDir, 'pkg2');
+      mkdirSync(pkg1Dir, { recursive: true });
+      mkdirSync(pkg2Dir, { recursive: true });
+
+      writeFileSync(
+        join(pkg1Dir, 'package.json'),
+        JSON.stringify({ name: '@my-org/pkg1', version: '4.0.0' }, null, 2)
+      );
+      writeFileSync(
+        join(pkg1Dir, 'jsr.json'),
+        JSON.stringify({ name: '@my-org/pkg1', version: '4.0.0' }, null, 2)
+      );
+
+      writeFileSync(
+        join(pkg2Dir, 'package.json'),
+        JSON.stringify({ name: '@my-org/pkg2', version: '1.0.0' }, null, 2)
+      );
+      writeFileSync(
+        join(pkg2Dir, 'jsr.json'),
+        JSON.stringify(
+          {
+            name: '@my-org/pkg2',
+            version: '1.0.0',
+            imports: {
+              pkg1: 'jsr:@my-org/pkg1@^3.0.0',
+            },
+          },
+          null,
+          2
+        )
+      );
+
+      // Execute
+      syncJsrJson({ packagesDir });
+
+      // Verify - should preserve caret prefix
+      const updatedJsrJson = JSON.parse(
+        readFileSync(join(pkg2Dir, 'jsr.json'), 'utf8')
+      );
+      expect(updatedJsrJson.imports.pkg1).toBe('jsr:@my-org/pkg1@^4.0.0');
+    });
+  });
 });

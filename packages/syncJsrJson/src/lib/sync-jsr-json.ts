@@ -32,6 +32,22 @@ export interface SyncResult {
   }>;
 }
 
+interface JsrImportInfo {
+  packageName: string;
+  version: string;
+  versionPrefix: string;
+}
+
+interface JsrJson {
+  imports?: Record<string, string | unknown>;
+  version?: string;
+}
+
+interface PackageJson {
+  name?: string;
+  version?: string;
+}
+
 /**
  * Sync jsr.json versions to match package.json versions
  *
@@ -54,101 +70,11 @@ export function syncJsrJson(options: SyncJsrJsonOptions = {}): SyncResult {
     .filter((dirent) => dirent.isDirectory())
     .map((dirent) => dirent.name);
 
-  let syncedCount = 0;
-  const syncedPackages: SyncResult['syncedPackages'] = [];
+  const syncedPackages = packages
+    .map((pkg) => syncPackage(pkg, packages, packagesDir, log, dryRun))
+    .filter((result): result is NonNullable<typeof result> => result !== null);
 
-  for (const pkg of packages) {
-    const packageJsonPath = join(packagesDir, pkg, 'package.json');
-    const jsrJsonPath = join(packagesDir, pkg, 'jsr.json');
-
-    try {
-      const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf8'));
-      const jsrJson = JSON.parse(readFileSync(jsrJsonPath, 'utf8'));
-      let updated = false;
-      const changes: string[] = [];
-
-      // Sync main version
-      if (packageJson.version !== jsrJson.version) {
-        log(
-          `   📝 Updating ${pkg}/jsr.json: ${jsrJson.version} → ${packageJson.version}`
-        );
-        changes.push(`version: ${jsrJson.version} → ${packageJson.version}`);
-        jsrJson.version = packageJson.version;
-        updated = true;
-      }
-
-      // Sync sub-dependency versions in imports
-      if (jsrJson.imports && typeof jsrJson.imports === 'object') {
-        for (const [dep, jsrImport] of Object.entries(jsrJson.imports)) {
-          // Only handle jsr: imports with version specifiers
-          const match = /^jsr:(@?[\w-]+\/[\w-]+)@\^?[\d.]+/.exec(
-            jsrImport as string
-          );
-          if (match) {
-            const fullPackageName = match[1];
-
-            // Try to find a local package with this name
-            // Check all directories in packagesDir
-            for (const localPkg of packages) {
-              const localPkgJsonPath = join(
-                packagesDir,
-                localPkg,
-                'package.json'
-              );
-              try {
-                const localPkgJson = JSON.parse(
-                  readFileSync(localPkgJsonPath, 'utf8')
-                );
-
-                // Check if this local package matches the import
-                if (localPkgJson.name === fullPackageName) {
-                  const currentVersion = localPkgJson.version;
-                  const newImport = `jsr:${fullPackageName}@^${currentVersion}`;
-
-                  if (jsrJson.imports[dep] !== newImport) {
-                    log(
-                      `   📝 Updating ${pkg}/jsr.json imports[${dep}]: ${jsrJson.imports[dep]} → ${newImport}`
-                    );
-                    changes.push(
-                      `imports[${dep}]: ${jsrJson.imports[dep]} → ${newImport}`
-                    );
-                    jsrJson.imports[dep] = newImport;
-                    updated = true;
-                  }
-
-                  break;
-                }
-              } catch {
-                // Ignore if package.json doesn't exist or can't be read
-              }
-            }
-          }
-        }
-      }
-
-      if (updated) {
-        if (!dryRun) {
-          writeFileSync(
-            jsrJsonPath,
-            JSON.stringify(jsrJson, null, 2) + '\n',
-            'utf8'
-          );
-        }
-        syncedCount++;
-        syncedPackages.push({ changes, packageName: pkg });
-      }
-    } catch (error: unknown) {
-      // Skip if files don't exist
-      if (
-        error &&
-        typeof error === 'object' &&
-        'code' in error &&
-        error.code !== 'ENOENT'
-      ) {
-        log(`   ⚠️  Warning: Could not sync ${pkg}: ${error}`);
-      }
-    }
-  }
+  const syncedCount = syncedPackages.length;
 
   if (syncedCount === 0) {
     log('   ✓ JSR versions already in sync');
@@ -161,4 +87,183 @@ export function syncJsrJson(options: SyncJsrJsonOptions = {}): SyncResult {
   }
 
   return { syncedCount, syncedPackages };
+}
+
+/**
+ * Create a JSR import string with the given package name, version prefix, and version
+ */
+function createJsrImport(
+  packageName: string,
+  versionPrefix: string,
+  version: string
+): string {
+  return `jsr:${packageName}@${versionPrefix}${version}`;
+}
+
+/**
+ * Find a local package by name from the list of packages
+ */
+function findLocalPackage(
+  packageName: string,
+  packages: string[],
+  packagesDir: string
+): null | { version: string } {
+  for (const localPkg of packages) {
+    try {
+      const localPkgJsonPath = join(packagesDir, localPkg, 'package.json');
+      const localPkgJson: PackageJson = JSON.parse(
+        readFileSync(localPkgJsonPath, 'utf8')
+      );
+
+      if (localPkgJson.name === packageName && localPkgJson.version) {
+        return { version: localPkgJson.version };
+      }
+    } catch {
+      // Ignore if package.json doesn't exist or can't be read
+    }
+  }
+
+  return null;
+}
+
+/**
+ * Parse a JSR import string to extract package name and version constraint
+ * Supports: ^1.0.0, ~1.0.0, 1.0.0, >=1.0.0, etc.
+ */
+function parseJsrImport(importValue: string): JsrImportInfo | null {
+  if (typeof importValue !== 'string') {
+    return null;
+  }
+
+  // Match jsr: imports with various version constraints
+  // Supports: ^, ~, exact versions, >, >=, <, <=, and ranges
+  const match = /^jsr:(@?[\w-]+\/[\w-]+)@([\^~><=]*)([\d.]+)/.exec(importValue);
+
+  if (!match) {
+    return null;
+  }
+
+  return {
+    packageName: match[1],
+    version: match[3],
+    versionPrefix: match[2] || '^', // Default to caret if no prefix
+  };
+}
+
+/**
+ * Sync all JSR imports in a package
+ */
+function syncImports(
+  pkg: string,
+  imports: Record<string, string | unknown>,
+  allPackages: string[],
+  packagesDir: string,
+  log: (message: string) => void
+): { changes: string[]; updatedImports: Record<string, string> } {
+  const changes: string[] = [];
+  const updatedImports: Record<string, string> = {};
+
+  for (const [dep, importValue] of Object.entries(imports)) {
+    const parsedImport = parseJsrImport(
+      typeof importValue === 'string' ? importValue : ''
+    );
+
+    if (!parsedImport) {
+      continue;
+    }
+
+    const localPackage = findLocalPackage(
+      parsedImport.packageName,
+      allPackages,
+      packagesDir
+    );
+
+    if (localPackage) {
+      const newImport = createJsrImport(
+        parsedImport.packageName,
+        parsedImport.versionPrefix,
+        localPackage.version
+      );
+
+      if (importValue !== newImport) {
+        log(
+          `   📝 Updating ${pkg}/jsr.json imports[${dep}]: ${importValue} → ${newImport}`
+        );
+        changes.push(`imports[${dep}]: ${importValue} → ${newImport}`);
+        updatedImports[dep] = newImport;
+      }
+    }
+  }
+
+  return { changes, updatedImports };
+}
+
+/**
+ * Sync a single package's jsr.json with its package.json
+ */
+function syncPackage(
+  pkg: string,
+  allPackages: string[],
+  packagesDir: string,
+  log: (message: string) => void,
+  dryRun: boolean
+): null | { changes: string[]; packageName: string } {
+  const packageJsonPath = join(packagesDir, pkg, 'package.json');
+  const jsrJsonPath = join(packagesDir, pkg, 'jsr.json');
+
+  try {
+    const packageJson: PackageJson = JSON.parse(
+      readFileSync(packageJsonPath, 'utf8')
+    );
+    const jsrJson: JsrJson = JSON.parse(readFileSync(jsrJsonPath, 'utf8'));
+
+    const changes: string[] = [];
+
+    // Sync main version
+    if (packageJson.version && packageJson.version !== jsrJson.version) {
+      log(
+        `   📝 Updating ${pkg}/jsr.json: ${jsrJson.version} → ${packageJson.version}`
+      );
+      changes.push(`version: ${jsrJson.version} → ${packageJson.version}`);
+      jsrJson.version = packageJson.version;
+    }
+
+    // Sync import versions
+    if (jsrJson.imports && typeof jsrJson.imports === 'object') {
+      const importChanges = syncImports(
+        pkg,
+        jsrJson.imports,
+        allPackages,
+        packagesDir,
+        log
+      );
+      changes.push(...importChanges.changes);
+      Object.assign(jsrJson.imports, importChanges.updatedImports);
+    }
+
+    // Write changes if any
+    if (changes.length > 0) {
+      if (!dryRun) {
+        writeFileSync(
+          jsrJsonPath,
+          JSON.stringify(jsrJson, null, 2) + '\n',
+          'utf8'
+        );
+      }
+      return { changes, packageName: pkg };
+    }
+
+    return null;
+  } catch (error: unknown) {
+    // Skip if files don't exist
+    if (
+      error &&
+      typeof error === 'object' &&
+      'code' in error &&
+      error.code !== 'ENOENT'
+    ) {
+      log(`   ⚠️  Warning: Could not sync ${pkg}: ${error}`);
+    }
+    return null;
+  }
 }
