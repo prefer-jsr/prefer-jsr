@@ -1,4 +1,5 @@
 import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { readdir, readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
 export interface SyncJsrJsonOptions {
@@ -49,6 +50,36 @@ interface PackageJson {
 }
 
 /**
+ * Custom error for file system operations
+ */
+export class FileSystemError extends Error {
+  public override readonly cause?: Error;
+  public readonly path: string;
+
+  constructor(message: string, path: string, cause?: Error) {
+    super(message);
+    this.name = 'FileSystemError';
+    this.cause = cause;
+    this.path = path;
+  }
+}
+
+/**
+ * Custom error for JSON parsing
+ */
+export class JsonParseError extends Error {
+  public override readonly cause?: Error;
+  public readonly path: string;
+
+  constructor(message: string, path: string, cause?: Error) {
+    super(message);
+    this.name = 'JsonParseError';
+    this.cause = cause;
+    this.path = path;
+  }
+}
+
+/**
  * Sync jsr.json versions to match package.json versions
  *
  * This function:
@@ -73,6 +104,56 @@ export function syncJsrJson(options: SyncJsrJsonOptions = {}): SyncResult {
   const syncedPackages = packages
     .map((pkg) => syncPackage(pkg, packages, packagesDir, log, dryRun))
     .filter((result): result is NonNullable<typeof result> => result !== null);
+
+  const syncedCount = syncedPackages.length;
+
+  if (syncedCount === 0) {
+    log('   ✓ JSR versions already in sync');
+  } else {
+    log(
+      `   ✓ Synced ${syncedCount} JSR ${
+        syncedCount === 1 ? 'version' : 'versions'
+      }`
+    );
+  }
+
+  return { syncedCount, syncedPackages };
+}
+
+/**
+ * Async version: Sync jsr.json versions to match package.json versions
+ *
+ * This function:
+ * 1. Reads all packages in the packages directory
+ * 2. Syncs the version in jsr.json to match package.json
+ * 3. Syncs JSR import versions for any local dependencies
+ *
+ * @param options - Configuration options
+ * @returns Promise resolving to result with count and details of synced packages
+ */
+export async function syncJsrJsonAsync(
+  options: SyncJsrJsonOptions = {}
+): Promise<SyncResult> {
+  const {
+    dryRun = false,
+    log = console.log,
+    packagesDir = join(process.cwd(), 'packages'),
+  } = options;
+
+  const dirents = await readdir(packagesDir, { withFileTypes: true });
+  const packages = dirents
+    .filter((dirent) => dirent.isDirectory())
+    .map((dirent) => dirent.name);
+
+  const syncResults = await Promise.all(
+    packages.map((pkg) =>
+      syncPackageAsync(pkg, packages, packagesDir, log, dryRun)
+    )
+  );
+
+  const syncedPackages = syncResults.filter(
+    (result): result is NonNullable<typeof result> => result !== null
+  );
 
   const syncedCount = syncedPackages.length;
 
@@ -118,8 +199,55 @@ function findLocalPackage(
       if (localPkgJson.name === packageName && localPkgJson.version) {
         return { version: localPkgJson.version };
       }
-    } catch {
+    } catch (error) {
       // Ignore if package.json doesn't exist or can't be read
+      if (
+        error instanceof Error &&
+        'code' in error &&
+        error.code !== 'ENOENT'
+      ) {
+        throw new FileSystemError(
+          `Failed to read package.json for ${localPkg}`,
+          join(packagesDir, localPkg, 'package.json'),
+          error
+        );
+      }
+    }
+  }
+
+  return null;
+}
+
+/**
+ * Async version: Find a local package by name from the list of packages
+ */
+async function findLocalPackageAsync(
+  packageName: string,
+  packages: string[],
+  packagesDir: string
+): Promise<null | { version: string }> {
+  for (const localPkg of packages) {
+    try {
+      const localPkgJsonPath = join(packagesDir, localPkg, 'package.json');
+      const content = await readFile(localPkgJsonPath, 'utf8');
+      const localPkgJson: PackageJson = JSON.parse(content);
+
+      if (localPkgJson.name === packageName && localPkgJson.version) {
+        return { version: localPkgJson.version };
+      }
+    } catch (error) {
+      // Ignore if package.json doesn't exist
+      if (
+        error instanceof Error &&
+        'code' in error &&
+        (error as NodeJS.ErrnoException).code !== 'ENOENT'
+      ) {
+        throw new FileSystemError(
+          `Failed to read package.json for ${localPkg}`,
+          join(packagesDir, localPkg, 'package.json'),
+          error
+        );
+      }
     }
   }
 
@@ -173,6 +301,54 @@ function syncImports(
     }
 
     const localPackage = findLocalPackage(
+      parsedImport.packageName,
+      allPackages,
+      packagesDir
+    );
+
+    if (localPackage) {
+      const newImport = createJsrImport(
+        parsedImport.packageName,
+        parsedImport.versionPrefix,
+        localPackage.version
+      );
+
+      if (importValue !== newImport) {
+        log(
+          `   📝 Updating ${pkg}/jsr.json imports[${dep}]: ${importValue} → ${newImport}`
+        );
+        changes.push(`imports[${dep}]: ${importValue} → ${newImport}`);
+        updatedImports[dep] = newImport;
+      }
+    }
+  }
+
+  return { changes, updatedImports };
+}
+
+/**
+ * Async version: Sync all JSR imports in a package
+ */
+async function syncImportsAsync(
+  pkg: string,
+  imports: Record<string, string | unknown>,
+  allPackages: string[],
+  packagesDir: string,
+  log: (message: string) => void
+): Promise<{ changes: string[]; updatedImports: Record<string, string> }> {
+  const changes: string[] = [];
+  const updatedImports: Record<string, string> = {};
+
+  for (const [dep, importValue] of Object.entries(imports)) {
+    const parsedImport = parseJsrImport(
+      typeof importValue === 'string' ? importValue : ''
+    );
+
+    if (!parsedImport) {
+      continue;
+    }
+
+    const localPackage = await findLocalPackageAsync(
       parsedImport.packageName,
       allPackages,
       packagesDir
@@ -254,16 +430,127 @@ function syncPackage(
     }
 
     return null;
-  } catch (error: unknown) {
+  } catch (error) {
     // Skip if files don't exist
     if (
-      error &&
-      typeof error === 'object' &&
+      error instanceof Error &&
       'code' in error &&
-      error.code !== 'ENOENT'
+      (error as NodeJS.ErrnoException).code === 'ENOENT'
     ) {
-      log(`   ⚠️  Warning: Could not sync ${pkg}: ${error}`);
+      return null;
     }
+
+    // Handle JSON parse errors
+    if (error instanceof SyntaxError) {
+      throw new JsonParseError(
+        `Invalid JSON in package files for ${pkg}`,
+        packageJsonPath,
+        error
+      );
+    }
+
+    // Handle file system errors
+    if (error instanceof Error) {
+      throw new FileSystemError(
+        `Failed to sync package ${pkg}`,
+        packageJsonPath,
+        error
+      );
+    }
+
+    // Rethrow if unknown error type
+    throw error;
+  }
+}
+
+/**
+ * Async version: Sync a single package's jsr.json with its package.json
+ */
+async function syncPackageAsync(
+  pkg: string,
+  allPackages: string[],
+  packagesDir: string,
+  log: (message: string) => void,
+  dryRun: boolean
+): Promise<null | { changes: string[]; packageName: string }> {
+  const packageJsonPath = join(packagesDir, pkg, 'package.json');
+  const jsrJsonPath = join(packagesDir, pkg, 'jsr.json');
+
+  try {
+    const [packageJsonContent, jsrJsonContent] = await Promise.all([
+      readFile(packageJsonPath, 'utf8'),
+      readFile(jsrJsonPath, 'utf8'),
+    ]);
+
+    const packageJson: PackageJson = JSON.parse(packageJsonContent);
+    const jsrJson: JsrJson = JSON.parse(jsrJsonContent);
+
+    const changes: string[] = [];
+
+    // Sync main version
+    if (packageJson.version && packageJson.version !== jsrJson.version) {
+      log(
+        `   📝 Updating ${pkg}/jsr.json: ${jsrJson.version} → ${packageJson.version}`
+      );
+      changes.push(`version: ${jsrJson.version} → ${packageJson.version}`);
+      jsrJson.version = packageJson.version;
+    }
+
+    // Sync import versions
+    if (jsrJson.imports && typeof jsrJson.imports === 'object') {
+      const importChanges = await syncImportsAsync(
+        pkg,
+        jsrJson.imports,
+        allPackages,
+        packagesDir,
+        log
+      );
+      changes.push(...importChanges.changes);
+      Object.assign(jsrJson.imports, importChanges.updatedImports);
+    }
+
+    // Write changes if any
+    if (changes.length > 0) {
+      if (!dryRun) {
+        await writeFile(
+          jsrJsonPath,
+          JSON.stringify(jsrJson, null, 2) + '\n',
+          'utf8'
+        );
+      }
+      return { changes, packageName: pkg };
+    }
+
     return null;
+  } catch (error) {
+    // Skip if files don't exist
+    if (
+      error instanceof Error &&
+      'code' in error &&
+      (error as NodeJS.ErrnoException).code === 'ENOENT'
+    ) {
+      return null;
+    }
+
+    // Handle JSON parse errors
+    if (error instanceof SyntaxError) {
+      throw new JsonParseError(
+        `Invalid JSON in package files for ${pkg}`,
+        packageJsonPath,
+        error
+      );
+    }
+
+    // Handle file system errors
+    if (error instanceof Error) {
+      throw new FileSystemError(
+        `Failed to sync package ${pkg}`,
+        packageJsonPath,
+        error
+      );
+    }
+
+    // Rethrow if unknown error type
+    throw error;
   }
 }

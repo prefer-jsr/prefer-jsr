@@ -709,4 +709,94 @@ describe('syncJsrJson', () => {
       expect(updatedJsrJson.imports.pkg1).toBe('jsr:@my-org/pkg1@^4.0.0');
     });
   });
+
+  describe('async version', () => {
+    it('should sync packages asynchronously', async () => {
+      // Setup
+      const pkg1Dir = join(packagesDir, 'pkg1');
+      const pkg2Dir = join(packagesDir, 'pkg2');
+      mkdirSync(pkg1Dir, { recursive: true });
+      mkdirSync(pkg2Dir, { recursive: true });
+
+      writeFileSync(
+        join(pkg1Dir, 'package.json'),
+        JSON.stringify({ name: '@test/pkg1', version: '2.0.0' }, null, 2)
+      );
+      writeFileSync(
+        join(pkg1Dir, 'jsr.json'),
+        JSON.stringify({ name: '@test/pkg1', version: '1.0.0' }, null, 2)
+      );
+
+      writeFileSync(
+        join(pkg2Dir, 'package.json'),
+        JSON.stringify({ name: '@test/pkg2', version: '3.0.0' }, null, 2)
+      );
+      writeFileSync(
+        join(pkg2Dir, 'jsr.json'),
+        JSON.stringify({ name: '@test/pkg2', version: '3.0.0' }, null, 2)
+      );
+
+      // Dynamic import to get async function
+      const { syncJsrJsonAsync } = await import('./sync-jsr-json.js');
+
+      // Execute
+      const result = await syncJsrJsonAsync({ packagesDir });
+
+      // Verify
+      expect(result.syncedCount).toBe(1);
+      expect(result.syncedPackages[0].packageName).toBe('pkg1');
+
+      const updatedJsrJson = JSON.parse(
+        readFileSync(join(pkg1Dir, 'jsr.json'), 'utf8')
+      );
+      expect(updatedJsrJson.version).toBe('2.0.0');
+    });
+
+    it('should handle concurrent package syncing', async () => {
+      // Setup multiple packages
+      const pkgs = ['pkg1', 'pkg2', 'pkg3'];
+      for (const pkg of pkgs) {
+        const pkgDir = join(packagesDir, pkg);
+        mkdirSync(pkgDir, { recursive: true });
+
+        writeFileSync(
+          join(pkgDir, 'package.json'),
+          JSON.stringify({ name: pkg, version: '2.0.0' }, null, 2)
+        );
+        writeFileSync(
+          join(pkgDir, 'jsr.json'),
+          JSON.stringify({ name: pkg, version: '1.0.0' }, null, 2)
+        );
+      }
+
+      const { syncJsrJsonAsync } = await import('./sync-jsr-json.js');
+
+      // Execute
+      const result = await syncJsrJsonAsync({ packagesDir });
+
+      // Verify all packages were synced
+      expect(result.syncedCount).toBe(3);
+    });
+  });
+
+  describe('error handling', () => {
+    it('should export custom error classes', async () => {
+      const { FileSystemError, JsonParseError } = await import(
+        './sync-jsr-json.js'
+      );
+
+      expect(FileSystemError).toBeDefined();
+      expect(JsonParseError).toBeDefined();
+
+      const fsError = new FileSystemError('test error', '/path/to/file');
+      expect(fsError).toBeInstanceOf(Error);
+      expect(fsError.name).toBe('FileSystemError');
+      expect(fsError.path).toBe('/path/to/file');
+
+      const jsonError = new JsonParseError('parse error', '/path/to/json');
+      expect(jsonError).toBeInstanceOf(Error);
+      expect(jsonError.name).toBe('JsonParseError');
+      expect(jsonError.path).toBe('/path/to/json');
+    });
+  });
 });
