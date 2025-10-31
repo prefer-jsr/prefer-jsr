@@ -41,10 +41,12 @@ interface JsrImportInfo {
 
 interface JsrJson {
   imports?: Record<string, string | unknown>;
+  name?: string;
   version?: string;
 }
 
 interface PackageJson {
+  dependencies?: Record<string, string>;
   name?: string;
   version?: string;
 }
@@ -97,31 +99,14 @@ export function syncJsrJson(options: SyncJsrJsonOptions = {}): SyncResult {
     packagesDir = join(process.cwd(), 'packages'),
   } = options;
 
-  const packages = readdirSync(packagesDir, { withFileTypes: true })
-    .filter((dirent) => dirent.isDirectory())
-    .map((dirent) => dirent.name);
-
-  // Build package map for O(1) lookups
+  const packages = getPackageNames(packagesDir);
   const packageMap = buildPackageMap(packages, packagesDir);
 
-  // More functional approach to package filtering
   const syncedPackages = packages
     .map((pkg) => syncPackage(pkg, packageMap, packagesDir, log, dryRun))
     .filter((result): result is NonNullable<typeof result> => result !== null);
 
-  const syncedCount = syncedPackages.length;
-
-  if (syncedCount === 0) {
-    log('   ✓ JSR versions already in sync');
-  } else {
-    log(
-      `   ✓ Synced ${syncedCount} JSR ${
-        syncedCount === 1 ? 'version' : 'versions'
-      }`
-    );
-  }
-
-  return { syncedCount, syncedPackages };
+  return processSyncResults(syncedPackages, log);
 }
 
 /**
@@ -144,15 +129,9 @@ export async function syncJsrJsonAsync(
     packagesDir = join(process.cwd(), 'packages'),
   } = options;
 
-  const dirents = await readdir(packagesDir, { withFileTypes: true });
-  const packages = dirents
-    .filter((dirent) => dirent.isDirectory())
-    .map((dirent) => dirent.name);
-
-  // Build package map for O(1) lookups
+  const packages = await getPackageNamesAsync(packagesDir);
   const packageMap = await buildPackageMapAsync(packages, packagesDir);
 
-  // More functional approach with concurrent processing
   const syncResults = await Promise.all(
     packages.map((pkg) =>
       syncPackageAsync(pkg, packageMap, packagesDir, log, dryRun)
@@ -163,19 +142,7 @@ export async function syncJsrJsonAsync(
     (result): result is NonNullable<typeof result> => result !== null
   );
 
-  const syncedCount = syncedPackages.length;
-
-  if (syncedCount === 0) {
-    log('   ✓ JSR versions already in sync');
-  } else {
-    log(
-      `   ✓ Synced ${syncedCount} JSR ${
-        syncedCount === 1 ? 'version' : 'versions'
-      }`
-    );
-  }
-
-  return { syncedCount, syncedPackages };
+  return processSyncResults(syncedPackages, log);
 }
 
 /**
@@ -198,7 +165,6 @@ function buildPackageMap(
         packageMap.set(packageJson.name, packageJson.version);
       }
     } catch (error) {
-      // Ignore if package.json doesn't exist or can't be read
       if (
         error instanceof Error &&
         'code' in error &&
@@ -217,7 +183,7 @@ function buildPackageMap(
 }
 
 /**
- * Async version: Build a map of package names to their versions for O(1) lookups
+ * Async version: Build a map of package names to their versions for lookups
  */
 async function buildPackageMapAsync(
   packages: string[],
@@ -236,7 +202,6 @@ async function buildPackageMapAsync(
           packageMap.set(packageJson.name, packageJson.version);
         }
       } catch (error) {
-        // Ignore if package.json doesn't exist
         if (
           error instanceof Error &&
           'code' in error &&
@@ -256,6 +221,83 @@ async function buildPackageMapAsync(
 }
 
 /**
+ * Calculate import updates for a single dependency
+ */
+function calculateImportUpdate(
+  dep: string,
+  importValue: unknown,
+  packageMap: Map<string, string>,
+  packageJsonDependencies?: Record<string, string>
+): null | { dependency: string; from: string; to: string } {
+  const stringValue = typeof importValue === 'string' ? importValue : '';
+  const parsedImport = parseJsrImport(stringValue);
+
+  if (!parsedImport) return null;
+
+  const monorepoVersion = packageMap.get(parsedImport.packageName);
+  if (monorepoVersion) {
+    const newImport = createJsrImport(
+      parsedImport.packageName,
+      parsedImport.versionPrefix,
+      monorepoVersion
+    );
+
+    return stringValue !== newImport
+      ? { dependency: dep, from: stringValue, to: newImport }
+      : null;
+  }
+
+  const packageJsonVersion = packageJsonDependencies?.[dep];
+  if (packageJsonVersion && parsedImport.packageName === dep) {
+    const cleanVersion = packageJsonVersion.replace(/^[\^~]/, '');
+    const newImport = createJsrImport(
+      parsedImport.packageName,
+      parsedImport.versionPrefix,
+      cleanVersion
+    );
+
+    return stringValue !== newImport
+      ? { dependency: dep, from: stringValue, to: newImport }
+      : null;
+  }
+
+  return null;
+}
+
+/**
+ * Calculate all import updates
+ */
+function calculateImportUpdates(
+  imports: Record<string, string | unknown>,
+  packageMap: Map<string, string>,
+  packageJsonDependencies?: Record<string, string>
+): Array<{ dependency: string; from: string; to: string }> {
+  return Object.entries(imports)
+    .map(([dep, importValue]) =>
+      calculateImportUpdate(
+        dep,
+        importValue,
+        packageMap,
+        packageJsonDependencies
+      )
+    )
+    .filter((update): update is NonNullable<typeof update> => update !== null);
+}
+
+/**
+ * Create log messages for import updates
+ */
+function createImportLogMessages(
+  pkg: string,
+  updates: Array<{ dependency: string; from: string; to: string }>
+): string[] {
+  return updates.map(
+    ({ dependency, from, to }) =>
+      `   📝 Updating ${pkg}/jsr.json imports[${dependency}]: ${from} → ${to}`
+  );
+}
+
+/**
  * Create a JSR import string with the given package name, version prefix, and version
  */
 function createJsrImport(
@@ -267,6 +309,53 @@ function createJsrImport(
 }
 
 /**
+ * Create a summary message for sync results
+ */
+function createSummaryMessage(syncedCount: number): string {
+  return syncedCount === 0
+    ? '   ✓ JSR versions already in sync'
+    : `   ✓ Synced ${syncedCount} JSR ${
+        syncedCount === 1 ? 'version' : 'versions'
+      }`;
+}
+
+/**
+ * Convert updates to changes and updatedImports format
+ */
+function formatImportUpdates(
+  updates: Array<{ dependency: string; from: string; to: string }>
+): { changes: string[]; updatedImports: Record<string, string> } {
+  const changes = updates.map(
+    ({ dependency, from, to }) => `imports[${dependency}]: ${from} → ${to}`
+  );
+
+  const updatedImports = Object.fromEntries(
+    updates.map(({ dependency, to }) => [dependency, to])
+  );
+
+  return { changes, updatedImports };
+}
+
+/**
+ * Get directory names from a packages directory
+ */
+function getPackageNames(packagesDir: string): string[] {
+  return readdirSync(packagesDir, { withFileTypes: true })
+    .filter((dirent) => dirent.isDirectory())
+    .map((dirent) => dirent.name);
+}
+
+/**
+ * Async version of getPackageNames
+ */
+async function getPackageNamesAsync(packagesDir: string): Promise<string[]> {
+  const dirents = await readdir(packagesDir, { withFileTypes: true });
+  return dirents
+    .filter((dirent) => dirent.isDirectory())
+    .map((dirent) => dirent.name);
+}
+
+/**
  * Parse a JSR import string to extract package name and version constraint
  * Supports: ^1.0.0, ~1.0.0, 1.0.0, >=1.0.0, etc.
  */
@@ -275,8 +364,6 @@ function parseJsrImport(importValue: string): JsrImportInfo | null {
     return null;
   }
 
-  // Match jsr: imports with various version constraints
-  // Supports: ^, ~, exact versions, >, >=, <, <=, and ranges
   const match = /^jsr:(@?[\w-]+\/[\w-]+)@([\^~><=]*)([\d.]+)/.exec(importValue);
 
   if (!match) {
@@ -286,96 +373,53 @@ function parseJsrImport(importValue: string): JsrImportInfo | null {
   return {
     packageName: match[1],
     version: match[3],
-    versionPrefix: match[2] || '^', // Default to caret if no prefix
+    versionPrefix: match[2] || '',
   };
 }
 
 /**
- * Sync all JSR imports in a package
+ * Process packages and return sync results
+ */
+function processSyncResults<
+  T extends { changes: string[]; packageName: string }
+>(syncedPackages: T[], log: (message: string) => void): SyncResult {
+  const syncedCount = syncedPackages.length;
+  log(createSummaryMessage(syncedCount));
+  return { syncedCount, syncedPackages };
+}
+
+/**
+ * Sync all JSR imports in a package based on monorepo package versions and package.json dependencies
  */
 function syncImports(
   pkg: string,
   imports: Record<string, string | unknown>,
   packageMap: Map<string, string>,
-  log: (message: string) => void
+  log: (message: string) => void,
+  packageJsonDependencies?: Record<string, string>
 ): { changes: string[]; updatedImports: Record<string, string> } {
-  const changes: string[] = [];
-  const updatedImports: Record<string, string> = {};
+  const updates = calculateImportUpdates(
+    imports,
+    packageMap,
+    packageJsonDependencies
+  );
 
-  for (const [dep, importValue] of Object.entries(imports)) {
-    const parsedImport = parseJsrImport(
-      typeof importValue === 'string' ? importValue : ''
-    );
+  createImportLogMessages(pkg, updates).forEach(log);
 
-    if (!parsedImport) {
-      continue;
-    }
-
-    // O(1) lookup using Map
-    const version = packageMap.get(parsedImport.packageName);
-
-    if (version) {
-      const newImport = createJsrImport(
-        parsedImport.packageName,
-        parsedImport.versionPrefix,
-        version
-      );
-
-      if (importValue !== newImport) {
-        log(
-          `   📝 Updating ${pkg}/jsr.json imports[${dep}]: ${importValue} → ${newImport}`
-        );
-        changes.push(`imports[${dep}]: ${importValue} → ${newImport}`);
-        updatedImports[dep] = newImport;
-      }
-    }
-  }
-
-  return { changes, updatedImports };
+  return formatImportUpdates(updates);
 }
 
 /**
- * Async version: Sync all JSR imports in a package
+ * Async version of syncImports
  */
 async function syncImportsAsync(
   pkg: string,
   imports: Record<string, string | unknown>,
   packageMap: Map<string, string>,
-  log: (message: string) => void
+  log: (message: string) => void,
+  packageJsonDependencies?: Record<string, string>
 ): Promise<{ changes: string[]; updatedImports: Record<string, string> }> {
-  const changes: string[] = [];
-  const updatedImports: Record<string, string> = {};
-
-  for (const [dep, importValue] of Object.entries(imports)) {
-    const parsedImport = parseJsrImport(
-      typeof importValue === 'string' ? importValue : ''
-    );
-
-    if (!parsedImport) {
-      continue;
-    }
-
-    // O(1) lookup using Map
-    const version = packageMap.get(parsedImport.packageName);
-
-    if (version) {
-      const newImport = createJsrImport(
-        parsedImport.packageName,
-        parsedImport.versionPrefix,
-        version
-      );
-
-      if (importValue !== newImport) {
-        log(
-          `   📝 Updating ${pkg}/jsr.json imports[${dep}]: ${importValue} → ${newImport}`
-        );
-        changes.push(`imports[${dep}]: ${importValue} → ${newImport}`);
-        updatedImports[dep] = newImport;
-      }
-    }
-  }
-
-  return { changes, updatedImports };
+  return syncImports(pkg, imports, packageMap, log, packageJsonDependencies);
 }
 
 /**
@@ -399,7 +443,6 @@ function syncPackage(
 
     const changes: string[] = [];
 
-    // Sync main version
     if (packageJson.version && packageJson.version !== jsrJson.version) {
       log(
         `   📝 Updating ${pkg}/jsr.json: ${jsrJson.version} → ${packageJson.version}`
@@ -408,15 +451,21 @@ function syncPackage(
       jsrJson.version = packageJson.version;
     }
 
-    // Sync import versions
     if (jsrJson.imports && typeof jsrJson.imports === 'object') {
-      const importChanges = syncImports(pkg, jsrJson.imports, packageMap, log);
+      const importChanges = syncImports(
+        pkg,
+        jsrJson.imports,
+        packageMap,
+        log,
+        packageJson.dependencies
+      );
       changes.push(...importChanges.changes);
       Object.assign(jsrJson.imports, importChanges.updatedImports);
     }
 
-    // Write changes if any
     if (changes.length > 0) {
+      const actualPackageName = packageJson.name || jsrJson.name || pkg;
+
       if (!dryRun) {
         writeFileSync(
           jsrJsonPath,
@@ -424,12 +473,11 @@ function syncPackage(
           'utf8'
         );
       }
-      return { changes, packageName: pkg };
+      return { changes, packageName: actualPackageName };
     }
 
     return null;
   } catch (error) {
-    // Skip if files don't exist
     if (
       error instanceof Error &&
       'code' in error &&
@@ -438,7 +486,6 @@ function syncPackage(
       return null;
     }
 
-    // Handle JSON parse errors
     if (error instanceof SyntaxError) {
       throw new JsonParseError(
         `Invalid JSON in package files for ${pkg}`,
@@ -447,7 +494,6 @@ function syncPackage(
       );
     }
 
-    // Handle file system errors
     if (error instanceof Error) {
       throw new FileSystemError(
         `Failed to sync package ${pkg}`,
@@ -456,7 +502,6 @@ function syncPackage(
       );
     }
 
-    // Rethrow if unknown error type
     throw error;
   }
 }
@@ -485,7 +530,6 @@ async function syncPackageAsync(
 
     const changes: string[] = [];
 
-    // Sync main version
     if (packageJson.version && packageJson.version !== jsrJson.version) {
       log(
         `   📝 Updating ${pkg}/jsr.json: ${jsrJson.version} → ${packageJson.version}`
@@ -494,20 +538,21 @@ async function syncPackageAsync(
       jsrJson.version = packageJson.version;
     }
 
-    // Sync import versions
     if (jsrJson.imports && typeof jsrJson.imports === 'object') {
       const importChanges = await syncImportsAsync(
         pkg,
         jsrJson.imports,
         packageMap,
-        log
+        log,
+        packageJson.dependencies
       );
       changes.push(...importChanges.changes);
       Object.assign(jsrJson.imports, importChanges.updatedImports);
     }
 
-    // Write changes if any
     if (changes.length > 0) {
+      const actualPackageName = packageJson.name || jsrJson.name || pkg;
+
       if (!dryRun) {
         await writeFile(
           jsrJsonPath,
@@ -515,12 +560,11 @@ async function syncPackageAsync(
           'utf8'
         );
       }
-      return { changes, packageName: pkg };
+      return { changes, packageName: actualPackageName };
     }
 
     return null;
   } catch (error) {
-    // Skip if files don't exist
     if (
       error instanceof Error &&
       'code' in error &&
@@ -529,7 +573,6 @@ async function syncPackageAsync(
       return null;
     }
 
-    // Handle JSON parse errors
     if (error instanceof SyntaxError) {
       throw new JsonParseError(
         `Invalid JSON in package files for ${pkg}`,
@@ -538,7 +581,6 @@ async function syncPackageAsync(
       );
     }
 
-    // Handle file system errors
     if (error instanceof Error) {
       throw new FileSystemError(
         `Failed to sync package ${pkg}`,
@@ -547,7 +589,6 @@ async function syncPackageAsync(
       );
     }
 
-    // Rethrow if unknown error type
     throw error;
   }
 }
