@@ -241,6 +241,57 @@ describe('syncJsrJson', () => {
       expect(jsrJson.imports.external).toBe('jsr:@external/package@^1.0.0');
       expect(jsrJson.imports['npm-pkg']).toBe('npm:some-package@^2.0.0');
     });
+
+    it('should sync imports from any scope with local packages', () => {
+      // Setup - Create packages with different scopes
+      const pkg1Dir = join(packagesDir, 'pkg1');
+      const pkg2Dir = join(packagesDir, 'pkg2');
+      mkdirSync(pkg1Dir, { recursive: true });
+      mkdirSync(pkg2Dir, { recursive: true });
+
+      // pkg1 with @my-org scope
+      writeFileSync(
+        join(pkg1Dir, 'package.json'),
+        JSON.stringify({ name: '@my-org/pkg1', version: '2.0.0' }, null, 2)
+      );
+      writeFileSync(
+        join(pkg1Dir, 'jsr.json'),
+        JSON.stringify({ name: '@my-org/pkg1', version: '2.0.0' }, null, 2)
+      );
+
+      // pkg2 depends on pkg1 with outdated version
+      writeFileSync(
+        join(pkg2Dir, 'package.json'),
+        JSON.stringify({ name: '@my-org/pkg2', version: '1.0.0' }, null, 2)
+      );
+      writeFileSync(
+        join(pkg2Dir, 'jsr.json'),
+        JSON.stringify({
+          name: '@my-org/pkg2',
+          version: '1.0.0',
+          imports: {
+            'pkg1': 'jsr:@my-org/pkg1@^1.0.0'
+          }
+        }, null, 2)
+      );
+
+      // Execute
+      const result = syncJsrJson({
+        packagesDir,
+      });
+
+      // Verify
+      expect(result.syncedCount).toBe(1);
+      expect(result.syncedPackages[0].packageName).toBe('pkg2');
+      expect(result.syncedPackages[0].changes).toContain(
+        'imports[pkg1]: jsr:@my-org/pkg1@^1.0.0 → jsr:@my-org/pkg1@^2.0.0'
+      );
+
+      const updatedJsrJson = JSON.parse(
+        readFileSync(join(pkg2Dir, 'jsr.json'), 'utf8')
+      );
+      expect(updatedJsrJson.imports.pkg1).toBe('jsr:@my-org/pkg1@^2.0.0');
+    });
   });
 
   describe('multiple packages', () => {

@@ -4,12 +4,12 @@ Sync jsr.json versions with package.json versions in monorepos.
 
 ## Overview
 
-This package provides a utility function to automatically synchronize version numbers between `package.json` and `jsr.json` files in a monorepo. It's particularly useful in release workflows to ensure that JSR package versions stay in sync with npm package versions.
+This package provides a utility function to automatically synchronize version numbers between `package.json` and `jsr.json` files in a package. It's particularly useful in release workflows to ensure that JSR package import versions stay in sync with npm package dependency versions.
 
 ## Features
 
 - ✅ Syncs main package version from `package.json` to `jsr.json`
-- ✅ Syncs `@prefer-jsr/*` dependency versions in `jsr.json` imports
+- ✅ Syncs JSR dependency import versions in `jsr.json` to match local package versions
 - ✅ Supports dry-run mode for testing
 - ✅ Provides detailed sync results
 - ✅ Handles missing files gracefully
@@ -127,7 +127,7 @@ The function:
 1. Scans all directories in the `packagesDir`
 2. For each directory with both `package.json` and `jsr.json`:
    - Syncs the main version field
-   - Syncs any `jsr:@prefer-jsr/*` imports to use the latest local versions
+   - Syncs any `jsr:` imports to use the latest local package versions (if the package exists locally)
 3. Returns a summary of all changes made
 
 ## Example Sync
@@ -137,22 +137,22 @@ Given:
 ```json
 // packages/my-pkg/package.json
 {
-  "name": "@prefer-jsr/my-pkg",
+  "name": "@my-org/my-pkg",
   "version": "2.0.0"
 }
 
 // packages/my-pkg/jsr.json
 {
-  "name": "@prefer-jsr/my-pkg",
+  "name": "@my-org/my-pkg",
   "version": "1.0.0",
   "imports": {
-    "dep": "jsr:@prefer-jsr/dep@^1.0.0"
+    "dep": "jsr:@my-org/dep@^1.0.0"
   }
 }
 
 // packages/dep/package.json
 {
-  "name": "@prefer-jsr/dep",
+  "name": "@my-org/dep",
   "version": "2.0.0"
 }
 ```
@@ -162,10 +162,10 @@ After running `syncJsrJson()`:
 ```json
 // packages/my-pkg/jsr.json
 {
-  "name": "@prefer-jsr/my-pkg",
+  "name": "@my-org/my-pkg",
   "version": "2.0.0",  // ✅ Updated
   "imports": {
-    "dep": "jsr:@prefer-jsr/dep@^2.0.0"  // ✅ Updated
+    "dep": "jsr:@my-org/dep@^2.0.0"  // ✅ Updated
   }
 }
 ```

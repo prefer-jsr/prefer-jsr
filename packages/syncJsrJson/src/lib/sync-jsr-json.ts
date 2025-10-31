@@ -38,7 +38,7 @@ export interface SyncResult {
  * This function:
  * 1. Reads all packages in the packages directory
  * 2. Syncs the version in jsr.json to match package.json
- * 3. Syncs JSR import versions for @prefer-jsr dependencies
+ * 3. Syncs JSR import versions for any local dependencies
  * 
  * @param options - Configuration options
  * @returns Result with count and details of synced packages
@@ -82,30 +82,41 @@ export function syncJsrJson(options: SyncJsrJsonOptions = {}): SyncResult {
       // Sync sub-dependency versions in imports
       if (jsrJson.imports && typeof jsrJson.imports === 'object') {
         for (const [dep, jsrImport] of Object.entries(jsrJson.imports)) {
-          // Only handle jsr: imports
-          const match = /^jsr:@prefer-jsr\/(\w+)@\^?[\d.]+/.exec(
+          // Only handle jsr: imports with version specifiers
+          const match = /^jsr:(@?[\w-]+\/[\w-]+)@\^?[\d.]+/.exec(
             jsrImport as string
           );
           if (match) {
-            const depName = match[1];
-            // Find the actual package.json for the dependency
-            const depPkgPath = join(packagesDir, depName, 'package.json');
-            try {
-              const depPkgJson = JSON.parse(readFileSync(depPkgPath, 'utf8'));
-              const currentVersion = depPkgJson.version;
-              const newImport = `jsr:@prefer-jsr/${depName}@^${currentVersion}`;
-              if (jsrJson.imports[dep] !== newImport) {
-                log(
-                  `   📝 Updating ${pkg}/jsr.json imports[${dep}]: ${jsrJson.imports[dep]} → ${newImport}`
-                );
-                changes.push(
-                  `imports[${dep}]: ${jsrJson.imports[dep]} → ${newImport}`
-                );
-                jsrJson.imports[dep] = newImport;
-                updated = true;
+            const fullPackageName = match[1];
+            
+            // Try to find a local package with this name
+            // Check all directories in packagesDir
+            for (const localPkg of packages) {
+              const localPkgJsonPath = join(packagesDir, localPkg, 'package.json');
+              try {
+                const localPkgJson = JSON.parse(readFileSync(localPkgJsonPath, 'utf8'));
+                
+                // Check if this local package matches the import
+                if (localPkgJson.name === fullPackageName) {
+                  const currentVersion = localPkgJson.version;
+                  const newImport = `jsr:${fullPackageName}@^${currentVersion}`;
+                  
+                  if (jsrJson.imports[dep] !== newImport) {
+                    log(
+                      `   📝 Updating ${pkg}/jsr.json imports[${dep}]: ${jsrJson.imports[dep]} → ${newImport}`
+                    );
+                    changes.push(
+                      `imports[${dep}]: ${jsrJson.imports[dep]} → ${newImport}`
+                    );
+                    jsrJson.imports[dep] = newImport;
+                    updated = true;
+                  }
+                  
+                  break;
+                }
+              } catch {
+                // Ignore if package.json doesn't exist or can't be read
               }
-            } catch {
-              // Ignore if dep package.json doesn't exist
             }
           }
         }
