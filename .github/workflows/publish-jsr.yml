@@ -46,6 +46,7 @@ jobs:
           NPM_CONFIG_PROVENANCE: true
         run: |
           echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
+          chmod 600 ~/.npmrc
           pnpm exec nx release publish --projects=${{ steps.project.outputs.name }} --dry-run
 
       - name: Publish to JSR
