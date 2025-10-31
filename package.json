@@ -6,7 +6,6 @@
   "license": "MIT",
   "type": "module",
   "devDependencies": {
-    "@eslint/js": "~8.57.0",
     "@nx/eslint": "21.6.4",
     "@nx/eslint-plugin": "21.6.4",
     "@nx/js": "21.6.4",
