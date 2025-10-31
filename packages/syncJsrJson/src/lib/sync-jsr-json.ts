@@ -152,35 +152,49 @@ function buildPackageMap(
   packages: string[],
   packagesDir: string
 ): Map<string, string> {
-  const packageMap = new Map<string, string>();
+  const packageInfos = packages
+    .map((pkg) => readPackageInfo(pkg, packagesDir))
+    .filter((pkg): pkg is NonNullable<typeof pkg> => pkg !== null);
 
-  for (const pkg of packages) {
-    try {
-      const packageJsonPath = join(packagesDir, pkg, 'package.json');
-      const packageJson: PackageJson = JSON.parse(
-        readFileSync(packageJsonPath, 'utf8')
-      );
-
-      if (packageJson.name && packageJson.version) {
-        packageMap.set(packageJson.name, packageJson.version);
-      }
-    } catch (error) {
-      if (
-        error instanceof Error &&
-        'code' in error &&
-        (error as NodeJS.ErrnoException).code !== 'ENOENT'
-      ) {
-        throw new FileSystemError(
-          `Failed to read package.json for ${pkg}`,
-          join(packagesDir, pkg, 'package.json'),
-          error
-        );
-      }
-    }
-  }
-
-  return packageMap;
+  return new Map(packageInfos.map(({ name, version }) => [name, version]));
 }
+
+/**
+ * Read and parse a package.json file async
+ */
+const readPackageInfoAsync = async (pkg: string, packagesDir: string) => {
+  try {
+    const packageJsonPath = join(packagesDir, pkg, 'package.json');
+    const content = await readFile(packageJsonPath, 'utf8');
+    const packageJson: PackageJson = JSON.parse(content);
+    return packageJson.name && packageJson.version
+      ? { name: packageJson.name, version: packageJson.version }
+      : null;
+  } catch (error) {
+    if (
+      error instanceof Error &&
+      'code' in error &&
+      (error as NodeJS.ErrnoException).code === 'ENOENT'
+    ) {
+      return null;
+    }
+    if (error instanceof SyntaxError) {
+      throw new JsonParseError(
+        `Invalid JSON in read package.json for ${pkg}`,
+        join(packagesDir, pkg, 'package.json'),
+        error
+      );
+    }
+    if (error instanceof Error) {
+      throw new FileSystemError(
+        `Failed to read package.json for ${pkg}`,
+        join(packagesDir, pkg, 'package.json'),
+        error
+      );
+    }
+    throw error;
+  }
+};
 
 /**
  * Async version: Build a map of package names to their versions for lookups
@@ -189,35 +203,13 @@ async function buildPackageMapAsync(
   packages: string[],
   packagesDir: string
 ): Promise<Map<string, string>> {
-  const packageMap = new Map<string, string>();
+  const packageInfos = (
+    await Promise.all(
+      packages.map((pkg) => readPackageInfoAsync(pkg, packagesDir))
+    )
+  ).filter((pkg): pkg is NonNullable<typeof pkg> => pkg !== null);
 
-  await Promise.all(
-    packages.map(async (pkg) => {
-      try {
-        const packageJsonPath = join(packagesDir, pkg, 'package.json');
-        const content = await readFile(packageJsonPath, 'utf8');
-        const packageJson: PackageJson = JSON.parse(content);
-
-        if (packageJson.name && packageJson.version) {
-          packageMap.set(packageJson.name, packageJson.version);
-        }
-      } catch (error) {
-        if (
-          error instanceof Error &&
-          'code' in error &&
-          (error as NodeJS.ErrnoException).code !== 'ENOENT'
-        ) {
-          throw new FileSystemError(
-            `Failed to read package.json for ${pkg}`,
-            join(packagesDir, pkg, 'package.json'),
-            error
-          );
-        }
-      }
-    })
-  );
-
-  return packageMap;
+  return new Map(packageInfos.map(({ name, version }) => [name, version]));
 }
 
 /**
@@ -378,6 +370,61 @@ function parseJsrImport(importValue: string): JsrImportInfo | null {
 }
 
 /**
+ * Safe file operation that returns null on ENOENT, throws on other errors
+ */
+const safeFileRead = <T>(
+  operation: () => T,
+  errorContext: { operation: string; path: string }
+): null | T => {
+  try {
+    return operation();
+  } catch (error) {
+    if (
+      error instanceof Error &&
+      'code' in error &&
+      (error as NodeJS.ErrnoException).code === 'ENOENT'
+    ) {
+      return null;
+    }
+    if (error instanceof SyntaxError) {
+      throw new JsonParseError(
+        `Invalid JSON in ${errorContext.operation}`,
+        errorContext.path,
+        error
+      );
+    }
+    if (error instanceof Error) {
+      throw new FileSystemError(
+        `Failed to ${errorContext.operation}`,
+        errorContext.path,
+        error
+      );
+    }
+    throw error;
+  }
+};
+
+/**
+ * Read and parse a package.json file
+ */
+const readPackageInfo = (pkg: string, packagesDir: string) =>
+  safeFileRead(
+    () => {
+      const packageJsonPath = join(packagesDir, pkg, 'package.json');
+      const packageJson: PackageJson = JSON.parse(
+        readFileSync(packageJsonPath, 'utf8')
+      );
+      return packageJson.name && packageJson.version
+        ? { name: packageJson.name, version: packageJson.version }
+        : null;
+    },
+    {
+      operation: `read package.json for ${pkg}`,
+      path: join(packagesDir, pkg, 'package.json'),
+    }
+  );
+
+/**
  * Process packages and return sync results
  */
 function processSyncResults<
@@ -410,7 +457,7 @@ function syncImports(
 }
 
 /**
- * Async version of syncImports
+ * Async version of syncImports - processes imports with async patterns
  */
 async function syncImportsAsync(
   pkg: string,
@@ -419,7 +466,38 @@ async function syncImportsAsync(
   log: (message: string) => void,
   packageJsonDependencies?: Record<string, string>
 ): Promise<{ changes: string[]; updatedImports: Record<string, string> }> {
-  return syncImports(pkg, imports, packageMap, log, packageJsonDependencies);
+  const batchSize = 10;
+
+  const processBatch = async (batch: Array<[string, unknown]>) => {
+    await Promise.resolve();
+    return batch
+      .map(([dep, importValue]) =>
+        calculateImportUpdate(
+          dep,
+          importValue,
+          packageMap,
+          packageJsonDependencies
+        )
+      )
+      .filter(
+        (update): update is NonNullable<typeof update> => update !== null
+      );
+  };
+
+  const importEntries = Object.entries(imports);
+  const batches = Array.from(
+    { length: Math.ceil(importEntries.length / batchSize) },
+    (_, i) => importEntries.slice(i * batchSize, (i + 1) * batchSize)
+  );
+
+  const batchResults = await Promise.all(batches.map(processBatch));
+  const allUpdates = batchResults.flat();
+
+  await Promise.resolve().then(() => {
+    createImportLogMessages(pkg, allUpdates).forEach(log);
+  });
+
+  return formatImportUpdates(allUpdates);
 }
 
 /**
