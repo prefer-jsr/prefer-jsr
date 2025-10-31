@@ -468,8 +468,7 @@ async function syncImportsAsync(
 ): Promise<{ changes: string[]; updatedImports: Record<string, string> }> {
   const batchSize = 10;
 
-  const processBatch = async (batch: Array<[string, unknown]>) => {
-    await Promise.resolve();
+  const processBatch = (batch: Array<[string, unknown]>) => {
     return batch
       .map(([dep, importValue]) =>
         calculateImportUpdate(
@@ -490,12 +489,10 @@ async function syncImportsAsync(
     (_, i) => importEntries.slice(i * batchSize, (i + 1) * batchSize)
   );
 
-  const batchResults = await Promise.all(batches.map(processBatch));
+  const batchResults = batches.map(processBatch);
   const allUpdates = batchResults.flat();
 
-  await Promise.resolve().then(() => {
-    createImportLogMessages(pkg, allUpdates).forEach(log);
-  });
+  createImportLogMessages(pkg, allUpdates).forEach(log);
 
   return formatImportUpdates(allUpdates);
 }
