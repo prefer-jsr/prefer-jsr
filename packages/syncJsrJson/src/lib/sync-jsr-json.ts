@@ -34,12 +34,12 @@ export interface SyncResult {
 
 /**
  * Sync jsr.json versions to match package.json versions
- * 
+ *
  * This function:
  * 1. Reads all packages in the packages directory
  * 2. Syncs the version in jsr.json to match package.json
  * 3. Syncs JSR import versions for any local dependencies
- * 
+ *
  * @param options - Configuration options
  * @returns Result with count and details of synced packages
  */
@@ -72,9 +72,7 @@ export function syncJsrJson(options: SyncJsrJsonOptions = {}): SyncResult {
         log(
           `   📝 Updating ${pkg}/jsr.json: ${jsrJson.version} → ${packageJson.version}`
         );
-        changes.push(
-          `version: ${jsrJson.version} → ${packageJson.version}`
-        );
+        changes.push(`version: ${jsrJson.version} → ${packageJson.version}`);
         jsrJson.version = packageJson.version;
         updated = true;
       }
@@ -88,19 +86,25 @@ export function syncJsrJson(options: SyncJsrJsonOptions = {}): SyncResult {
           );
           if (match) {
             const fullPackageName = match[1];
-            
+
             // Try to find a local package with this name
             // Check all directories in packagesDir
             for (const localPkg of packages) {
-              const localPkgJsonPath = join(packagesDir, localPkg, 'package.json');
+              const localPkgJsonPath = join(
+                packagesDir,
+                localPkg,
+                'package.json'
+              );
               try {
-                const localPkgJson = JSON.parse(readFileSync(localPkgJsonPath, 'utf8'));
-                
+                const localPkgJson = JSON.parse(
+                  readFileSync(localPkgJsonPath, 'utf8')
+                );
+
                 // Check if this local package matches the import
                 if (localPkgJson.name === fullPackageName) {
                   const currentVersion = localPkgJson.version;
                   const newImport = `jsr:${fullPackageName}@^${currentVersion}`;
-                  
+
                   if (jsrJson.imports[dep] !== newImport) {
                     log(
                       `   📝 Updating ${pkg}/jsr.json imports[${dep}]: ${jsrJson.imports[dep]} → ${newImport}`
@@ -111,7 +115,7 @@ export function syncJsrJson(options: SyncJsrJsonOptions = {}): SyncResult {
                     jsrJson.imports[dep] = newImport;
                     updated = true;
                   }
-                  
+
                   break;
                 }
               } catch {

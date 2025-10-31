@@ -1,10 +1,10 @@
-# @prefer-jsr/syncJsrJson
+# @prefer-jsr/sync-jsr-json
 
-Sync jsr.json versions with package.json versions in monorepos.
+Sync jsr.json versions with package.json versions in packages publishing to both JSR and NPM.
 
 ## Overview
 
-This package provides a utility function to automatically synchronize version numbers between `package.json` and `jsr.json` files in a package. It's particularly useful in release workflows to ensure that JSR package import versions stay in sync with npm package dependency versions.
+This package provides a utility function to automatically synchronize version numbers between `package.json` and `jsr.json` files in a package. It's particularly useful in release workflows to ensure that JSR package import versions stay in sync with npm registry package dependency versions.
 
 ## Features
 
@@ -17,12 +17,25 @@ This package provides a utility function to automatically synchronize version nu
 ## Installation
 
 ```bash
-npm install @prefer-jsr/syncJsrJson
-# or
-pnpm add @prefer-jsr/syncJsrJson
-# or
-yarn add @prefer-jsr/syncJsrJson
+pnpm i jsr:@prefer-jsr/sync-jsr-json
 ```
+
+```bash
+yarn add jsr:@prefer-jsr/sync-jsr-json
+```
+
+```bash
+npx jsr add @prefer-jsr/sync-jsr-json
+```
+
+<details>
+<summary>NPM registry (If you really need it for some reason)</summary>
+
+```bash
+npm install @prefer-jsr/sync-jsr-json
+```
+
+</details>
 
 ## Usage
 
@@ -43,15 +56,15 @@ console.log(`Synced ${result.syncedCount} packages`);
 import { syncJsrJson } from '@prefer-jsr/syncJsrJson';
 
 const result = syncJsrJson({
-  packagesDir: './my-packages',  // Custom packages directory
-  dryRun: true,                  // Test without writing changes
-  log: (msg) => console.log(msg) // Custom logger
+  packagesDir: './my-packages', // Custom packages directory
+  dryRun: true, // Test without writing changes
+  log: (msg) => console.log(msg), // Custom logger
 });
 
 // Check what would be synced
-result.syncedPackages.forEach(pkg => {
+result.syncedPackages.forEach((pkg) => {
   console.log(`Package: ${pkg.packageName}`);
-  pkg.changes.forEach(change => {
+  pkg.changes.forEach((change) => {
     console.log(`  - ${change}`);
   });
 });
@@ -86,13 +99,13 @@ interface SyncJsrJsonOptions {
    * @default process.cwd() + '/packages'
    */
   packagesDir?: string;
-  
+
   /**
    * Whether to run in dry-run mode (don't write files)
    * @default false
    */
   dryRun?: boolean;
-  
+
   /**
    * Custom logger function for output
    * @default console.log
@@ -109,7 +122,7 @@ interface SyncResult {
    * Number of packages that were synced
    */
   syncedCount: number;
-  
+
   /**
    * Details of packages that were synced
    */
@@ -163,9 +176,9 @@ After running `syncJsrJson()`:
 // packages/my-pkg/jsr.json
 {
   "name": "@my-org/my-pkg",
-  "version": "2.0.0",  // ✅ Updated
+  "version": "2.0.0", // ✅ Updated
   "imports": {
-    "dep": "jsr:@my-org/dep@^2.0.0"  // ✅ Updated
+    "dep": "jsr:@my-org/dep@^2.0.0" // ✅ Updated
   }
 }
 ```

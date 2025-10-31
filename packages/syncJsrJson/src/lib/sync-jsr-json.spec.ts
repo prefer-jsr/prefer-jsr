@@ -22,7 +22,7 @@ describe('syncJsrJson', () => {
       // Setup
       const pkgDir = join(packagesDir, 'test-pkg');
       mkdirSync(pkgDir, { recursive: true });
-      
+
       writeFileSync(
         join(pkgDir, 'package.json'),
         JSON.stringify({ name: 'test-pkg', version: '1.0.0' }, null, 2)
@@ -43,7 +43,9 @@ describe('syncJsrJson', () => {
       expect(result.syncedCount).toBe(1);
       expect(result.syncedPackages).toHaveLength(1);
       expect(result.syncedPackages[0].packageName).toBe('test-pkg');
-      expect(result.syncedPackages[0].changes).toContain('version: 0.9.0 → 1.0.0');
+      expect(result.syncedPackages[0].changes).toContain(
+        'version: 0.9.0 → 1.0.0'
+      );
 
       const updatedJsrJson = JSON.parse(
         readFileSync(join(pkgDir, 'jsr.json'), 'utf8')
@@ -55,7 +57,7 @@ describe('syncJsrJson', () => {
       // Setup
       const pkgDir = join(packagesDir, 'test-pkg');
       mkdirSync(pkgDir, { recursive: true });
-      
+
       writeFileSync(
         join(pkgDir, 'package.json'),
         JSON.stringify({ name: 'test-pkg', version: '1.0.0' }, null, 2)
@@ -75,7 +77,7 @@ describe('syncJsrJson', () => {
       // Verify
       expect(result.syncedCount).toBe(0);
       expect(result.syncedPackages).toHaveLength(0);
-      expect(logs.some(log => log.includes('already in sync'))).toBe(true);
+      expect(logs.some((log) => log.includes('already in sync'))).toBe(true);
     });
   });
 
@@ -84,7 +86,7 @@ describe('syncJsrJson', () => {
       // Setup
       const pkgDir = join(packagesDir, 'test-pkg');
       mkdirSync(pkgDir, { recursive: true });
-      
+
       writeFileSync(
         join(pkgDir, 'package.json'),
         JSON.stringify({ name: 'test-pkg', version: '2.0.0' }, null, 2)
@@ -102,7 +104,7 @@ describe('syncJsrJson', () => {
 
       // Verify
       expect(result.syncedCount).toBe(1);
-      
+
       const jsrJson = JSON.parse(
         readFileSync(join(pkgDir, 'jsr.json'), 'utf8')
       );
@@ -135,13 +137,17 @@ describe('syncJsrJson', () => {
       );
       writeFileSync(
         join(pkg2Dir, 'jsr.json'),
-        JSON.stringify({
-          name: '@prefer-jsr/pkg2',
-          version: '1.0.0',
-          imports: {
-            'pkg1': 'jsr:@prefer-jsr/pkg1@^1.0.0'
-          }
-        }, null, 2)
+        JSON.stringify(
+          {
+            name: '@prefer-jsr/pkg2',
+            version: '1.0.0',
+            imports: {
+              pkg1: 'jsr:@prefer-jsr/pkg1@^1.0.0',
+            },
+          },
+          null,
+          2
+        )
       );
 
       // Execute
@@ -186,13 +192,17 @@ describe('syncJsrJson', () => {
       );
       writeFileSync(
         join(pkg2Dir, 'jsr.json'),
-        JSON.stringify({
-          name: '@prefer-jsr/pkg2',
-          version: '1.0.0',
-          imports: {
-            'pkg1': 'jsr:@prefer-jsr/pkg1@2.0.0'
-          }
-        }, null, 2)
+        JSON.stringify(
+          {
+            name: '@prefer-jsr/pkg2',
+            version: '1.0.0',
+            imports: {
+              pkg1: 'jsr:@prefer-jsr/pkg1@2.0.0',
+            },
+          },
+          null,
+          2
+        )
       );
 
       // Execute
@@ -214,18 +224,26 @@ describe('syncJsrJson', () => {
 
       writeFileSync(
         join(pkgDir, 'package.json'),
-        JSON.stringify({ name: '@prefer-jsr/test-pkg', version: '1.0.0' }, null, 2)
+        JSON.stringify(
+          { name: '@prefer-jsr/test-pkg', version: '1.0.0' },
+          null,
+          2
+        )
       );
       writeFileSync(
         join(pkgDir, 'jsr.json'),
-        JSON.stringify({
-          name: '@prefer-jsr/test-pkg',
-          version: '1.0.0',
-          imports: {
-            'external': 'jsr:@external/package@^1.0.0',
-            'npm-pkg': 'npm:some-package@^2.0.0'
-          }
-        }, null, 2)
+        JSON.stringify(
+          {
+            name: '@prefer-jsr/test-pkg',
+            version: '1.0.0',
+            imports: {
+              external: 'jsr:@external/package@^1.0.0',
+              'npm-pkg': 'npm:some-package@^2.0.0',
+            },
+          },
+          null,
+          2
+        )
       );
 
       // Execute
@@ -266,13 +284,17 @@ describe('syncJsrJson', () => {
       );
       writeFileSync(
         join(pkg2Dir, 'jsr.json'),
-        JSON.stringify({
-          name: '@my-org/pkg2',
-          version: '1.0.0',
-          imports: {
-            'pkg1': 'jsr:@my-org/pkg1@^1.0.0'
-          }
-        }, null, 2)
+        JSON.stringify(
+          {
+            name: '@my-org/pkg2',
+            version: '1.0.0',
+            imports: {
+              pkg1: 'jsr:@my-org/pkg1@^1.0.0',
+            },
+          },
+          null,
+          2
+        )
       );
 
       // Execute
@@ -341,7 +363,10 @@ describe('syncJsrJson', () => {
 
       // Verify
       expect(result.syncedCount).toBe(2);
-      expect(result.syncedPackages.map(p => p.packageName).sort()).toEqual(['pkg1', 'pkg3']);
+      expect(result.syncedPackages.map((p) => p.packageName).sort()).toEqual([
+        'pkg1',
+        'pkg3',
+      ]);
     });
   });
 
@@ -350,7 +375,7 @@ describe('syncJsrJson', () => {
       // Setup
       const pkgDir = join(packagesDir, 'test-pkg');
       mkdirSync(pkgDir, { recursive: true });
-      
+
       writeFileSync(
         join(pkgDir, 'package.json'),
         JSON.stringify({ version: '1.0.0' }, null, 2)
@@ -372,7 +397,7 @@ describe('syncJsrJson', () => {
       // Setup
       const pkgDir = join(packagesDir, 'test-pkg');
       mkdirSync(pkgDir, { recursive: true });
-      
+
       writeFileSync(
         join(pkgDir, 'jsr.json'),
         JSON.stringify({ version: '1.0.0' }, null, 2)
@@ -401,12 +426,16 @@ describe('syncJsrJson', () => {
       );
       writeFileSync(
         join(pkgDir, 'jsr.json'),
-        JSON.stringify({
-          version: '1.0.0',
-          imports: {
-            'missing': 'jsr:@prefer-jsr/missing@^1.0.0'
-          }
-        }, null, 2)
+        JSON.stringify(
+          {
+            version: '1.0.0',
+            imports: {
+              missing: 'jsr:@prefer-jsr/missing@^1.0.0',
+            },
+          },
+          null,
+          2
+        )
       );
 
       // Execute
@@ -417,7 +446,7 @@ describe('syncJsrJson', () => {
       });
 
       // Verify - should not error, just skip the missing dependency
-      expect(logs.some(log => log.includes('already in sync'))).toBe(true);
+      expect(logs.some((log) => log.includes('already in sync'))).toBe(true);
     });
   });
 
@@ -439,7 +468,7 @@ describe('syncJsrJson', () => {
       // Setup
       const pkgDir = join(packagesDir, 'test-pkg');
       mkdirSync(pkgDir, { recursive: true });
-      
+
       writeFileSync(
         join(pkgDir, 'package.json'),
         JSON.stringify({ version: '1.0.0' }, null, 2)
@@ -463,7 +492,7 @@ describe('syncJsrJson', () => {
       // Setup
       const pkgDir = join(packagesDir, 'test-pkg');
       mkdirSync(pkgDir, { recursive: true });
-      
+
       writeFileSync(
         join(pkgDir, 'package.json'),
         JSON.stringify({ version: '1.0.0' }, null, 2)
@@ -507,13 +536,17 @@ describe('syncJsrJson', () => {
       );
       writeFileSync(
         join(pkg2Dir, 'jsr.json'),
-        JSON.stringify({
-          name: '@prefer-jsr/pkg2',
-          version: '1.0.0',
-          imports: {
-            'pkg1': 'jsr:@prefer-jsr/pkg1@^2.0.0'
-          }
-        }, null, 2)
+        JSON.stringify(
+          {
+            name: '@prefer-jsr/pkg2',
+            version: '1.0.0',
+            imports: {
+              pkg1: 'jsr:@prefer-jsr/pkg1@^2.0.0',
+            },
+          },
+          null,
+          2
+        )
       );
 
       // Execute
@@ -525,7 +558,9 @@ describe('syncJsrJson', () => {
       expect(result.syncedCount).toBe(1);
       expect(result.syncedPackages[0].packageName).toBe('pkg2');
       expect(result.syncedPackages[0].changes).toHaveLength(2);
-      expect(result.syncedPackages[0].changes).toContain('version: 1.0.0 → 2.0.0');
+      expect(result.syncedPackages[0].changes).toContain(
+        'version: 1.0.0 → 2.0.0'
+      );
       expect(result.syncedPackages[0].changes).toContain(
         'imports[pkg1]: jsr:@prefer-jsr/pkg1@^2.0.0 → jsr:@prefer-jsr/pkg1@^3.0.0'
       );
