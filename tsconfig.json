@@ -8,6 +8,9 @@
     },
     {
       "path": "./packages/npm2jsr"
+    },
+    {
+      "path": "./packages/syncJsrJson"
     }
   ]
 }
