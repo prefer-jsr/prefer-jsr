@@ -42,10 +42,10 @@ npm install @prefer-jsr/sync-jsr-json
 ### Basic Usage
 
 ```typescript
-import { syncJsrJson } from '@prefer-jsr/syncJsrJson';
+import { syncJsrJson } from '@prefer-jsr/sync-jsr-json';
 
 // Sync all packages in the default packages directory
-const result = syncJsrJson();
+const result = await syncJsrJson();
 
 console.log(`Synced ${result.syncedCount} packages`);
 ```
@@ -53,9 +53,9 @@ console.log(`Synced ${result.syncedCount} packages`);
 ### With Options
 
 ```typescript
-import { syncJsrJson } from '@prefer-jsr/syncJsrJson';
+import { syncJsrJson } from '@prefer-jsr/sync-jsr-json';
 
-const result = syncJsrJson({
+const result = await syncJsrJson({
   packagesDir: './my-packages', // Custom packages directory
   dryRun: true, // Test without writing changes
   log: (msg) => console.log(msg), // Custom logger
@@ -73,10 +73,10 @@ result.syncedPackages.forEach((pkg) => {
 ### In Release Scripts
 
 ```typescript
-import { syncJsrJson } from '@prefer-jsr/syncJsrJson';
+import { syncJsrJson } from '@prefer-jsr/sync-jsr-json';
 
 // Before creating a release
-const result = syncJsrJson({ dryRun: false });
+const result = await syncJsrJson({ dryRun: false });
 
 if (result.syncedCount > 0) {
   console.log('JSR versions synced successfully!');
@@ -86,9 +86,9 @@ if (result.syncedCount > 0) {
 
 ## API
 
-### `syncJsrJson(options?: SyncJsrJsonOptions): SyncResult`
+### `syncJsrJson(options?: SyncJsrJsonOptions): Promise<SyncResult>`
 
-Syncs jsr.json versions to match package.json versions.
+Syncs jsr.json versions to match package.json versions using async file operations for optimal performance.
 
 #### Options
 

@@ -26,12 +26,12 @@ function setupFixture(fixtureName: string, testDir: string): string {
 
 describe('syncJsrJson', () => {
   describe('using fixtures', () => {
-    it('should sync single package version', () => {
+    it('should sync single package version', async () => {
       const testDir = join(process.cwd(), 'tmp', 'fixture-single');
       const packagesDir = setupFixture('single-package', testDir);
 
       try {
-        const result = syncJsrJson({ packagesDir });
+        const result = await syncJsrJson({ packagesDir });
 
         expect(result.syncedCount).toBe(1);
         expect(result.syncedPackages[0].packageName).toBe('@test/single-pkg');
@@ -66,12 +66,12 @@ describe('syncJsrJson', () => {
       }
     });
 
-    it('should handle multiple packages with version sync and all constraint types', () => {
+    it('should handle multiple packages with version sync and all constraint types', async () => {
       const testDir = join(process.cwd(), 'tmp', 'fixture-multi');
       const packagesDir = setupFixture('multiple-packages', testDir);
 
       try {
-        const result = syncJsrJson({ packagesDir });
+        const result = await syncJsrJson({ packagesDir });
 
         expect(result.syncedCount).toBe(3);
         expect(result.syncedPackages.map((p) => p.packageName).sort()).toEqual([
@@ -106,12 +106,12 @@ describe('syncJsrJson', () => {
       }
     });
 
-    it('should not write files in dry-run mode', () => {
+    it('should not write files in dry-run mode', async () => {
       const testDir = join(process.cwd(), 'tmp', 'fixture-dry-run');
       const packagesDir = setupFixture('dry-run-test', testDir);
 
       try {
-        const result = syncJsrJson({ packagesDir, dryRun: true });
+        const result = await syncJsrJson({ packagesDir, dryRun: true });
 
         expect(result.syncedCount).toBe(1);
 
@@ -147,8 +147,8 @@ describe('syncJsrJson', () => {
       const packagesDir = setupFixture('single-package', testDir);
 
       try {
-        const { syncJsrJsonAsync } = await import('./sync-jsr-json.js');
-        const result = await syncJsrJsonAsync({ packagesDir });
+        const { syncJsrJson } = await import('./sync-jsr-json.js');
+        const result = await syncJsrJson({ packagesDir });
 
         expect(result.syncedCount).toBe(1);
         expect(result.syncedPackages[0].packageName).toBe('@test/single-pkg');
@@ -193,7 +193,7 @@ describe('syncJsrJson', () => {
       rmSync(testDir, { recursive: true, force: true });
     });
 
-    it('should skip packages without required files', () => {
+    it('should skip packages without required files', async () => {
       const pkg1Dir = join(packagesDir, 'pkg1');
       const pkg2Dir = join(packagesDir, 'pkg2');
       mkdirSync(pkg1Dir, { recursive: true });
@@ -208,7 +208,7 @@ describe('syncJsrJson', () => {
         JSON.stringify({ version: '1.0.0' }, null, 2)
       );
 
-      const result = syncJsrJson({ packagesDir });
+      const result = await syncJsrJson({ packagesDir });
       expect(result.syncedCount).toBe(0);
     });
 

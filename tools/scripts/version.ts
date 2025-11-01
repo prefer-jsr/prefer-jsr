@@ -3,6 +3,7 @@
 import { execSync } from 'node:child_process';
 import { releaseChangelog, releaseVersion } from 'nx/release/index.js';
 
+// eslint-disable-next-line @nx/enforce-module-boundaries
 import { syncJsrJson } from '../../packages/syncJsrJson/src/index.js';
 
 /**
@@ -54,7 +55,7 @@ function isExecError(
 
   // Step 2: Sync jsr.json versions with package.json
   console.log('\n2️⃣  Syncing JSR versions...');
-  syncJsrJson({ dryRun: options.dryRun });
+  await syncJsrJson({ dryRun: options.dryRun });
 
   // Step 3: Amend the release commit to include jsr.json changes (if not dry run)
   if (!options.dryRun) {

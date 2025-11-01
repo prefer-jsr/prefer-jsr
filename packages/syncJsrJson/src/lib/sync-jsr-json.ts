@@ -1,4 +1,3 @@
-import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { readdir, readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
@@ -56,13 +55,11 @@ interface PackageJson {
  */
 export class FileSystemError extends Error {
   public override readonly cause?: Error;
-  public readonly path: string;
 
-  constructor(message: string, path: string, cause?: Error) {
+  constructor(message: string, cause?: Error) {
     super(message);
     this.name = 'FileSystemError';
     this.cause = cause;
-    this.path = path;
   }
 }
 
@@ -90,37 +87,9 @@ export class JsonParseError extends Error {
  * 3. Syncs JSR import versions for any local dependencies
  *
  * @param options - Configuration options
- * @returns Result with count and details of synced packages
- */
-export function syncJsrJson(options: SyncJsrJsonOptions = {}): SyncResult {
-  const {
-    dryRun = false,
-    log = console.log,
-    packagesDir = join(process.cwd(), 'packages'),
-  } = options;
-
-  const packages = getPackageNames(packagesDir);
-  const packageMap = buildPackageMap(packages, packagesDir);
-
-  const syncedPackages = packages
-    .map((pkg) => syncPackage(pkg, packageMap, packagesDir, log, dryRun))
-    .filter((result): result is NonNullable<typeof result> => result !== null);
-
-  return processSyncResults(syncedPackages, log);
-}
-
-/**
- * Async version: Sync jsr.json versions to match package.json versions
- *
- * This function:
- * 1. Reads all packages in the packages directory
- * 2. Syncs the version in jsr.json to match package.json
- * 3. Syncs JSR import versions for any local dependencies
- *
- * @param options - Configuration options
  * @returns Promise resolving to result with count and details of synced packages
  */
-export async function syncJsrJsonAsync(
+export async function syncJsrJson(
   options: SyncJsrJsonOptions = {}
 ): Promise<SyncResult> {
   const {
@@ -129,12 +98,12 @@ export async function syncJsrJsonAsync(
     packagesDir = join(process.cwd(), 'packages'),
   } = options;
 
-  const packages = await getPackageNamesAsync(packagesDir);
-  const packageMap = await buildPackageMapAsync(packages, packagesDir);
+  const packages = await getPackageNames(packagesDir);
+  const packageMap = await buildPackageMap(packages, packagesDir);
 
   const syncResults = await Promise.all(
     packages.map((pkg) =>
-      syncPackageAsync(pkg, packageMap, packagesDir, log, dryRun)
+      syncPackage(pkg, packageMap, packagesDir, log, dryRun)
     )
   );
 
@@ -148,65 +117,12 @@ export async function syncJsrJsonAsync(
 /**
  * Build a map of package names to their versions for O(1) lookups
  */
-function buildPackageMap(
-  packages: string[],
-  packagesDir: string
-): Map<string, string> {
-  const packageInfos = packages
-    .map((pkg) => readPackageInfo(pkg, packagesDir))
-    .filter((pkg): pkg is NonNullable<typeof pkg> => pkg !== null);
-
-  return new Map(packageInfos.map(({ name, version }) => [name, version]));
-}
-
-/**
- * Read and parse a package.json file async
- */
-const readPackageInfoAsync = async (pkg: string, packagesDir: string) => {
-  try {
-    const packageJsonPath = join(packagesDir, pkg, 'package.json');
-    const content = await readFile(packageJsonPath, 'utf8');
-    const packageJson: PackageJson = JSON.parse(content);
-    return packageJson.name && packageJson.version
-      ? { name: packageJson.name, version: packageJson.version }
-      : null;
-  } catch (error) {
-    if (
-      error instanceof Error &&
-      'code' in error &&
-      (error as NodeJS.ErrnoException).code === 'ENOENT'
-    ) {
-      return null;
-    }
-    if (error instanceof SyntaxError) {
-      throw new JsonParseError(
-        `Invalid JSON in read package.json for ${pkg}`,
-        join(packagesDir, pkg, 'package.json'),
-        error
-      );
-    }
-    if (error instanceof Error) {
-      throw new FileSystemError(
-        `Failed to read package.json for ${pkg}`,
-        join(packagesDir, pkg, 'package.json'),
-        error
-      );
-    }
-    throw error;
-  }
-};
-
-/**
- * Async version: Build a map of package names to their versions for lookups
- */
-async function buildPackageMapAsync(
+async function buildPackageMap(
   packages: string[],
   packagesDir: string
 ): Promise<Map<string, string>> {
   const packageInfos = (
-    await Promise.all(
-      packages.map((pkg) => readPackageInfoAsync(pkg, packagesDir))
-    )
+    await Promise.all(packages.map((pkg) => readPackageInfo(pkg, packagesDir)))
   ).filter((pkg): pkg is NonNullable<typeof pkg> => pkg !== null);
 
   return new Map(packageInfos.map(({ name, version }) => [name, version]));
@@ -329,18 +245,9 @@ function formatImportUpdates(
 }
 
 /**
- * Get directory names from a packages directory
+ * Get directory names from a packages directory (async)
  */
-function getPackageNames(packagesDir: string): string[] {
-  return readdirSync(packagesDir, { withFileTypes: true })
-    .filter((dirent) => dirent.isDirectory())
-    .map((dirent) => dirent.name);
-}
-
-/**
- * Async version of getPackageNames
- */
-async function getPackageNamesAsync(packagesDir: string): Promise<string[]> {
+async function getPackageNames(packagesDir: string): Promise<string[]> {
   const dirents = await readdir(packagesDir, { withFileTypes: true });
   return dirents
     .filter((dirent) => dirent.isDirectory())
@@ -370,14 +277,16 @@ function parseJsrImport(importValue: string): JsrImportInfo | null {
 }
 
 /**
- * Safe file operation that returns null on ENOENT, throws on other errors
+ * Read and parse a package.json file async
  */
-const safeFileRead = <T>(
-  operation: () => T,
-  errorContext: { operation: string; path: string }
-): null | T => {
+const readPackageInfo = async (pkg: string, packagesDir: string) => {
   try {
-    return operation();
+    const packageJsonPath = join(packagesDir, pkg, 'package.json');
+    const content = await readFile(packageJsonPath, 'utf8');
+    const packageJson: PackageJson = JSON.parse(content);
+    return packageJson.name && packageJson.version
+      ? { name: packageJson.name, version: packageJson.version }
+      : null;
   } catch (error) {
     if (
       error instanceof Error &&
@@ -388,41 +297,24 @@ const safeFileRead = <T>(
     }
     if (error instanceof SyntaxError) {
       throw new JsonParseError(
-        `Invalid JSON in ${errorContext.operation}`,
-        errorContext.path,
+        `Invalid JSON in read package.json for ${pkg}`,
+        join(packagesDir, pkg, 'package.json'),
         error
       );
     }
     if (error instanceof Error) {
       throw new FileSystemError(
-        `Failed to ${errorContext.operation}`,
-        errorContext.path,
+        `Failed to read package.json for ${pkg}: ${join(
+          packagesDir,
+          pkg,
+          'package.json'
+        )}`,
         error
       );
     }
     throw error;
   }
 };
-
-/**
- * Read and parse a package.json file
- */
-const readPackageInfo = (pkg: string, packagesDir: string) =>
-  safeFileRead(
-    () => {
-      const packageJsonPath = join(packagesDir, pkg, 'package.json');
-      const packageJson: PackageJson = JSON.parse(
-        readFileSync(packageJsonPath, 'utf8')
-      );
-      return packageJson.name && packageJson.version
-        ? { name: packageJson.name, version: packageJson.version }
-        : null;
-    },
-    {
-      operation: `read package.json for ${pkg}`,
-      path: join(packagesDir, pkg, 'package.json'),
-    }
-  );
 
 /**
  * Process packages and return sync results
@@ -436,15 +328,15 @@ function processSyncResults<
 }
 
 /**
- * Sync all JSR imports in a package based on monorepo package versions and package.json dependencies
+ * Sync all JSR imports in a package based on monorepo package versions and package.json dependencies (async version)
  */
-function syncImports(
+async function syncImports(
   pkg: string,
   imports: Record<string, string | unknown>,
   packageMap: Map<string, string>,
   log: (message: string) => void,
   packageJsonDependencies?: Record<string, string>
-): { changes: string[]; updatedImports: Record<string, string> } {
+): Promise<{ changes: string[]; updatedImports: Record<string, string> }> {
   const updates = calculateImportUpdates(
     imports,
     packageMap,
@@ -457,134 +349,9 @@ function syncImports(
 }
 
 /**
- * Async version of syncImports - processes imports with async patterns
+ * Sync a single package's jsr.json with its package.json (async primary implementation)
  */
-async function syncImportsAsync(
-  pkg: string,
-  imports: Record<string, string | unknown>,
-  packageMap: Map<string, string>,
-  log: (message: string) => void,
-  packageJsonDependencies?: Record<string, string>
-): Promise<{ changes: string[]; updatedImports: Record<string, string> }> {
-  const batchSize = 10;
-
-  const processBatch = (batch: Array<[string, unknown]>) => {
-    return batch
-      .map(([dep, importValue]) =>
-        calculateImportUpdate(
-          dep,
-          importValue,
-          packageMap,
-          packageJsonDependencies
-        )
-      )
-      .filter(
-        (update): update is NonNullable<typeof update> => update !== null
-      );
-  };
-
-  const importEntries = Object.entries(imports);
-  const batches = Array.from(
-    { length: Math.ceil(importEntries.length / batchSize) },
-    (_, i) => importEntries.slice(i * batchSize, (i + 1) * batchSize)
-  );
-
-  const batchResults = batches.map(processBatch);
-  const allUpdates = batchResults.flat();
-
-  createImportLogMessages(pkg, allUpdates).forEach(log);
-
-  return formatImportUpdates(allUpdates);
-}
-
-/**
- * Sync a single package's jsr.json with its package.json
- */
-function syncPackage(
-  pkg: string,
-  packageMap: Map<string, string>,
-  packagesDir: string,
-  log: (message: string) => void,
-  dryRun: boolean
-): null | { changes: string[]; packageName: string } {
-  const packageJsonPath = join(packagesDir, pkg, 'package.json');
-  const jsrJsonPath = join(packagesDir, pkg, 'jsr.json');
-
-  try {
-    const packageJson: PackageJson = JSON.parse(
-      readFileSync(packageJsonPath, 'utf8')
-    );
-    const jsrJson: JsrJson = JSON.parse(readFileSync(jsrJsonPath, 'utf8'));
-
-    const changes: string[] = [];
-
-    if (packageJson.version && packageJson.version !== jsrJson.version) {
-      log(
-        `   📝 Updating ${pkg}/jsr.json: ${jsrJson.version} → ${packageJson.version}`
-      );
-      changes.push(`version: ${jsrJson.version} → ${packageJson.version}`);
-      jsrJson.version = packageJson.version;
-    }
-
-    if (jsrJson.imports && typeof jsrJson.imports === 'object') {
-      const importChanges = syncImports(
-        pkg,
-        jsrJson.imports,
-        packageMap,
-        log,
-        packageJson.dependencies
-      );
-      changes.push(...importChanges.changes);
-      Object.assign(jsrJson.imports, importChanges.updatedImports);
-    }
-
-    if (changes.length > 0) {
-      const actualPackageName = packageJson.name || jsrJson.name || pkg;
-
-      if (!dryRun) {
-        writeFileSync(
-          jsrJsonPath,
-          JSON.stringify(jsrJson, null, 2) + '\n',
-          'utf8'
-        );
-      }
-      return { changes, packageName: actualPackageName };
-    }
-
-    return null;
-  } catch (error) {
-    if (
-      error instanceof Error &&
-      'code' in error &&
-      (error as NodeJS.ErrnoException).code === 'ENOENT'
-    ) {
-      return null;
-    }
-
-    if (error instanceof SyntaxError) {
-      throw new JsonParseError(
-        `Invalid JSON in package files for ${pkg}`,
-        packageJsonPath,
-        error
-      );
-    }
-
-    if (error instanceof Error) {
-      throw new FileSystemError(
-        `Failed to sync package ${pkg}`,
-        packageJsonPath,
-        error
-      );
-    }
-
-    throw error;
-  }
-}
-
-/**
- * Async version: Sync a single package's jsr.json with its package.json
- */
-async function syncPackageAsync(
+async function syncPackage(
   pkg: string,
   packageMap: Map<string, string>,
   packagesDir: string,
@@ -614,7 +381,7 @@ async function syncPackageAsync(
     }
 
     if (jsrJson.imports && typeof jsrJson.imports === 'object') {
-      const importChanges = await syncImportsAsync(
+      const importChanges = await syncImports(
         pkg,
         jsrJson.imports,
         packageMap,
@@ -658,8 +425,7 @@ async function syncPackageAsync(
 
     if (error instanceof Error) {
       throw new FileSystemError(
-        `Failed to sync package ${pkg}`,
-        packageJsonPath,
+        `Failed to sync package ${pkg}: ${packageJsonPath}`,
         error
       );
     }
