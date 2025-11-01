@@ -44,6 +44,11 @@ jobs:
       - name: Configure npm authentication
         run: |
           echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
+          chmod 600 ~/.npmrc
+
+      - name: Dry run JSR publish
+        run: npx jsr publish --dry-run
+        working-directory: ./packages/${{ steps.project.outputs.name }}
 
       - name: Publish to npm
         env:

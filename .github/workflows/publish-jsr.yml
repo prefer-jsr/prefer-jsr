@@ -40,6 +40,15 @@ jobs:
           PROJECT="${TAG%@*}"
           echo "name=${PROJECT}" >> $GITHUB_OUTPUT
 
+      - name: Dry run npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_CONFIG_PROVENANCE: true
+        run: |
+          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
+          chmod 600 ~/.npmrc
+          pnpm exec nx release publish --projects=${{ steps.project.outputs.name }} --dry-run
+
       - name: Publish to JSR
         run: npx jsr publish
         working-directory: ./packages/${{ steps.project.outputs.name }}
