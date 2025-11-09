@@ -144,7 +144,7 @@ GitHub Actions workflows automatically run on every push:
 
 ## Contributing
 
-Contributions are welcome! See [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines.
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines.
 
 ## Acknowledgements
 
