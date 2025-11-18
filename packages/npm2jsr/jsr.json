@@ -1,6 +1,6 @@
 {
   "name": "@prefer-jsr/npm2jsr",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "exports": "./src/index.ts",
   "publish": {
     "exclude": [
