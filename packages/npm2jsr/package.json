@@ -1,7 +1,7 @@
 {
   "name": "@prefer-jsr/npm2jsr",
   "version": "0.6.0",
-  "description": "Mapping of NPM packages to their JSR equivalents",
+  "description": "Mapping of NPM packages to their JSR equivalent packages",
   "keywords": [
     "jsr",
     "npm",
