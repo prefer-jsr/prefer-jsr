@@ -270,23 +270,6 @@ export const npmToJsrMapping: Map<string, JsrPackageInfo> = new Map<
     },
   ],
   [
-    '@supabase/functions-js',
-    {
-      jsrPackage: '@supabase/functions-js',
-      minimumVersion: '2.4.0',
-      sourceUrl:
-        'https://github.com/supabase/supabase-js/tree/master/packages/core/functions-js',
-    },
-  ],
-  [
-    '@supabase/supabase-js',
-    {
-      jsrPackage: '@supabase/supabase-js',
-      minimumVersion: '2.43.2',
-      sourceUrl: 'https://github.com/supabase/supabase-js',
-    },
-  ],
-  [
     '@openai/openai',
     {
       jsrPackage: '@openai/openai',
@@ -308,6 +291,23 @@ export const npmToJsrMapping: Map<string, JsrPackageInfo> = new Map<
       jsrPackage: '@prefer-jsr/npm2jsr',
       minimumVersion: '0.1.0',
       sourceUrl: 'https://github.com/prefer-jsr/prefer-jsr',
+    },
+  ],
+  [
+    '@supabase/functions-js',
+    {
+      jsrPackage: '@supabase/functions-js',
+      minimumVersion: '2.4.0',
+      sourceUrl:
+        'https://github.com/supabase/supabase-js/tree/master/packages/core/functions-js',
+    },
+  ],
+  [
+    '@supabase/supabase-js',
+    {
+      jsrPackage: '@supabase/supabase-js',
+      minimumVersion: '2.43.2',
+      sourceUrl: 'https://github.com/supabase/supabase-js',
     },
   ],
   [
