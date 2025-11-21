@@ -1,0 +1,7 @@
+{
+  "version": "2.0.0",
+  "imports": {
+    "pkg1": "jsr:@test/pkg1@1.0.0",
+    "@external/tilde-pkg": "jsr:@external/tilde-pkg@~1.8.0"
+  }
+}
