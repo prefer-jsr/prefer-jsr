@@ -35,7 +35,6 @@ npm install --save-dev @prefer-jsr/eslint-plugin-prefer-jsr
 
 ### [@prefer-jsr/npm2jsr](./packages/npm2jsr) &middot; [![JSR](https://jsr.io/badges/@prefer-jsr/npm2jsr)](https://jsr.io/@prefer-jsr/npm2jsr)
 
-
 Mapping library that provides data about npm packages and their JSR equivalents.
 
 **Installation:**
