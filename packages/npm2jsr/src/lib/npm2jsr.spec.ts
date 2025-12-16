@@ -32,6 +32,7 @@ describe('npm2jsr', () => {
     it('should return JSR equivalent for mapped packages', () => {
       expect(getJsrEquivalent('zod')).toBe('@zod/zod');
       expect(getJsrEquivalent('@eslint/markdown')).toBe('@eslint/markdown');
+      expect(getJsrEquivalent('es-toolkit')).toBe('@es-toolkit/es-toolkit');
     });
 
     it('should return null for unmapped packages', () => {
@@ -76,6 +77,7 @@ describe('npm2jsr', () => {
     it('should return true for mapped packages', () => {
       expect(hasJsrEquivalent('zod')).toBe(true);
       expect(hasJsrEquivalent('@eslint/markdown')).toBe(true);
+      expect(hasJsrEquivalent('es-toolkit')).toBe(true);
     });
 
     it('should return false for unmapped packages', () => {

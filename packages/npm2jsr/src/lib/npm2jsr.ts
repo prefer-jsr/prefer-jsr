@@ -311,6 +311,14 @@ export const npmToJsrMapping: Map<string, JsrPackageInfo> = new Map<
     },
   ],
   [
+    'es-toolkit',
+    {
+      jsrPackage: '@es-toolkit/es-toolkit',
+      minimumVersion: '1.43.0',
+      sourceUrl: 'https://github.com/toss/es-toolkit',
+    },
+  ],
+  [
     'hono',
     {
       jsrPackage: '@hono/hono',
