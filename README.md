@@ -1,4 +1,4 @@
-# Prefer JSR
+# Prefer JSR &middot; [![JSR Scope](https://jsr.io/badges/@prefer-jsr)](https://jsr.io/@prefer-jsr)
 
 A collection of tools to help JavaScript/TypeScript projects prefer [JSR](https://jsr.io/) packages over npm when available.
 
@@ -6,7 +6,7 @@ A collection of tools to help JavaScript/TypeScript projects prefer [JSR](https:
 
 This monorepo contains two packages:
 
-### [@prefer-jsr/eslint-plugin-prefer-jsr](./packages/eslint-plugin)
+### [@prefer-jsr/eslint-plugin-prefer-jsr](./packages/eslint-plugin) &middot; [![JSR](https://jsr.io/badges/@prefer-jsr/eslint-plugin-prefer-jsr)](https://jsr.io/@prefer-jsr/eslint-plugin-prefer-jsr)
 
 ESLint plugin that suggests using JSR packages over npm when JSR alternatives are available.
 
@@ -33,7 +33,8 @@ npm install --save-dev @prefer-jsr/eslint-plugin-prefer-jsr
 
 </details>
 
-### [@prefer-jsr/npm2jsr](./packages/npm2jsr)
+### [@prefer-jsr/npm2jsr](./packages/npm2jsr) &middot; [![JSR](https://jsr.io/badges/@prefer-jsr/npm2jsr)](https://jsr.io/@prefer-jsr/npm2jsr)
+
 
 Mapping library that provides data about npm packages and their JSR equivalents.
 
