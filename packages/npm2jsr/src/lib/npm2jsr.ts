@@ -306,7 +306,7 @@ export const npmToJsrMapping: Map<string, JsrPackageInfo> = new Map<
     '@supabase/supabase-js',
     {
       jsrPackage: '@supabase/supabase-js',
-      minimumVersion: '2.58.0',
+      minimumVersion: '2.85.0',
       sourceUrl: 'https://github.com/supabase/supabase-js',
     },
   ],

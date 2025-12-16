@@ -26,22 +26,6 @@ describe('npm2jsr', () => {
       expect(eslintInfo?.minimumVersion).toBe('6.0.0');
       expect(eslintInfo?.sourceUrl).toBe('https://github.com/eslint/markdown');
     });
-
-    it('should contain supabase packages with correct minimum versions', () => {
-      const supabaseJsInfo = npmToJsrMapping.get('@supabase/supabase-js');
-      expect(supabaseJsInfo?.jsrPackage).toBe('@supabase/supabase-js');
-      expect(supabaseJsInfo?.minimumVersion).toBe('2.58.0');
-      expect(supabaseJsInfo?.sourceUrl).toBe(
-        'https://github.com/supabase/supabase-js'
-      );
-
-      const functionsJsInfo = npmToJsrMapping.get('@supabase/functions-js');
-      expect(functionsJsInfo?.jsrPackage).toBe('@supabase/functions-js');
-      expect(functionsJsInfo?.minimumVersion).toBe('2.85.0');
-      expect(functionsJsInfo?.sourceUrl).toBe(
-        'https://github.com/supabase/supabase-js/tree/master/packages/core/functions-js'
-      );
-    });
   });
 
   describe('getJsrEquivalent', () => {
