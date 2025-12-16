@@ -1,6 +1,6 @@
 ![npm1jsr](./assets/npm2jsr.svg)
 
-# @prefer-jsr/npm2jsr
+# @prefer-jsr/npm2jsr &middot; [![JSR](https://jsr.io/badges/@prefer-jsr/npm2jsr)](https://jsr.io/@prefer-jsr/npm2jsr)
 
 A utility package that provides mapping between NPM packages and their JSR equivalents.
 
