@@ -48,6 +48,6 @@
     "access": "public"
   },
   "nx": {
-    "name": "syncJsrJson"
+    "name": "sync-jsr-json"
   }
 }
