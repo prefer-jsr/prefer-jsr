@@ -1,0 +1,53 @@
+{
+  "name": "@prefer-jsr/sync-jsr-json",
+  "version": "0.1.0",
+  "description": "Sync jsr.json versions with package.json versions",
+  "keywords": [
+    "jsr",
+    "npm",
+    "sync",
+    "version",
+    "prefer-jsr"
+  ],
+  "homepage": "https://github.com/prefer-jsr/prefer-jsr#readme",
+  "bugs": {
+    "url": "https://github.com/prefer-jsr/prefer-jsr/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/prefer-jsr/prefer-jsr.git",
+    "directory": "packages/syncJsrJson"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "prefer-jsr",
+    "url": "https://github.com/prefer-jsr"
+  },
+  "sideEffects": false,
+  "type": "module",
+  "exports": {
+    ".": {
+      "@prefer-jsr/source": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "!**/*.tsbuildinfo"
+  ],
+  "engines": {
+    "node": ">=20.9.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "nx": {
+    "name": "syncJsrJson"
+  }
+}

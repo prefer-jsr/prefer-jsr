@@ -9,7 +9,12 @@ export default defineConfig([
   ...nx.configs['flat/typescript'],
   ...nx.configs['flat/javascript'],
   globalIgnores(
-    ['**/dist', '**/vite.config.*.timestamp*', '**/vitest.config.*.timestamp*'],
+    [
+      '**/dist',
+      '**/vite.config.*.timestamp*',
+      '**/vitest.config.*.timestamp*',
+      '**/__fixtures__/**',
+    ],
     'Global Ignores'
   ),
   {

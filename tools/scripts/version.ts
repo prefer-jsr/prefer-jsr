@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 
 import { execSync } from 'node:child_process';
-import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { join } from 'node:path';
 import { releaseChangelog, releaseVersion } from 'nx/release/index.js';
+
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import { syncJsrJson } from '../../packages/syncJsrJson/src/index.js';
 
 /**
  * Type guard for exec sync errors with status code
@@ -54,7 +55,7 @@ function isExecError(
 
   // Step 2: Sync jsr.json versions with package.json
   console.log('\n2️⃣  Syncing JSR versions...');
-  syncJsrVersions(options.dryRun);
+  await syncJsrJson({ dryRun: options.dryRun });
 
   // Step 3: Amend the release commit to include jsr.json changes (if not dry run)
   if (!options.dryRun) {
@@ -93,88 +94,3 @@ function isExecError(
 
   process.exit(0);
 })();
-
-/**
- * Sync jsr.json versions to match package.json versions
- */
-function syncJsrVersions(dryRun: boolean): void {
-  const packagesDir = join(process.cwd(), 'packages');
-  const packages = readdirSync(packagesDir, { withFileTypes: true })
-    .filter((dirent) => dirent.isDirectory())
-    .map((dirent) => dirent.name);
-
-  let syncedCount = 0;
-
-  for (const pkg of packages) {
-    const packageJsonPath = join(packagesDir, pkg, 'package.json');
-    const jsrJsonPath = join(packagesDir, pkg, 'jsr.json');
-
-    try {
-      const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf8'));
-      const jsrJson = JSON.parse(readFileSync(jsrJsonPath, 'utf8'));
-      let updated = false;
-
-      // Sync main version
-      if (packageJson.version !== jsrJson.version) {
-        console.log(
-          `   📝 Updating ${pkg}/jsr.json: ${jsrJson.version} → ${packageJson.version}`
-        );
-        jsrJson.version = packageJson.version;
-        updated = true;
-      }
-
-      // Sync sub-dependency versions in imports
-      if (jsrJson.imports && typeof jsrJson.imports === 'object') {
-        for (const [dep, jsrImport] of Object.entries(jsrJson.imports)) {
-          // Only handle jsr: imports
-          const match = /^jsr:@prefer-jsr\/(\w+)@\^?[\d\.]+/.exec(jsrImport);
-          if (match) {
-            const depName = match[1];
-            // Find the actual package.json for the dependency
-            const depPkgPath = join(packagesDir, depName, 'package.json');
-            try {
-              const depPkgJson = JSON.parse(readFileSync(depPkgPath, 'utf8'));
-              const currentVersion = depPkgJson.version;
-              const newImport = `jsr:@prefer-jsr/${depName}@^${currentVersion}`;
-              if (jsrJson.imports[dep] !== newImport) {
-                console.log(
-                  `   📝 Updating ${pkg}/jsr.json imports[${dep}]: ${jsrJson.imports[dep]} → ${newImport}`
-                );
-                jsrJson.imports[dep] = newImport;
-                updated = true;
-              }
-            } catch (depErr) {
-              // Ignore if dep package.json doesn't exist
-            }
-          }
-        }
-      }
-
-      if (updated) {
-        if (!dryRun) {
-          writeFileSync(
-            jsrJsonPath,
-            JSON.stringify(jsrJson, null, 2) + '\n',
-            'utf8'
-          );
-        }
-        syncedCount++;
-      }
-    } catch (error: unknown) {
-      // Skip if files don't exist
-      if (isExecError(error) && error.code !== 'ENOENT') {
-        console.warn(`   ⚠️  Warning: Could not sync ${pkg}:`, error);
-      }
-    }
-  }
-
-  if (syncedCount === 0) {
-    console.log('   ✓ JSR versions already in sync');
-  } else {
-    console.log(
-      `   ✓ Synced ${syncedCount} JSR ${
-        syncedCount === 1 ? 'version' : 'versions'
-      }`
-    );
-  }
-}

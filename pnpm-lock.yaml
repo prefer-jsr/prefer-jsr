@@ -108,6 +108,8 @@ importers:
 
   packages/npm2jsr: {}
 
+  packages/syncJsrJson: {}
+
 packages:
 
   '@altano/repository-tools@2.0.1':

@@ -1,0 +1,7 @@
+{
+  "name": "@test/single-pkg",
+  "version": "1.0.0",
+  "imports": {
+    "@eslint/json": "jsr:@eslint/json@^0.4.0"
+  }
+}

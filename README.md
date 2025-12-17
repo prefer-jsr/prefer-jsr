@@ -4,7 +4,7 @@ A collection of tools to help JavaScript/TypeScript projects prefer [JSR](https:
 
 ## Packages
 
-This monorepo contains two packages:
+This monorepo contains three packages:
 
 ### [@prefer-jsr/eslint-plugin-prefer-jsr](./packages/eslint-plugin) &middot; [![JSR](https://jsr.io/badges/@prefer-jsr/eslint-plugin-prefer-jsr)](https://jsr.io/@prefer-jsr/eslint-plugin-prefer-jsr)
 
@@ -56,6 +56,33 @@ npx jsr add @prefer-jsr/npm2jsr
 
 ```sh
 npm install @prefer-jsr/npm2jsr
+```
+
+</details>
+
+### [@prefer-jsr/sync-jsr-json](./packages/syncJsrJson)
+
+Utility to synchronize version numbers between `package.json` and `jsr.json` files.
+
+**Installation:**
+
+```sh
+pnpm i jsr:@prefer-jsr/sync-jsr-json
+```
+
+```sh
+yarn add jsr:@prefer-jsr/sync-jsr-json
+```
+
+```sh
+npx jsr add @prefer-jsr/sync-jsr-json
+```
+
+<details>
+<summary>NPM registry (If you really need it for some reason)</summary>
+
+```sh
+npm install @prefer-jsr/sync-jsr-json
 ```
 
 </details>
