@@ -1,6 +1,11 @@
 {
   "extends": "./tsconfig.base.json",
   "compileOnSave": false,
+  "compilerOptions": {
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
+    "rewriteRelativeImportExtensions": false
+  },
   "files": ["knip.ts", "tools/scripts/version.ts", "eslint.config.mjs"],
   "references": [
     {
