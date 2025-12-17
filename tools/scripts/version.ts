@@ -4,7 +4,7 @@ import { execSync } from 'node:child_process';
 import { releaseChangelog, releaseVersion } from 'nx/release/index.js';
 
 // eslint-disable-next-line @nx/enforce-module-boundaries
-import { syncJsrJson } from '../../packages/syncJsrJson/src/index.js';
+import { syncJsrJson } from '../../packages/syncJsrJson/src/index.ts';
 
 /**
  * Type guard for exec sync errors with status code
