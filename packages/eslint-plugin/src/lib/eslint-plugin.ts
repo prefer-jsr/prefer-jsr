@@ -4,12 +4,23 @@ import { recommendedConfig } from './configs/recommended.js';
 import { preferJsrRule } from './rules/prefer-jsr.js';
 
 /**
- * ESLint plugin that suggests using JSR packages over npm when available.
+ * An ESLint plugin that suggests using JSR packages over NPM when available.
  *
- * This plugin provides the `prefer-jsr` rule that checks your dependencies
- * and suggests JSR alternatives when they exist.
+ * This plugin works with `package.json` files and supports both the new `@eslint/json`
+ * parser and the legacy `jsonc-eslint-parser`.
  *
- * @example
+ * **Features:**
+ * - 🔍 **Detection** - Identifies NPM dependencies that have JSR equivalents
+ * - 🔧 **Auto-fix** - Automatically replaces NPM imports with JSR versions
+ * - 📦 **Package.json support** - Works with all dependency types (`dependencies`, `devDependencies`, `peerDependencies`, `optionalDependencies`)
+ *
+ * **Rules:**
+ * - `prefer-jsr` - Warns when a dependency has a JSR equivalent available
+ *
+ * **Configs:**
+ * - `recommended` - Applies to `package.json` files with `error` severity
+ *
+ * @example Recommended Config
  * ```js
  * // eslint.config.js
  * import { defineConfig } from 'eslint/config';
@@ -18,15 +29,45 @@ import { preferJsrRule } from './rules/prefer-jsr.js';
  *
  * export default defineConfig([
  *   {
- *     files: ['package.json'],
- *     language: 'json/json',
  *     plugins: {
  *       preferJsr,
  *       json,
  *     },
  *     extends: ['prefer-jsr/recommended'],
- *   }
+ *   },
  * ]);
+ * ```
+ *
+ * @example Flat Config (ESLint 9+) with @eslint/json
+ * ```js
+ * // eslint.config.js
+ * import preferJsr from '@prefer-jsr/eslint-plugin-prefer-jsr';
+ * import json from '@eslint/json';
+ *
+ * export default [
+ *   {
+ *     files: ['package.json'],
+ *     language: 'json/json',
+ *     plugins: {
+ *       '@prefer-jsr': preferJsr,
+ *       json,
+ *     },
+ *     rules: {
+ *       '@prefer-jsr/prefer-jsr': 'error',
+ *     },
+ *   },
+ * ];
+ * ```
+ *
+ * @example Ignoring specific packages
+ * ```js
+ * {
+ *   rules: {
+ *     '@prefer-jsr/prefer-jsr': ['error', {
+ *       ignore: ['legacy-package', 'special-case']
+ *     }],
+ *   },
+ * }
  * ```
  */
 const plugin: ESLint.Plugin = {
