@@ -1,4 +1,4 @@
-name: Publish to JSR
+name: Publish
 
 on:
   release:
@@ -6,7 +6,7 @@ on:
 
 permissions:
   contents: read
-  id-token: write # for JSR provenance
+  id-token: write # for both npm and JSR provenance
 
 jobs:
   publish:
@@ -23,8 +23,12 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: 'pnpm'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Use npm for OIDC
+        run: npm install -g npm@11.5.2
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -42,12 +46,17 @@ jobs:
 
       - name: Dry run npm publish
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_CONFIG_PROVENANCE: true
-        run: |
-          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
-          chmod 600 ~/.npmrc
-          pnpm exec nx release publish --projects=${{ steps.project.outputs.name }} --dry-run
+        run: pnpm exec nx release publish --projects=${{ steps.project.outputs.name }} --dry-run
+
+      - name: Dry run JSR publish
+        run: npx jsr publish --dry-run
+        working-directory: ./packages/${{ steps.project.outputs.name }}
+
+      - name: Publish to npm
+        env:
+          NPM_CONFIG_PROVENANCE: true
+        run: pnpm exec nx release publish --projects=${{ steps.project.outputs.name }}
 
       - name: Publish to JSR
         run: npx jsr publish
