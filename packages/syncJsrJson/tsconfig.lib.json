@@ -8,6 +8,7 @@
     "emitDeclarationOnly": false,
     "forceConsistentCasingInFileNames": true,
     "importHelpers": false,
+    "rewriteRelativeImportExtensions": true,
     "types": ["node"]
   },
   "include": ["src/**/*.ts"],
