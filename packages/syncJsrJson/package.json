@@ -1,6 +1,6 @@
 {
   "name": "@prefer-jsr/sync-jsr-json",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Sync jsr.json versions with package.json versions",
   "keywords": [
     "jsr",
