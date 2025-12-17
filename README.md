@@ -1,4 +1,4 @@
-# Prefer JSR
+# Prefer JSR &middot; [![JSR Scope](https://jsr.io/badges/@prefer-jsr)](https://jsr.io/@prefer-jsr)
 
 A collection of tools to help JavaScript/TypeScript projects prefer [JSR](https://jsr.io/) packages over npm when available.
 
@@ -6,7 +6,7 @@ A collection of tools to help JavaScript/TypeScript projects prefer [JSR](https:
 
 This monorepo contains three packages:
 
-### [@prefer-jsr/eslint-plugin-prefer-jsr](./packages/eslint-plugin)
+### [@prefer-jsr/eslint-plugin-prefer-jsr](./packages/eslint-plugin) &middot; [![JSR](https://jsr.io/badges/@prefer-jsr/eslint-plugin-prefer-jsr)](https://jsr.io/@prefer-jsr/eslint-plugin-prefer-jsr)
 
 ESLint plugin that suggests using JSR packages over npm when JSR alternatives are available.
 
@@ -33,7 +33,7 @@ npm install --save-dev @prefer-jsr/eslint-plugin-prefer-jsr
 
 </details>
 
-### [@prefer-jsr/npm2jsr](./packages/npm2jsr)
+### [@prefer-jsr/npm2jsr](./packages/npm2jsr) &middot; [![JSR](https://jsr.io/badges/@prefer-jsr/npm2jsr)](https://jsr.io/@prefer-jsr/npm2jsr)
 
 Mapping library that provides data about npm packages and their JSR equivalents.
 
@@ -171,13 +171,7 @@ GitHub Actions workflows automatically run on every push:
 
 ## Contributing
 
-Contributions are welcome! Please ensure:
-
-1. All tests pass: `pnpm exec nx run-many -t test`
-2. Code is properly formatted: `pnpm exec nx format:write`
-3. No lint errors: `pnpm exec nx run-many -t lint`
-4. No type errors: `pnpm exec nx run-many -t typecheck`
-5. Use conventional commits for your commit messages
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines.
 
 ## Acknowledgements
 

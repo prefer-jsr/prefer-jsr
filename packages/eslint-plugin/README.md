@@ -1,4 +1,4 @@
-# @prefer-jsr/eslint-plugin-prefer-jsr
+# @prefer-jsr/eslint-plugin-prefer-jsr &middot; [![JSR](https://jsr.io/badges/@prefer-jsr/eslint-plugin-prefer-jsr)](https://jsr.io/@prefer-jsr/eslint-plugin-prefer-jsr)
 
 An ESLint plugin that suggests using JSR packages over NPM when available.
 

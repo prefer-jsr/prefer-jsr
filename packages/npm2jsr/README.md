@@ -1,6 +1,6 @@
 ![npm1jsr](./assets/npm2jsr.svg)
 
-# @prefer-jsr/npm2jsr
+# @prefer-jsr/npm2jsr &middot; [![JSR](https://jsr.io/badges/@prefer-jsr/npm2jsr)](https://jsr.io/@prefer-jsr/npm2jsr)
 
 A utility package that provides mapping between NPM packages and their JSR equivalents.
 
@@ -71,8 +71,8 @@ This package is part of the prefer-jsr monorepo. The mapping may be updated as n
 
 ## Building
 
-Run `nx build npm2jsr` to build the library.
+Run `pnpm nx build npm2jsr` to build the library.
 
 ## Running unit tests
 
-Run `nx test npm2jsr` to execute the unit tests via [Vitest](https://vitest.dev/).
+Run `pnpm nx test npm2jsr` to execute the unit tests via [Vitest](https://vitest.dev/).
