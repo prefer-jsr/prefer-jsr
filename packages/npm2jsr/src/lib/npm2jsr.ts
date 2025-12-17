@@ -270,6 +270,134 @@ export const npmToJsrMapping: Map<string, JsrPackageInfo> = new Map<
     },
   ],
   [
+    '@logtape/adaptor-pino',
+    {
+      jsrPackage: '@logtape/adaptor-pino',
+      minimumVersion: '0.1.0',
+      sourceUrl: 'https://github.com/dahlia/logtape',
+    },
+  ],
+  [
+    '@logtape/adaptor-winston',
+    {
+      jsrPackage: '@logtape/adaptor-winston',
+      minimumVersion: '0.1.0',
+      sourceUrl: 'https://github.com/dahlia/logtape',
+    },
+  ],
+  [
+    '@logtape/cloudwatch-logs',
+    {
+      jsrPackage: '@logtape/cloudwatch-logs',
+      minimumVersion: '0.1.0',
+      sourceUrl: 'https://github.com/dahlia/logtape',
+    },
+  ],
+  [
+    '@logtape/drizzle-orm',
+    {
+      jsrPackage: '@logtape/drizzle-orm',
+      minimumVersion: '0.1.0',
+      sourceUrl: 'https://github.com/dahlia/logtape',
+    },
+  ],
+  [
+    '@logtape/express',
+    {
+      jsrPackage: '@logtape/express',
+      minimumVersion: '0.1.0',
+      sourceUrl: 'https://github.com/dahlia/logtape',
+    },
+  ],
+  [
+    '@logtape/fastify',
+    {
+      jsrPackage: '@logtape/fastify',
+      minimumVersion: '0.1.0',
+      sourceUrl: 'https://github.com/dahlia/logtape',
+    },
+  ],
+  [
+    '@logtape/file',
+    {
+      jsrPackage: '@logtape/file',
+      minimumVersion: '0.1.0',
+      sourceUrl: 'https://github.com/dahlia/logtape',
+    },
+  ],
+  [
+    '@logtape/hono',
+    {
+      jsrPackage: '@logtape/hono',
+      minimumVersion: '0.1.0',
+      sourceUrl: 'https://github.com/dahlia/logtape',
+    },
+  ],
+  [
+    '@logtape/koa',
+    {
+      jsrPackage: '@logtape/koa',
+      minimumVersion: '0.1.0',
+      sourceUrl: 'https://github.com/dahlia/logtape',
+    },
+  ],
+  [
+    '@logtape/logtape',
+    {
+      jsrPackage: '@logtape/logtape',
+      minimumVersion: '0.1.0',
+      sourceUrl: 'https://github.com/dahlia/logtape',
+    },
+  ],
+  [
+    '@logtape/otel',
+    {
+      jsrPackage: '@logtape/otel',
+      minimumVersion: '0.1.0',
+      sourceUrl: 'https://github.com/dahlia/logtape',
+    },
+  ],
+  [
+    '@logtape/pretty',
+    {
+      jsrPackage: '@logtape/pretty',
+      minimumVersion: '0.1.0',
+      sourceUrl: 'https://github.com/dahlia/logtape',
+    },
+  ],
+  [
+    '@logtape/redaction',
+    {
+      jsrPackage: '@logtape/redaction',
+      minimumVersion: '0.1.0',
+      sourceUrl: 'https://github.com/dahlia/logtape',
+    },
+  ],
+  [
+    '@logtape/sentry',
+    {
+      jsrPackage: '@logtape/sentry',
+      minimumVersion: '0.1.0',
+      sourceUrl: 'https://github.com/dahlia/logtape',
+    },
+  ],
+  [
+    '@logtape/syslog',
+    {
+      jsrPackage: '@logtape/syslog',
+      minimumVersion: '0.1.0',
+      sourceUrl: 'https://github.com/dahlia/logtape',
+    },
+  ],
+  [
+    '@logtape/windows-eventlog',
+    {
+      jsrPackage: '@logtape/windows-eventlog',
+      minimumVersion: '0.1.0',
+      sourceUrl: 'https://github.com/dahlia/logtape',
+    },
+  ],
+  [
     '@openai/openai',
     {
       jsrPackage: '@openai/openai',
