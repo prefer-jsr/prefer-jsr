@@ -273,7 +273,7 @@ export const npmToJsrMapping: Map<string, JsrPackageInfo> = new Map<
     '@logtape/adaptor-pino',
     {
       jsrPackage: '@logtape/adaptor-pino',
-      minimumVersion: '0.1.0',
+      minimumVersion: '1.0.0',
       sourceUrl: 'https://github.com/dahlia/logtape',
     },
   ],
@@ -281,7 +281,7 @@ export const npmToJsrMapping: Map<string, JsrPackageInfo> = new Map<
     '@logtape/adaptor-winston',
     {
       jsrPackage: '@logtape/adaptor-winston',
-      minimumVersion: '0.1.0',
+      minimumVersion: '1.0.0',
       sourceUrl: 'https://github.com/dahlia/logtape',
     },
   ],
@@ -289,7 +289,7 @@ export const npmToJsrMapping: Map<string, JsrPackageInfo> = new Map<
     '@logtape/cloudwatch-logs',
     {
       jsrPackage: '@logtape/cloudwatch-logs',
-      minimumVersion: '0.1.0',
+      minimumVersion: '1.0.0',
       sourceUrl: 'https://github.com/dahlia/logtape',
     },
   ],
@@ -297,7 +297,7 @@ export const npmToJsrMapping: Map<string, JsrPackageInfo> = new Map<
     '@logtape/drizzle-orm',
     {
       jsrPackage: '@logtape/drizzle-orm',
-      minimumVersion: '0.1.0',
+      minimumVersion: '1.3.0',
       sourceUrl: 'https://github.com/dahlia/logtape',
     },
   ],
@@ -305,7 +305,7 @@ export const npmToJsrMapping: Map<string, JsrPackageInfo> = new Map<
     '@logtape/express',
     {
       jsrPackage: '@logtape/express',
-      minimumVersion: '0.1.0',
+      minimumVersion: '1.3.0',
       sourceUrl: 'https://github.com/dahlia/logtape',
     },
   ],
@@ -313,7 +313,7 @@ export const npmToJsrMapping: Map<string, JsrPackageInfo> = new Map<
     '@logtape/fastify',
     {
       jsrPackage: '@logtape/fastify',
-      minimumVersion: '0.1.0',
+      minimumVersion: '1.3.0',
       sourceUrl: 'https://github.com/dahlia/logtape',
     },
   ],
@@ -321,7 +321,7 @@ export const npmToJsrMapping: Map<string, JsrPackageInfo> = new Map<
     '@logtape/file',
     {
       jsrPackage: '@logtape/file',
-      minimumVersion: '0.1.0',
+      minimumVersion: '0.9.0',
       sourceUrl: 'https://github.com/dahlia/logtape',
     },
   ],
@@ -329,7 +329,7 @@ export const npmToJsrMapping: Map<string, JsrPackageInfo> = new Map<
     '@logtape/hono',
     {
       jsrPackage: '@logtape/hono',
-      minimumVersion: '0.1.0',
+      minimumVersion: '1.3.0',
       sourceUrl: 'https://github.com/dahlia/logtape',
     },
   ],
@@ -337,7 +337,7 @@ export const npmToJsrMapping: Map<string, JsrPackageInfo> = new Map<
     '@logtape/koa',
     {
       jsrPackage: '@logtape/koa',
-      minimumVersion: '0.1.0',
+      minimumVersion: '1.3.0',
       sourceUrl: 'https://github.com/dahlia/logtape',
     },
   ],
@@ -361,7 +361,7 @@ export const npmToJsrMapping: Map<string, JsrPackageInfo> = new Map<
     '@logtape/pretty',
     {
       jsrPackage: '@logtape/pretty',
-      minimumVersion: '0.1.0',
+      minimumVersion: '1.0.0',
       sourceUrl: 'https://github.com/dahlia/logtape',
     },
   ],
@@ -369,7 +369,7 @@ export const npmToJsrMapping: Map<string, JsrPackageInfo> = new Map<
     '@logtape/redaction',
     {
       jsrPackage: '@logtape/redaction',
-      minimumVersion: '0.1.0',
+      minimumVersion: '0.10.0',
       sourceUrl: 'https://github.com/dahlia/logtape',
     },
   ],
@@ -385,7 +385,7 @@ export const npmToJsrMapping: Map<string, JsrPackageInfo> = new Map<
     '@logtape/syslog',
     {
       jsrPackage: '@logtape/syslog',
-      minimumVersion: '0.1.0',
+      minimumVersion: '0.12.0',
       sourceUrl: 'https://github.com/dahlia/logtape',
     },
   ],
@@ -393,7 +393,7 @@ export const npmToJsrMapping: Map<string, JsrPackageInfo> = new Map<
     '@logtape/windows-eventlog',
     {
       jsrPackage: '@logtape/windows-eventlog',
-      minimumVersion: '0.1.0',
+      minimumVersion: '1.0.0',
       sourceUrl: 'https://github.com/dahlia/logtape',
     },
   ],
