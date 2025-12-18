@@ -108,7 +108,7 @@ importers:
 
   packages/npm2jsr: {}
 
-  packages/syncJsrJson: {}
+  packages/sync-jsr-json: {}
 
 packages:
 

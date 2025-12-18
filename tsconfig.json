@@ -15,7 +15,7 @@
       "path": "./packages/npm2jsr"
     },
     {
-      "path": "./packages/syncJsrJson"
+      "path": "./packages/sync-jsr-json"
     }
   ]
 }

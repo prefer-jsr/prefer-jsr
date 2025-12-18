@@ -189,8 +189,8 @@ MIT
 
 ## Building
 
-Run `nx build syncJsrJson` to build the library.
+Run `nx build sync-jsr-json` to build the library.
 
 ## Running unit tests
 
-Run `nx test syncJsrJson` to execute the unit tests via [Vitest](https://vitest.dev/).
+Run `nx test sync-jsr-json` to execute the unit tests via [Vitest](https://vitest.dev/).

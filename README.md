@@ -60,7 +60,7 @@ npm install @prefer-jsr/npm2jsr
 
 </details>
 
-### [@prefer-jsr/sync-jsr-json](./packages/syncJsrJson)
+### [@prefer-jsr/sync-jsr-json](./packages/sync-jsr-json)
 
 Utility to synchronize version numbers between `package.json` and `jsr.json` files.
 
