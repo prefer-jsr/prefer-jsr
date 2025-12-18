@@ -1,6 +1,7 @@
 {
   "name": "@prefer-jsr/sync-jsr-json",
   "version": "0.1.2",
+  "description": "Sync jsr.json versions with package.json versions in packages publishing to both JSR and NPM.",
   "exports": "./src/index.ts",
   "publish": {
     "exclude": [
