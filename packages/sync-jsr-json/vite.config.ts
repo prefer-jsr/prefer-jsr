@@ -3,7 +3,7 @@ import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
 import { defineConfig } from 'vite';
 
 export default defineConfig(() => ({
-  cacheDir: '../../node_modules/.vite/packages/syncJsrJson',
+  cacheDir: '../../node_modules/.vite/packages/sync-jsr-json',
   plugins: [nxViteTsPaths(), nxCopyAssetsPlugin(['*.md'])],
   root: __dirname,
   // Uncomment this if you are using workers.
@@ -13,12 +13,12 @@ export default defineConfig(() => ({
   test: {
     coverage: {
       provider: 'v8' as const,
-      reportsDirectory: '../../coverage/packages/syncJsrJson',
+      reportsDirectory: '../../coverage/packages/sync-jsr-json',
     },
     environment: 'node',
     globals: true,
     include: ['src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
-    name: 'syncJsrJson',
+    name: 'sync-jsr-json',
     reporters: ['default'],
     watch: false,
   },
