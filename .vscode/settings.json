@@ -3,7 +3,5 @@
   "markdownlint.config": {
     "default": false
   },
-  "git.branchProtection": [
-    "main"
-  ]
+  "git.branchProtection": ["main"]
 }
