@@ -19,7 +19,7 @@ export default [
         {
           checkMissingDependencies: true,
           ignoredDependencies: [
-            'tslib',
+            '@prefer-jsr/npm2jsr',
             '@eslint/json',
             '@humanwhocodes/momoa',
             'jsonc-eslint-parser',

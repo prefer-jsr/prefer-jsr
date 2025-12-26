@@ -4,7 +4,6 @@
     "outDir": "./out-tsc/vitest",
     "allowJs": true,
     "checkJs": true,
-    "importHelpers": false,
     "types": [
       "vitest/globals",
       "vitest/importMeta",
