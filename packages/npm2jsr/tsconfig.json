@@ -1,8 +1,5 @@
 {
   "extends": "../../tsconfig.base.json",
-  "compilerOptions": {
-    "importHelpers": false
-  },
   "files": ["eslint.config.mjs"],
   "include": [],
   "references": [

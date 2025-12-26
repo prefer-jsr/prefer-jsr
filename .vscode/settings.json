@@ -2,5 +2,6 @@
   // Disable markdown linting in this workspace
   "markdownlint.config": {
     "default": false
-  }
+  },
+  "git.branchProtection": ["main"]
 }

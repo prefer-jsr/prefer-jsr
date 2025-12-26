@@ -3,7 +3,6 @@ import packageJson from 'eslint-plugin-package-json';
 import perfectionist from 'eslint-plugin-perfectionist';
 import { defineConfig, globalIgnores } from 'eslint/config';
 
-// @ts-expect-error - TS2742: Known issue with defineConfig and pnpm, tracked at https://github.com/eslint/rewrite/issues/283
 export default defineConfig([
   ...nx.configs['flat/base'],
   ...nx.configs['flat/typescript'],
