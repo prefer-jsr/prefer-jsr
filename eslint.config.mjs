@@ -1,6 +1,8 @@
 import nx from '@nx/eslint-plugin';
+import dependabot from 'eslint-plugin-dependabot';
 import packageJson from 'eslint-plugin-package-json';
 import perfectionist from 'eslint-plugin-perfectionist';
+import { yaml } from 'eslint-yaml';
 import { defineConfig, globalIgnores } from 'eslint/config';
 
 export default defineConfig([
@@ -119,6 +121,16 @@ export default defineConfig([
       ...packageJson.configs.recommended.rules,
       'package-json/require-author': 'error',
       'package-json/require-engines': 'error',
+    },
+  },
+  {
+    name: 'dependabot config',
+    extends: [dependabot.configs.recommended],
+    files: ['**/.github/dependabot.{yml,yaml}'],
+    language: 'yaml/yaml',
+    plugins: {
+      dependabot,
+      yaml,
     },
   },
 ]);
