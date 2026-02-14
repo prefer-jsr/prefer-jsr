@@ -2,3 +2,5 @@ packages:
   - 'packages/*'
 
 strictPeerDependencies: true
+
+minimumReleaseAge: 10080
