@@ -8,8 +8,7 @@ on:
 
 permissions:
   actions: read
-  contents: write # for creating releases and pushing tags (main branch only)
-  pull-requests: write # for commenting on PRs
+  contents: read
 
 jobs:
   main:
@@ -20,7 +19,6 @@ jobs:
         with:
           filter: tree:0
           fetch-depth: 0
-          token: ${{ secrets.RELEASE_PAT_TOKEN }}
 
       - uses: pnpm/action-setup@41ff72655975bd51cab0327fa583b6e92b6d3061 # v4.2.0
         name: Install pnpm
@@ -55,18 +53,3 @@ jobs:
       # Nx Cloud recommends fixes for failures to help you get CI green faster. Learn more: https://nx.dev/ci/features/self-healing-ci
       # - run: pnpm exec nx fix-ci
       # if: always()
-
-      - name: Configure Git for Release
-        # Only release on pushes to main
-        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-        run: |
-          git config user.name "${GITHUB_ACTOR}"
-          git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
-          git remote set-url origin https://x-access-token:${{ secrets.RELEASE_PAT_TOKEN }}@github.com/${{ github.repository }}.git
-
-      - name: Version packages and create releases
-        # Only release on pushes to main
-        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-        env:
-          GH_TOKEN: ${{ secrets.RELEASE_PAT_TOKEN }}
-        run: node --experimental-strip-types tools/scripts/version.ts
