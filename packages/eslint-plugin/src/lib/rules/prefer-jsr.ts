@@ -14,7 +14,7 @@ interface PreferJsrOptions {
 }
 
 export const preferJsrRule: Rule.RuleModule = {
-  create(context) {
+  create(context): Rule.RuleListener {
     // Only run on package.json files
     const filename = context.filename;
     if (!filename.endsWith('package.json')) {
