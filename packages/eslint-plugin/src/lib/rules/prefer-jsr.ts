@@ -14,7 +14,7 @@ interface PreferJsrOptions {
 }
 
 export const preferJsrRule: Rule.RuleModule = {
-  create(context) {
+  create(context: Rule.RuleContext): Rule.RuleListener {
     // Only run on package.json files
     const filename = context.filename;
     if (!filename.endsWith('package.json')) {
@@ -83,17 +83,17 @@ export const preferJsrRule: Rule.RuleModule = {
       'Document > Object > Member': (node: MemberNode) => {
         // Check if we're in a dependencies object
         if (
-          node.name?.type === 'String' &&
+          node.name.type === 'String' &&
           [
             'dependencies',
             'devDependencies',
             'optionalDependencies',
             'peerDependencies',
           ].includes(node.name.value) &&
-          node.value?.type === 'Object'
+          node.value.type === 'Object'
         ) {
           // Iterate through dependency members
-          for (const member of node.value.members || []) {
+          for (const member of node.value.members) {
             if (
               member.name?.type === 'String' &&
               member.value?.type === 'String'
@@ -113,7 +113,8 @@ export const preferJsrRule: Rule.RuleModule = {
       },
 
       // Handle JSONProperty pattern (for legacy jsonc-eslint-parser)
-      JSONProperty(node: AST.JSONProperty) {
+      JSONProperty(astNode: Rule.Node) {
+        const node = astNode as unknown as AST.JSONProperty;
         // Check if this is a property in a dependencies object
         const parent = node.parent as AST.JSONObjectExpression | undefined;
         const grandparent = parent?.parent as AST.JSONProperty | undefined;
@@ -144,7 +145,7 @@ export const preferJsrRule: Rule.RuleModule = {
           );
         }
       },
-    };
+    } as unknown as Rule.RuleListener;
   },
   meta: {
     defaultOptions: [{}],
