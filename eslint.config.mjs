@@ -45,9 +45,12 @@ export default defineConfig([
       'perfectionist/sort-objects': [
         'error',
         {
-          customGroups: {
-            name: 'name',
-          },
+          customGroups: [
+            {
+              elementNamePattern: '^name$',
+              groupName: 'name',
+            },
+          ],
           groups: ['name', 'unknown'],
           type: 'natural',
         },
