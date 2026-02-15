@@ -11,7 +11,7 @@ export default {
         'prettier',
 
         // Required at runtime by @nx/eslint-plugin's flat config presets
-        // (not just for types - the package imports it directly)
+        '@eslint/js',
         'typescript-eslint',
       ],
     },
