@@ -66,8 +66,8 @@ importers:
         specifier: ^2.4.2
         version: 2.4.2
       jsr:
-        specifier: ^0.13.5
-        version: 0.13.5
+        specifier: ^0.14.3
+        version: 0.14.3
       knip:
         specifier: ^5.83.1
         version: 5.83.1(@types/node@20.19.9)(typescript@5.9.3)
@@ -2806,8 +2806,8 @@ packages:
     resolution: {integrity: sha512-gqXddjPqQ6G40VdnI6T6yObEC+pDNvyP95wdQhkWkg7crHH3km5qP1FsOXEkzEQwnz6gz5qGTn1c2Y52wP3OyQ==}
     engines: {'0': node >=0.6.0}
 
-  jsr@0.13.5:
-    resolution: {integrity: sha512-qQP20ZcG28pYes7bCq3uuvixl1TL1EpJzwLPfoQadSyWk9j2AID66qhW8+aXpRDRFDvDkXFnONsSRhpnnQAupg==}
+  jsr@0.14.3:
+    resolution: {integrity: sha512-PGxnDepx7vwJoZQe2SHbyBiFfpGwsOKmX4kn/wZZqfMafV7fjXqTxSaX6lp9QHYkSTLKkER+P/wmrZY3gVJNzg==}
     hasBin: true
 
   jwa@1.4.2:
@@ -6981,7 +6981,7 @@ snapshots:
       json-schema: 0.4.0
       verror: 1.10.0
 
-  jsr@0.13.5:
+  jsr@0.14.3:
     dependencies:
       node-stream-zip: 1.15.0
       semiver: 1.1.0
