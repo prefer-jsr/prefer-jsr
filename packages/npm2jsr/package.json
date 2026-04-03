@@ -21,6 +21,7 @@
     "name": "prefer-jsr",
     "url": "https://github.com/prefer-jsr"
   },
+  "sideEffects": false,
   "type": "module",
   "exports": {
     ".": {
