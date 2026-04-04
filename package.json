@@ -13,7 +13,7 @@
     "@nx/vite": "21.6.4",
     "@swc-node/register": "~1.11.1",
     "@swc/core": "~1.15.11",
-    "@swc/helpers": "~0.5.17",
+    "@swc/helpers": "~0.5.20",
     "@types/node": "20.19.9",
     "@vitest/coverage-v8": "^3.2.4",
     "@vitest/ui": "^3.2.4",
