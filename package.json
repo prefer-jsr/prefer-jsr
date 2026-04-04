@@ -19,7 +19,7 @@
     "@vitest/ui": "^3.2.4",
     "eslint": "catalog:eslint",
     "eslint-config-prettier": "^10.1.8",
-    "eslint-plugin-dependabot": "^0.6.0",
+    "eslint-plugin-dependabot": "^0.6.1",
     "eslint-plugin-package-json": "^0.91.0",
     "eslint-plugin-perfectionist": "catalog:eslint",
     "eslint-yaml": "^0.1.0",
