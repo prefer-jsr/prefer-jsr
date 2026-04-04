@@ -1,6 +1,13 @@
 packages:
   - 'packages/*'
 
+catalogs:
+  eslint:
+    '@eslint/json': ^1.2.0
+    eslint: ^9.39.2
+    eslint-plugin-eslint-plugin: ^7.0.0
+    eslint-plugin-perfectionist: '^5.7.0'
+
 strictPeerDependencies: true
 
 minimumReleaseAge: 10080

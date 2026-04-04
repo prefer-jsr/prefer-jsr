@@ -25,6 +25,7 @@
     "name": "prefer-jsr",
     "url": "https://github.com/prefer-jsr"
   },
+  "sideEffects": false,
   "type": "module",
   "exports": {
     ".": {
@@ -46,9 +47,10 @@
     "@prefer-jsr/npm2jsr": "workspace:*"
   },
   "devDependencies": {
-    "@eslint/json": "^1.1.0",
+    "@eslint/json": "catalog:eslint",
     "@humanwhocodes/momoa": "^3.3.9",
-    "eslint-plugin-eslint-plugin": "^7.0.0",
+    "eslint": "catalog:eslint",
+    "eslint-plugin-eslint-plugin": "catalog:eslint",
     "jsonc-eslint-parser": "^2.4.1"
   },
   "peerDependencies": {
