@@ -63,8 +63,8 @@ importers:
         specifier: ^10.1.8
         version: 10.1.8(eslint@9.39.2(jiti@2.4.2))
       eslint-plugin-dependabot:
-        specifier: ^0.6.0
-        version: 0.6.0(eslint-yaml@0.1.0)(eslint@9.39.2(jiti@2.4.2))
+        specifier: ^0.6.1
+        version: 0.6.1(eslint-yaml@0.1.0)(eslint@9.39.2(jiti@2.4.2))
       eslint-plugin-package-json:
         specifier: ^0.91.0
         version: 0.91.0(@types/estree@1.0.8)(eslint@9.39.2(jiti@2.4.2))(jsonc-eslint-parser@2.4.2)
@@ -2251,8 +2251,8 @@ packages:
       '@types/estree':
         optional: true
 
-  eslint-plugin-dependabot@0.6.0:
-    resolution: {integrity: sha512-MCDQHICVbEyhAuwYewx2vmwFUXXSBalsQk99VbMbcwq13O+8B8bzRt/cv9EllPhKV6uyiAwMclt4EtHw/XWe0Q==}
+  eslint-plugin-dependabot@0.6.1:
+    resolution: {integrity: sha512-lMS67FNilTTy3MLQyqLijBr7PJkc8+XiA8sz8P2zb5tqK4EZWQHZoQOAUfCZkYlXNUtqH1XAUit3GNL4l1SuyA==}
     engines: {node: '>=22.0.0'}
     peerDependencies:
       eslint: '>=9.0.0'
@@ -3919,8 +3919,8 @@ packages:
   yallist@3.1.1:
     resolution: {integrity: sha512-a4UGQaWPH59mOXUYnAG2ewncQS4i4F43Tv3JoAM+s2VDAmS9NsK8GpDMLrCHPksFT7h3K6TOoUNn2pb7RoXx4g==}
 
-  yaml@1.10.2:
-    resolution: {integrity: sha512-r3vXyErRCYJ7wg28yvBY5VSoAF8ZvlcW9/BwUzEtUsjvX/DKs24dIkuwjtuprwJJHsbyUbLApepYTR1BN4uHrg==}
+  yaml@1.10.3:
+    resolution: {integrity: sha512-vIYeF1u3CjlhAFekPPAk2h/Kv4T3mAkMox5OymRiJQB0spDP10LHvt+K7G9Ny6NuuMAb25/6n1qyUjAcGNf/AA==}
     engines: {node: '>= 6'}
 
   yaml@2.8.0:
@@ -6112,7 +6112,7 @@ snapshots:
       import-fresh: 3.3.1
       parse-json: 5.2.0
       path-type: 4.0.0
-      yaml: 1.10.2
+      yaml: 1.10.3
 
   cross-spawn@7.0.6:
     dependencies:
@@ -6295,7 +6295,7 @@ snapshots:
     optionalDependencies:
       '@types/estree': 1.0.8
 
-  eslint-plugin-dependabot@0.6.0(eslint-yaml@0.1.0)(eslint@9.39.2(jiti@2.4.2)):
+  eslint-plugin-dependabot@0.6.1(eslint-yaml@0.1.0)(eslint@9.39.2(jiti@2.4.2)):
     dependencies:
       eslint: 9.39.2(jiti@2.4.2)
       eslint-yaml: 0.1.0
@@ -8142,7 +8142,7 @@ snapshots:
 
   yallist@3.1.1: {}
 
-  yaml@1.10.2: {}
+  yaml@1.10.3: {}
 
   yaml@2.8.0: {}
 
