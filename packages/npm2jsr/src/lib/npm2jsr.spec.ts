@@ -25,6 +25,11 @@ describe('npm2jsr', () => {
       expect(eslintInfo?.jsrPackage).toBe('@eslint/markdown');
       expect(eslintInfo?.minimumVersion).toBe('6.0.0');
       expect(eslintInfo?.sourceUrl).toBe('https://github.com/eslint/markdown');
+
+      const gagenInfo = npmToJsrMapping.get('gagen');
+      expect(gagenInfo?.jsrPackage).toBe('@david/gagen');
+      expect(gagenInfo?.minimumVersion).toBe('0.0.1');
+      expect(gagenInfo?.sourceUrl).toBe('https://github.com/dsherret/gagen');
     });
   });
 

@@ -447,6 +447,14 @@ export const npmToJsrMapping: Map<string, JsrPackageInfo> = new Map<
     },
   ],
   [
+    'gagen',
+    {
+      jsrPackage: '@david/gagen',
+      minimumVersion: '0.0.1',
+      sourceUrl: 'https://github.com/dsherret/gagen',
+    },
+  ],
+  [
     'hono',
     {
       jsrPackage: '@hono/hono',
