@@ -6,7 +6,7 @@ catalogs:
     '@eslint/json': ^1.2.0
     eslint: ^9.39.4
     eslint-plugin-eslint-plugin: ^7.3.2
-    eslint-plugin-perfectionist: '^5.7.0'
+    eslint-plugin-perfectionist: '^5.8.0'
 
 strictPeerDependencies: true
 
