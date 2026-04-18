@@ -32,7 +32,6 @@
     "prettier": "^3.8.2",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.58.1",
-    "verdaccio": "^6.4.0",
     "vite": "^7.3.2",
     "vitest": "catalog:vitest"
   },
@@ -46,14 +45,6 @@
         "executor": "nx:run-commands",
         "options": {
           "command": "eslint package.json .github/"
-        }
-      },
-      "local-registry": {
-        "executor": "@nx/js:verdaccio",
-        "options": {
-          "port": 4873,
-          "config": ".verdaccio/config.yml",
-          "storage": "tmp/local-registry/storage"
         }
       }
     }

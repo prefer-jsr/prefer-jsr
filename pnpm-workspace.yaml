@@ -22,5 +22,6 @@ catalogs:
     vitest: '^4.1.4'
 
 strictPeerDependencies: true
+autoInstallPeers: false
 
 minimumReleaseAge: 10080
