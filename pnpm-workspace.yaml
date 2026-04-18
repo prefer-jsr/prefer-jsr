@@ -8,6 +8,19 @@ catalogs:
     eslint-plugin-eslint-plugin: ^7.3.2
     eslint-plugin-perfectionist: '^5.8.0'
 
+  nx:
+    '@nx/eslint': 22.6.5
+    '@nx/eslint-plugin': 22.6.5
+    '@nx/js': 22.6.5
+    '@nx/vite': 22.6.5
+    '@nx/vitest': 22.6.5
+    nx: 22.6.5
+
+  vitest:
+    '@vitest/coverage-v8': '^4.1.4'
+    '@vitest/ui': '^4.1.4'
+    vitest: '^4.1.4'
+
 strictPeerDependencies: true
 
 minimumReleaseAge: 10080
