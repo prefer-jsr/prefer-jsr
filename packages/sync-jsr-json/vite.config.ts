@@ -12,6 +12,7 @@ export default defineConfig(() => ({
   // },
   test: {
     coverage: {
+      include: ['src/**/*.ts'],
       provider: 'v8' as const,
       reportsDirectory: '../../coverage/packages/sync-jsr-json',
     },
