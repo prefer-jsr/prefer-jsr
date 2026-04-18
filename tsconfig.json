@@ -6,7 +6,7 @@
     "noEmit": true,
     "rewriteRelativeImportExtensions": false
   },
-  "files": ["knip.ts", "tools/scripts/version.ts", "eslint.config.mjs"],
+  "files": ["knip.ts", "tools/scripts/version.ts", "vitest.config.ts"],
   "references": [
     {
       "path": "./packages/eslint-plugin"
