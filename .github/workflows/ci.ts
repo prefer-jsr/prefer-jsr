@@ -20,7 +20,7 @@ const setupNode = step({
   uses: 'actions/setup-node@v6',
   with: {
     cache: 'pnpm',
-    'node-version': 20,
+    'node-version': 24,
   },
 });
 
@@ -53,7 +53,7 @@ const nxAffected = step({
 
 const lintWorkflows = step({
   name: 'Lint Workflow Generation',
-  run: 'pnpm exec jiti .github/workflows/ci.ts --lint && pnpm exec jiti .github/workflows/release.ts --lint && pnpm exec jiti .github/workflows/publish.ts --lint',
+  run: 'pnpm run workflows:lint',
 });
 
 workflow({

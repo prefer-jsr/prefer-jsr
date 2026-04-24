@@ -20,7 +20,7 @@ const setupNode = step({
   uses: 'actions/setup-node@v6',
   with: {
     cache: 'pnpm',
-    'node-version': 22,
+    'node-version': 24,
   },
 });
 
