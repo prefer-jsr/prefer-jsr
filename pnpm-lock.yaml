@@ -106,6 +106,9 @@ importers:
       eslint-yaml:
         specifier: ^0.1.0
         version: 0.1.0
+      gagen:
+        specifier: 0.4.0
+        version: 0.4.0
       jiti:
         specifier: 2.6.1
         version: 2.6.1
@@ -2255,6 +2258,10 @@ packages:
 
   function-bind@1.1.2:
     resolution: {integrity: sha512-7XHNxH7qX9xG5mIwxkhumTox/MIRNcOgDrxWsMt2pAr23WHp6MrRlN7FBSFpCpr+oVO0F744iUgR82nJMfG2SA==}
+
+  gagen@0.4.0:
+    resolution: {integrity: sha512-fSHWA/IK87+PBpmSLZ6SOZxFEI6SlU8WsXI1/y/D5EK/5H9Z6ZYfABnmPOyrq0Uut17ZfzBUEjkErxCfSnsOaw==}
+    hasBin: true
 
   gensync@1.0.0-beta.2:
     resolution: {integrity: sha512-3hN7NaskYvMDLQY55gnW3NQ+mesEAepTqlg+VEbj7zzqEMBVNhzcGYYeqFo/TlYz6eQiFcp1HcsCZO+nGgS8zg==}
@@ -5298,6 +5305,8 @@ snapshots:
     optional: true
 
   function-bind@1.1.2: {}
+
+  gagen@0.4.0: {}
 
   gensync@1.0.0-beta.2: {}
 
