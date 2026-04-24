@@ -5,6 +5,10 @@
   "description": "Monorepo for prefer-jsr: ESLint tooling to suggest JSR packages over NPM",
   "license": "MIT",
   "type": "module",
+  "scripts": {
+    "workflows:generate": "jiti .github/workflows/ci.ts && jiti .github/workflows/release.ts && jiti .github/workflows/publish.ts",
+    "workflows:lint": "jiti .github/workflows/ci.ts --lint && jiti .github/workflows/release.ts --lint && jiti .github/workflows/publish.ts --lint"
+  },
   "devDependencies": {
     "@eslint/js": "^9.39.4",
     "@nx/eslint": "catalog:nx",
