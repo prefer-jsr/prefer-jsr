@@ -3,6 +3,7 @@ import type { KnipConfig } from 'knip';
 export default {
   workspaces: {
     '.': {
+      entry: ['.github/workflows/*.ts'],
       ignoreDependencies: [
         // Required by Nx's `nx format` command for code formatting
         'prettier',

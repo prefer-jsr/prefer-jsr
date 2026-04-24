@@ -52,6 +52,9 @@ importers:
 
   .:
     devDependencies:
+      '@david/gagen':
+        specifier: npm:gagen@^0.4.0
+        version: gagen@0.4.0
       '@eslint/js':
         specifier: ^9.39.4
         version: 9.39.4
@@ -106,9 +109,6 @@ importers:
       eslint-yaml:
         specifier: ^0.1.0
         version: 0.1.0
-      gagen:
-        specifier: 0.4.0
-        version: 0.4.0
       jiti:
         specifier: 2.6.1
         version: 2.6.1
