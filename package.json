@@ -10,7 +10,7 @@
     "workflows:lint": "gagen --lint"
   },
   "devDependencies": {
-    "@david/gagen": "npm:gagen@^0.4.0",
+    "@david/gagen": "jsr:^0.4.0",
     "@eslint/js": "^9.39.4",
     "@nx/eslint": "catalog:nx",
     "@nx/eslint-plugin": "catalog:nx",
