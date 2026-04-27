@@ -1,4 +1,4 @@
-import { step, workflow } from '@david/gagen';
+import { step, workflow } from 'gagen';
 
 const checkout = step({
   uses: 'actions/checkout@v6',

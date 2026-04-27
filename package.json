@@ -10,7 +10,6 @@
     "workflows:lint": "gagen --lint"
   },
   "devDependencies": {
-    "@david/gagen": "jsr:^0.4.0",
     "@eslint/js": "^9.39.4",
     "@nx/eslint": "catalog:nx",
     "@nx/eslint-plugin": "catalog:nx",
@@ -29,6 +28,7 @@
     "eslint-plugin-package-json": "^0.91.1",
     "eslint-plugin-perfectionist": "catalog:eslint",
     "eslint-yaml": "^0.1.0",
+    "gagen": "catalog:",
     "jiti": "2.6.1",
     "jsonc-eslint-parser": "^2.4.2",
     "jsr": "^0.14.3",

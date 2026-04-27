@@ -5,6 +5,10 @@ settings:
   excludeLinksFromLockfile: false
 
 catalogs:
+  default:
+    gagen:
+      specifier: ^0.4.0
+      version: 0.4.0
   eslint:
     '@eslint/json':
       specifier: ^1.2.0
@@ -52,9 +56,6 @@ importers:
 
   .:
     devDependencies:
-      '@david/gagen':
-        specifier: jsr:^0.4.0
-        version: '@jsr/david__gagen@0.4.0'
       '@eslint/js':
         specifier: ^9.39.4
         version: 9.39.4
@@ -109,6 +110,9 @@ importers:
       eslint-yaml:
         specifier: ^0.1.0
         version: 0.1.0
+      gagen:
+        specifier: 'catalog:'
+        version: 0.4.0
       jiti:
         specifier: 2.6.1
         version: 2.6.1
@@ -832,12 +836,6 @@ packages:
 
   '@jridgewell/trace-mapping@0.3.31':
     resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==}
-
-  '@jsr/david__gagen@0.4.0':
-    resolution: {integrity: sha512-tDGF4NQdNXaFkmGmhnPmKOgv8xB5fqaEmHZfVIFsi8A5s1nHx6zg8ActeS22V/zPAYcOphpuDzoGmlmh1v7ruw==, tarball: https://npm.jsr.io/~/11/@jsr/david__gagen/0.4.0.tgz}
-
-  '@jsr/std__yaml@1.0.12':
-    resolution: {integrity: sha512-pz/BisWZWH16JvLJBwrNwUwfIsRnf9qniMrmI6Z3vIAcVRVFcA5+i4o6z6QqsMKqFzjlB66WZE+jSyujT/RvRg==, tarball: https://npm.jsr.io/~/11/@jsr/std__yaml/1.0.12.tgz}
 
   '@napi-rs/wasm-runtime@0.2.4':
     resolution: {integrity: sha512-9zESzOO5aDByvhIAsOy9TbpZ0Ur2AJbUI7UT73kcUTS2mxAMHOBaa1st/jAymNoCtvrit99kkzT1FZuXVcgfIQ==}
@@ -2076,6 +2074,10 @@ packages:
 
   function-bind@1.1.2:
     resolution: {integrity: sha512-7XHNxH7qX9xG5mIwxkhumTox/MIRNcOgDrxWsMt2pAr23WHp6MrRlN7FBSFpCpr+oVO0F744iUgR82nJMfG2SA==}
+
+  gagen@0.4.0:
+    resolution: {integrity: sha512-fSHWA/IK87+PBpmSLZ6SOZxFEI6SlU8WsXI1/y/D5EK/5H9Z6ZYfABnmPOyrq0Uut17ZfzBUEjkErxCfSnsOaw==}
+    hasBin: true
 
   gensync@1.0.0-beta.2:
     resolution: {integrity: sha512-3hN7NaskYvMDLQY55gnW3NQ+mesEAepTqlg+VEbj7zzqEMBVNhzcGYYeqFo/TlYz6eQiFcp1HcsCZO+nGgS8zg==}
@@ -3871,12 +3873,6 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
 
-  '@jsr/david__gagen@0.4.0':
-    dependencies:
-      '@jsr/std__yaml': 1.0.12
-
-  '@jsr/std__yaml@1.0.12': {}
-
   '@napi-rs/wasm-runtime@0.2.4':
     dependencies:
       '@emnapi/core': 1.10.0
@@ -5093,6 +5089,8 @@ snapshots:
     optional: true
 
   function-bind@1.1.2: {}
+
+  gagen@0.4.0: {}
 
   gensync@1.0.0-beta.2: {}
 
