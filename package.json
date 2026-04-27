@@ -5,6 +5,10 @@
   "description": "Monorepo for prefer-jsr: ESLint tooling to suggest JSR packages over NPM",
   "license": "MIT",
   "type": "module",
+  "scripts": {
+    "workflows:generate": "gagen",
+    "workflows:lint": "gagen --lint"
+  },
   "devDependencies": {
     "@eslint/js": "^9.39.4",
     "@nx/eslint": "catalog:nx",
@@ -24,6 +28,7 @@
     "eslint-plugin-package-json": "^0.91.1",
     "eslint-plugin-perfectionist": "catalog:eslint",
     "eslint-yaml": "^0.1.0",
+    "gagen": "catalog:",
     "jiti": "2.6.1",
     "jsonc-eslint-parser": "^2.4.2",
     "jsr": "^0.14.3",

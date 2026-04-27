@@ -2,6 +2,9 @@ packages:
   - 'packages/*'
 
 catalogs:
+  default:
+    gagen: ^0.4.0
+
   eslint:
     '@eslint/json': ^1.2.0
     eslint: ^9.39.4
