@@ -51,7 +51,7 @@
     "@humanwhocodes/momoa": "^3.3.9",
     "eslint": "catalog:eslint",
     "eslint-plugin-eslint-plugin": "catalog:eslint",
-    "jsonc-eslint-parser": "^2.4.1"
+    "jsonc-eslint-parser": "^3.1.0"
   },
   "peerDependencies": {
     "eslint": ">=9.15.0"
