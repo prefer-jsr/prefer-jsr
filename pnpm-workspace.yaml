@@ -4,7 +4,7 @@ packages:
 catalogs:
   eslint:
     '@eslint/json': ^1.2.0
-    eslint: ^9.39.4
+    eslint: ^10.3.0
     eslint-plugin-eslint-plugin: ^7.3.2
     eslint-plugin-perfectionist: '^5.8.0'
 
