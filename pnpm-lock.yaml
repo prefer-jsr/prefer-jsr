@@ -7,8 +7,8 @@ settings:
 catalogs:
   default:
     gagen:
-      specifier: ^0.4.0
-      version: 0.4.0
+      specifier: ^0.5.0
+      version: 0.5.0
   eslint:
     '@eslint/json':
       specifier: ^1.2.0
@@ -112,7 +112,7 @@ importers:
         version: 0.1.0
       gagen:
         specifier: 'catalog:'
-        version: 0.4.0
+        version: 0.5.0
       jiti:
         specifier: 2.6.1
         version: 2.6.1
@@ -2075,8 +2075,8 @@ packages:
   function-bind@1.1.2:
     resolution: {integrity: sha512-7XHNxH7qX9xG5mIwxkhumTox/MIRNcOgDrxWsMt2pAr23WHp6MrRlN7FBSFpCpr+oVO0F744iUgR82nJMfG2SA==}
 
-  gagen@0.4.0:
-    resolution: {integrity: sha512-fSHWA/IK87+PBpmSLZ6SOZxFEI6SlU8WsXI1/y/D5EK/5H9Z6ZYfABnmPOyrq0Uut17ZfzBUEjkErxCfSnsOaw==}
+  gagen@0.5.0:
+    resolution: {integrity: sha512-p7bZtj5b94ypMVnBnTFtF4/HHSplORZDSIhSZSfWFJuwQW+n7+gzAjr9xXL1s47Gwi1MpH45yr5yrhS2rKDfrA==}
     hasBin: true
 
   gensync@1.0.0-beta.2:
@@ -5090,7 +5090,7 @@ snapshots:
 
   function-bind@1.1.2: {}
 
-  gagen@0.4.0: {}
+  gagen@0.5.0: {}
 
   gensync@1.0.0-beta.2: {}
 
