@@ -8,9 +8,26 @@ import { meetsMinimumVersion } from '../utils/version-compare.js';
 
 interface PreferJsrOptions {
   /**
-   * Packages to ignore (won't suggest JSR alternatives)
+   * Packages to ignore (won't suggest JSR alternatives).
+   * @deprecated Use `exclude` instead.
    */
   ignore?: string[];
+  /**
+   * When true, suggest JSR alternatives even for packages that have a bin
+   * entry (i.e. packages with `hasBin: true` in the mapping).
+   */
+  strict?: boolean;
+  /**
+   * Packages to force-include in the check, even if they would normally be
+   * excluded by other rules (e.g. `hasBin` or below minimum version).
+   * Can be overridden by `exclude`.
+   */
+  include?: string[];
+  /**
+   * Packages to force-exclude from the check, regardless of any other
+   * settings including `strict` and `include`.
+   */
+  exclude?: string[];
 }
 
 export const preferJsrRule: Rule.RuleModule = {
@@ -24,6 +41,9 @@ export const preferJsrRule: Rule.RuleModule = {
     // Get rule options
     const options: PreferJsrOptions = context.options[0] || {};
     const ignore = new Set(options.ignore || []);
+    const strict = options.strict ?? false;
+    const include = new Set(options.include || []);
+    const exclude = new Set(options.exclude || []);
 
     /**
      * Common logic for checking and reporting JSR equivalents
@@ -34,8 +54,8 @@ export const preferJsrRule: Rule.RuleModule = {
       packageNameNode: Rule.Node,
       versionNode: Rule.Node,
     ) {
-      // Skip if package is in ignore list
-      if (ignore.has(npmPackage)) {
+      // Skip if package is in ignore list (legacy) or exclude list
+      if (ignore.has(npmPackage) || exclude.has(npmPackage)) {
         return;
       }
 
@@ -44,13 +64,24 @@ export const preferJsrRule: Rule.RuleModule = {
         return;
       }
 
-      // Check built-in mappings with version awareness
+      // Check built-in mappings
       const packageInfo = getJsrPackageInfo(npmPackage);
+      if (!packageInfo) {
+        return;
+      }
+
+      const forceInclude = include.has(npmPackage);
+
+      // Skip if version is below the minimum (unless force-included)
       if (
-        !packageInfo ||
-        !meetsMinimumVersion(version, packageInfo.minimumVersion) ||
-        packageInfo.hasBin
+        !forceInclude &&
+        !meetsMinimumVersion(version, packageInfo.minimumVersion)
       ) {
+        return;
+      }
+
+      // Skip hasBin packages unless strict mode is on or the package is force-included
+      if (packageInfo.hasBin && !strict && !forceInclude) {
         return;
       }
 
@@ -166,7 +197,28 @@ export const preferJsrRule: Rule.RuleModule = {
         properties: {
           ignore: {
             description:
-              "Array of package names to ignore (won't suggest JSR alternatives)",
+              "Array of package names to ignore (won't suggest JSR alternatives). Deprecated: use `exclude` instead.",
+            items: {
+              type: 'string',
+            },
+            type: 'array',
+          },
+          strict: {
+            description:
+              'When true, suggest JSR alternatives even for packages that have a bin entry (hasBin: true).',
+            type: 'boolean',
+          },
+          include: {
+            description:
+              'Array of package names to force-include in the check, even if excluded by other rules (e.g. hasBin or below minimum version). Overridden by `exclude`.',
+            items: {
+              type: 'string',
+            },
+            type: 'array',
+          },
+          exclude: {
+            description:
+              'Array of package names to force-exclude from the check regardless of any other settings, including `strict` and `include`.',
             items: {
               type: 'string',
             },
