@@ -11,7 +11,7 @@ export interface JsrPackageInfo {
   /**
    * Whether the NPM package includes a bin entry.
    * JSR does not support bin entries, so packages with this flag
-   * might not fully replace their JSR equivalent.
+   * might not fully replace their NPM equivalent.
    */
   hasBin?: boolean;
 }
