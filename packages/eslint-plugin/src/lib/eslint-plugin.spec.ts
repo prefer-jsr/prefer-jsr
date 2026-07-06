@@ -38,6 +38,15 @@ describe('prefer-jsr rule', () => {
           },
         }),
       },
+      // Package with hasBin flag - should not suggest JSR (JSR doesn't support bin)
+      {
+        filename: 'package.json',
+        code: JSON.stringify({
+          dependencies: {
+            gagen: '^0.1.0',
+          },
+        }),
+      },
       // Not a package.json file
       {
         filename: 'other.json',
@@ -248,6 +257,15 @@ describe('prefer-jsr rule with legacy jsonc-eslint-parser', () => {
         code: JSON.stringify({
           dependencies: {
             'some-other-package': '^1.0.0',
+          },
+        }),
+      },
+      // Package with hasBin flag - should not suggest JSR (JSR doesn't support bin)
+      {
+        filename: 'package.json',
+        code: JSON.stringify({
+          dependencies: {
+            gagen: '^0.1.0',
           },
         }),
       },

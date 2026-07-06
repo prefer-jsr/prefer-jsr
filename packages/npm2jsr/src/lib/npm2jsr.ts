@@ -8,6 +8,12 @@ export interface JsrPackageInfo {
   minimumVersion: string;
   /** URL to the source code repository for reference. */
   sourceUrl?: string;
+  /**
+   * Whether the NPM package includes a bin entry.
+   * JSR does not support bin entries, so packages with this flag
+   * cannot be fully replaced by their JSR equivalent.
+   */
+  hasBin?: boolean;
 }
 
 /**
@@ -452,6 +458,7 @@ export const npmToJsrMapping: Map<string, JsrPackageInfo> = new Map<
       jsrPackage: '@david/gagen',
       minimumVersion: '0.0.1',
       sourceUrl: 'https://github.com/dsherret/gagen',
+      hasBin: true,
     },
   ],
   [

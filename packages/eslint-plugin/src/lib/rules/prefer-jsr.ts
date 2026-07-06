@@ -48,7 +48,8 @@ export const preferJsrRule: Rule.RuleModule = {
       const packageInfo = getJsrPackageInfo(npmPackage);
       if (
         !packageInfo ||
-        !meetsMinimumVersion(version, packageInfo.minimumVersion)
+        !meetsMinimumVersion(version, packageInfo.minimumVersion) ||
+        packageInfo.hasBin
       ) {
         return;
       }
