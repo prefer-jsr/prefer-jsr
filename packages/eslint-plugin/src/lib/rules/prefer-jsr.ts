@@ -32,7 +32,7 @@ export const preferJsrRule: Rule.RuleModule = {
       npmPackage: string,
       version: string,
       packageNameNode: Rule.Node,
-      versionNode: Rule.Node
+      versionNode: Rule.Node,
     ) {
       // Skip if package is in ignore list
       if (ignore.has(npmPackage)) {
@@ -106,7 +106,7 @@ export const preferJsrRule: Rule.RuleModule = {
                 npmPackage,
                 version,
                 member.name as unknown as Rule.Node,
-                member.value as unknown as Rule.Node
+                member.value as unknown as Rule.Node,
               );
             }
           }
@@ -142,7 +142,7 @@ export const preferJsrRule: Rule.RuleModule = {
             npmPackage,
             version,
             node.key as unknown as Rule.Node,
-            node.value as unknown as Rule.Node
+            node.value as unknown as Rule.Node,
           );
         }
       },

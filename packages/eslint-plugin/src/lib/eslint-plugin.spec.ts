@@ -461,7 +461,7 @@ describe('prefer-jsr rule with legacy jsonc-eslint-parser', () => {
           }),
         },
       ],
-    }
+    },
   );
 });
 
