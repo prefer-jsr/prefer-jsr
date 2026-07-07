@@ -34,6 +34,7 @@ describe('version-compare', () => {
       expect(extractVersion('invalid')).toBe(null);
       expect(extractVersion('latest')).toBe(null);
       expect(extractVersion('')).toBe(null);
+      expect(extractVersion('1.2.3.4')).toBe(null);
     });
   });
 

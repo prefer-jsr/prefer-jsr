@@ -90,13 +90,17 @@ export function meetsMinimumVersion(
 
 function isValidVersionNumber(versionNumber: string): boolean {
   const versionParts = versionNumber.split('.');
+  if (versionParts.length < 1 || versionParts.length > 3) {
+    return false;
+  }
+
   return versionParts.every((part) => /^\d+$/.test(part));
 }
 
 function parseVersionRange(versionRange: string): null | ParsedVersionRange {
   let normalizedRange = versionRange.trim();
   let operator = '';
-  const knownOperators = ['>=', '<=', '^', '~', '>', '<', '='];
+  const knownOperators = ['>=', '<=', '>', '<', '^', '~', '='];
 
   for (const knownOperator of knownOperators) {
     if (normalizedRange.startsWith(knownOperator)) {
