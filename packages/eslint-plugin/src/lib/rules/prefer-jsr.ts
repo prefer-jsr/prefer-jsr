@@ -210,7 +210,7 @@ export const preferJsrRule: Rule.RuleModule = {
           },
           include: {
             description:
-              'Array of package names to force-include in the check, even if excluded by other rules (e.g. hasBin or below minimum version). Overridden by `exclude`.',
+              'Array of package names to force-include in the check, even if excluded by other criteria.',
             items: {
               type: 'string',
             },
