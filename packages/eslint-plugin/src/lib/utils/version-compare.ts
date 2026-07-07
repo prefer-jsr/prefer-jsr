@@ -1,3 +1,8 @@
+interface ParsedVersionRange {
+  operator: string;
+  version: string;
+}
+
 /**
  * Clamp a version range to a minimum version, preserving the range operator.
  * If the range already meets the minimum, it is returned unchanged.
@@ -12,9 +17,19 @@ export function clampVersionToMinimum(
   if (meetsMinimumVersion(versionRange, minimumVersion)) {
     return versionRange;
   }
-  // Preserve the operator prefix (^, ~, >=, <=, >, <, =) and replace the version
-  const operatorMatch = versionRange.match(/^([\^~><=]*)/);
-  const operator = operatorMatch ? operatorMatch[1] : '';
+
+  const parsedVersionRange = parseVersionRange(versionRange);
+  if (!parsedVersionRange) {
+    return minimumVersion;
+  }
+
+  // Upper-bound ranges still allow versions below the minimum, so clamp to a lower bound.
+  if (['<', '<='].includes(parsedVersionRange.operator)) {
+    return `>=${minimumVersion}`;
+  }
+
+  // Preserve operators that maintain the minimum as a lower bound (^, ~, >=, >, =, exact).
+  const operator = parsedVersionRange.operator;
   return `${operator}${minimumVersion}`;
 }
 
@@ -46,9 +61,8 @@ export function compareVersions(v1: string, v2: string): number {
  * @returns The extracted version number (e.g., "3.21.4") or null if invalid
  */
 export function extractVersion(versionRange: string): null | string {
-  // Match semver operators followed by version number
-  const match = versionRange.match(/[\^~>=]*\s*([\d.]+)/);
-  return match ? match[1] : null;
+  const parsedVersionRange = parseVersionRange(versionRange);
+  return parsedVersionRange?.version ?? null;
 }
 
 /**
@@ -61,10 +75,27 @@ export function meetsMinimumVersion(
   versionRange: string,
   minimumVersion: string,
 ): boolean {
-  const version = extractVersion(versionRange);
-  if (!version) {
+  const parsedVersionRange = parseVersionRange(versionRange);
+  if (!parsedVersionRange) {
     return false;
   }
 
-  return compareVersions(version, minimumVersion) >= 0;
+  // Upper-bound ranges (e.g. <4.0.0) can still include unsupported versions below minimum.
+  if (['<', '<='].includes(parsedVersionRange.operator)) {
+    return false;
+  }
+
+  return compareVersions(parsedVersionRange.version, minimumVersion) >= 0;
+}
+
+function parseVersionRange(versionRange: string): null | ParsedVersionRange {
+  const match = versionRange.match(/^\s*(\^|~|>=|>|<=|<|=)?\s*([\d.]+)\s*$/);
+  if (!match) {
+    return null;
+  }
+
+  return {
+    operator: match[1] || '',
+    version: match[2],
+  };
 }
