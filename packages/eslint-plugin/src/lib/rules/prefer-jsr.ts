@@ -8,15 +8,15 @@ import { meetsMinimumVersion } from '../utils/version-compare.js';
 
 interface PreferJsrOptions {
   /**
+   * Packages to force-exclude from the check, regardless of any other
+   * settings including `strict` and `include`.
+   */
+  exclude?: string[];
+  /**
    * Packages to ignore (won't suggest JSR alternatives).
    * @deprecated Use `exclude` instead.
    */
   ignore?: string[];
-  /**
-   * When true, suggest JSR alternatives even for packages that have a bin
-   * entry (i.e. packages with `hasBin: true` in the mapping).
-   */
-  strict?: boolean;
   /**
    * Packages to force-include in the check, even if they would normally be
    * excluded by other rules (e.g. `hasBin` or below minimum version).
@@ -24,10 +24,10 @@ interface PreferJsrOptions {
    */
   include?: string[];
   /**
-   * Packages to force-exclude from the check, regardless of any other
-   * settings including `strict` and `include`.
+   * When true, suggest JSR alternatives even for packages that have a bin
+   * entry (i.e. packages with `hasBin: true` in the mapping).
    */
-  exclude?: string[];
+  strict?: boolean;
 }
 
 export const preferJsrRule: Rule.RuleModule = {
@@ -40,6 +40,7 @@ export const preferJsrRule: Rule.RuleModule = {
 
     // Get rule options
     const options: PreferJsrOptions = context.options[0] || {};
+    // eslint-disable-next-line @typescript-eslint/no-deprecated -- This should be removed in the next breaking changes.
     const ignore = new Set(options.ignore || []);
     const strict = options.strict ?? false;
     const include = new Set(options.include || []);
@@ -195,6 +196,14 @@ export const preferJsrRule: Rule.RuleModule = {
       {
         additionalProperties: false,
         properties: {
+          exclude: {
+            description:
+              'Array of package names to force-exclude from the check regardless of any other settings, including `strict` and `include`.',
+            items: {
+              type: 'string',
+            },
+            type: 'array',
+          },
           ignore: {
             description:
               "Array of package names to ignore (won't suggest JSR alternatives). Deprecated: use `exclude` instead.",
@@ -202,11 +211,6 @@ export const preferJsrRule: Rule.RuleModule = {
               type: 'string',
             },
             type: 'array',
-          },
-          strict: {
-            description:
-              'When true, suggest JSR alternatives even for packages that have a bin entry (hasBin: true).',
-            type: 'boolean',
           },
           include: {
             description:
@@ -216,13 +220,10 @@ export const preferJsrRule: Rule.RuleModule = {
             },
             type: 'array',
           },
-          exclude: {
+          strict: {
             description:
-              'Array of package names to force-exclude from the check regardless of any other settings, including `strict` and `include`.',
-            items: {
-              type: 'string',
-            },
-            type: 'array',
+              'When true, suggest JSR alternatives even for packages that have a bin entry (hasBin: true).',
+            type: 'boolean',
           },
         },
         type: 'object',
