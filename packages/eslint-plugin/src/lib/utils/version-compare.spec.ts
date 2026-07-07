@@ -96,18 +96,23 @@ describe('version-compare', () => {
       expect(meetsMinimumVersion('^7.4.0', '6.0.0')).toBe(true);
       expect(meetsMinimumVersion('^5.0.0', '6.0.0')).toBe(false);
     });
+  });
 
-    describe('clampVersionToMinimum', () => {
-      it('should preserve lower-bound operators when clamping', () => {
-        expect(clampVersionToMinimum('^2.0.0', '3.0.0')).toBe('^3.0.0');
-        expect(clampVersionToMinimum('~2.0.0', '3.0.0')).toBe('~3.0.0');
-        expect(clampVersionToMinimum('>=2.0.0', '3.0.0')).toBe('>=3.0.0');
-      });
+  describe('clampVersionToMinimum', () => {
+    it('should preserve lower-bound operators when clamping', () => {
+      expect(clampVersionToMinimum('^2.0.0', '3.0.0')).toBe('^3.0.0');
+      expect(clampVersionToMinimum('~2.0.0', '3.0.0')).toBe('~3.0.0');
+      expect(clampVersionToMinimum('>=2.0.0', '3.0.0')).toBe('>=3.0.0');
+    });
 
-      it('should convert upper-bound operators to lower-bound clamp', () => {
-        expect(clampVersionToMinimum('<2.0.0', '3.0.0')).toBe('>=3.0.0');
-        expect(clampVersionToMinimum('<=2.0.0', '3.0.0')).toBe('>=3.0.0');
-      });
+    it('should convert upper-bound operators to lower-bound clamp', () => {
+      expect(clampVersionToMinimum('<2.0.0', '3.0.0')).toBe('>=3.0.0');
+      expect(clampVersionToMinimum('<=2.0.0', '3.0.0')).toBe('>=3.0.0');
+    });
+
+    it('should keep ranges unchanged when they already meet minimum', () => {
+      expect(clampVersionToMinimum('^3.0.0', '3.0.0')).toBe('^3.0.0');
+      expect(clampVersionToMinimum('^4.0.0', '3.0.0')).toBe('^4.0.0');
     });
   });
 });

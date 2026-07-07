@@ -88,14 +88,30 @@ export function meetsMinimumVersion(
   return compareVersions(parsedVersionRange.version, minimumVersion) >= 0;
 }
 
+function isValidVersionNumber(versionNumber: string): boolean {
+  const versionParts = versionNumber.split('.');
+  return versionParts.every((part) => /^\d+$/.test(part));
+}
+
 function parseVersionRange(versionRange: string): null | ParsedVersionRange {
-  const match = versionRange.match(/^\s*(\^|~|>=|>|<=|<|=)?\s*([\d.]+)\s*$/);
-  if (!match) {
+  let normalizedRange = versionRange.trim();
+  let operator = '';
+  const knownOperators = ['>=', '<=', '^', '~', '>', '<', '='];
+
+  for (const knownOperator of knownOperators) {
+    if (normalizedRange.startsWith(knownOperator)) {
+      operator = knownOperator;
+      normalizedRange = normalizedRange.slice(knownOperator.length).trim();
+      break;
+    }
+  }
+
+  if (!isValidVersionNumber(normalizedRange)) {
     return null;
   }
 
   return {
-    operator: match[1] || '',
-    version: match[2],
+    operator,
+    version: normalizedRange,
   };
 }
