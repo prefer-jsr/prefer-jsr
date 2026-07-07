@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import {
+  clampVersionToMinimum,
   compareVersions,
   extractVersion,
   meetsMinimumVersion,
@@ -33,6 +34,7 @@ describe('version-compare', () => {
       expect(extractVersion('invalid')).toBe(null);
       expect(extractVersion('latest')).toBe(null);
       expect(extractVersion('')).toBe(null);
+      expect(extractVersion('1.2.3.4')).toBe(null);
     });
   });
 
@@ -76,6 +78,8 @@ describe('version-compare', () => {
       expect(meetsMinimumVersion('^2.9.0', '3.0.0')).toBe(false);
       expect(meetsMinimumVersion('~2.99.0', '3.0.0')).toBe(false);
       expect(meetsMinimumVersion('2.0.0', '3.0.0')).toBe(false);
+      expect(meetsMinimumVersion('<4.0.0', '3.0.0')).toBe(false);
+      expect(meetsMinimumVersion('<=3.0.0', '3.0.0')).toBe(false);
     });
 
     it('should return false for invalid version strings', () => {
@@ -92,6 +96,24 @@ describe('version-compare', () => {
       // @eslint/markdown: minimum 6.0.0
       expect(meetsMinimumVersion('^7.4.0', '6.0.0')).toBe(true);
       expect(meetsMinimumVersion('^5.0.0', '6.0.0')).toBe(false);
+    });
+  });
+
+  describe('clampVersionToMinimum', () => {
+    it('should preserve lower-bound operators when clamping', () => {
+      expect(clampVersionToMinimum('^2.0.0', '3.0.0')).toBe('^3.0.0');
+      expect(clampVersionToMinimum('~2.0.0', '3.0.0')).toBe('~3.0.0');
+      expect(clampVersionToMinimum('>=2.0.0', '3.0.0')).toBe('>=3.0.0');
+    });
+
+    it('should convert upper-bound operators to lower-bound clamp', () => {
+      expect(clampVersionToMinimum('<2.0.0', '3.0.0')).toBe('>=3.0.0');
+      expect(clampVersionToMinimum('<=2.0.0', '3.0.0')).toBe('>=3.0.0');
+    });
+
+    it('should keep ranges unchanged when they already meet minimum', () => {
+      expect(clampVersionToMinimum('^3.0.0', '3.0.0')).toBe('^3.0.0');
+      expect(clampVersionToMinimum('^4.0.0', '3.0.0')).toBe('^4.0.0');
     });
   });
 });

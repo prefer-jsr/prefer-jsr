@@ -2,6 +2,12 @@
  * Metadata for NPM to JSR package mappings
  */
 export interface JsrPackageInfo {
+  /**
+   * Whether the NPM package includes a bin entry.
+   * JSR does not support bin entries, so packages with this flag
+   * might not fully replace their NPM equivalent.
+   */
+  hasBin?: boolean;
   /** The JSR package name */
   jsrPackage: string;
   /** Minimum version that has a JSR equivalent (e.g., "3.0.0") */
@@ -449,6 +455,7 @@ export const npmToJsrMapping: Map<string, JsrPackageInfo> = new Map<
   [
     'gagen',
     {
+      hasBin: true,
       jsrPackage: '@david/gagen',
       minimumVersion: '0.0.1',
       sourceUrl: 'https://github.com/dsherret/gagen',

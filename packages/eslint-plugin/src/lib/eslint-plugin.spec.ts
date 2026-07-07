@@ -38,6 +38,15 @@ describe('prefer-jsr rule', () => {
           },
         }),
       },
+      // Package with hasBin flag - should not suggest JSR (JSR doesn't support bin)
+      {
+        filename: 'package.json',
+        code: JSON.stringify({
+          dependencies: {
+            gagen: '^0.1.0',
+          },
+        }),
+      },
       // Not a package.json file
       {
         filename: 'other.json',
@@ -178,9 +187,10 @@ describe('prefer-jsr rule', () => {
     ],
   });
 
-  // Test with ignore option
+  // Test with ignore option (deprecated, backward compat)
   ruleTester.run('prefer-jsr with ignore option', preferJsrRule, {
     valid: [
+      // ignore: package is skipped
       {
         filename: 'package.json',
         code: JSON.stringify({
@@ -193,6 +203,17 @@ describe('prefer-jsr rule', () => {
             ignore: ['zod'],
           },
         ],
+      },
+      // ignore: works alongside exclude - both are respected
+      {
+        filename: 'package.json',
+        code: JSON.stringify({
+          dependencies: {
+            zod: '^3.21.4',
+            hono: '^4.4.0',
+          },
+        }),
+        options: [{ ignore: ['zod'], exclude: ['hono'] }],
       },
     ],
     invalid: [
@@ -228,6 +249,170 @@ describe('prefer-jsr rule', () => {
       },
     ],
   });
+
+  // Test with strict option
+  ruleTester.run('prefer-jsr with strict option', preferJsrRule, {
+    valid: [
+      // strict does not affect packages already using JSR
+      {
+        filename: 'package.json',
+        code: JSON.stringify({
+          dependencies: {
+            '@david/gagen': 'jsr:^0.1.0',
+          },
+        }),
+        options: [{ strict: true }],
+      },
+    ],
+    invalid: [
+      // strict: hasBin packages ARE reported
+      {
+        filename: 'package.json',
+        code: JSON.stringify({
+          dependencies: {
+            gagen: '^0.1.0',
+          },
+        }),
+        options: [{ strict: true }],
+        errors: [
+          {
+            messageId: 'preferJsr',
+            data: {
+              npmPackage: 'gagen',
+              jsrPackage: '@david/gagen',
+              jsrDependency: 'jsr:^0.1.0',
+            },
+          },
+        ],
+        output: JSON.stringify({
+          dependencies: {
+            '@david/gagen': 'jsr:^0.1.0',
+          },
+        }),
+      },
+    ],
+  });
+
+  // Test with include option
+  ruleTester.run('prefer-jsr with include option', preferJsrRule, {
+    valid: [
+      // package in exclude overrides include
+      {
+        filename: 'package.json',
+        code: JSON.stringify({
+          dependencies: {
+            gagen: '^0.1.0',
+          },
+        }),
+        options: [{ include: ['gagen'], exclude: ['gagen'] }],
+      },
+    ],
+    invalid: [
+      // include: hasBin package IS reported when explicitly included
+      {
+        filename: 'package.json',
+        code: JSON.stringify({
+          dependencies: {
+            gagen: '^0.1.0',
+          },
+        }),
+        options: [{ include: ['gagen'] }],
+        errors: [
+          {
+            messageId: 'preferJsr',
+            data: {
+              npmPackage: 'gagen',
+              jsrPackage: '@david/gagen',
+              jsrDependency: 'jsr:^0.1.0',
+            },
+          },
+        ],
+        output: JSON.stringify({
+          dependencies: {
+            '@david/gagen': 'jsr:^0.1.0',
+          },
+        }),
+      },
+      // include: package below minimum version IS reported when explicitly included,
+      // and fix version is clamped to the minimum version
+      {
+        filename: 'package.json',
+        code: JSON.stringify({
+          dependencies: {
+            zod: '^2.0.0',
+          },
+        }),
+        options: [{ include: ['zod'] }],
+        errors: [
+          {
+            messageId: 'preferJsr',
+            data: {
+              npmPackage: 'zod',
+              jsrPackage: '@zod/zod',
+              jsrDependency: 'jsr:^3.0.0',
+            },
+          },
+        ],
+        output: JSON.stringify({
+          dependencies: {
+            '@zod/zod': 'jsr:^3.0.0',
+          },
+        }),
+      },
+      // include: package not in npm2jsr map is reported with same name and version
+      {
+        filename: 'package.json',
+        code: JSON.stringify({
+          dependencies: {
+            'my-custom-package': '^1.2.3',
+          },
+        }),
+        options: [{ include: ['my-custom-package'] }],
+        errors: [
+          {
+            messageId: 'preferJsr',
+            data: {
+              npmPackage: 'my-custom-package',
+              jsrPackage: 'my-custom-package',
+              jsrDependency: 'jsr:^1.2.3',
+            },
+          },
+        ],
+        output: JSON.stringify({
+          dependencies: {
+            'my-custom-package': 'jsr:^1.2.3',
+          },
+        }),
+      },
+    ],
+  });
+
+  // Test with exclude option
+  ruleTester.run('prefer-jsr with exclude option', preferJsrRule, {
+    valid: [
+      // exclude: package is not reported even when it would normally match
+      {
+        filename: 'package.json',
+        code: JSON.stringify({
+          dependencies: {
+            zod: '^4.0.0',
+          },
+        }),
+        options: [{ exclude: ['zod'] }],
+      },
+      // exclude overrides strict mode
+      {
+        filename: 'package.json',
+        code: JSON.stringify({
+          dependencies: {
+            gagen: '^0.1.0',
+          },
+        }),
+        options: [{ strict: true, exclude: ['gagen'] }],
+      },
+    ],
+    invalid: [],
+  });
 });
 
 describe('prefer-jsr rule with legacy jsonc-eslint-parser', () => {
@@ -248,6 +433,15 @@ describe('prefer-jsr rule with legacy jsonc-eslint-parser', () => {
         code: JSON.stringify({
           dependencies: {
             'some-other-package': '^1.0.0',
+          },
+        }),
+      },
+      // Package with hasBin flag - should not suggest JSR (JSR doesn't support bin)
+      {
+        filename: 'package.json',
+        code: JSON.stringify({
+          dependencies: {
+            gagen: '^0.1.0',
           },
         }),
       },
@@ -443,7 +637,7 @@ describe('prefer-jsr rule with legacy jsonc-eslint-parser', () => {
           }),
         },
       ],
-    }
+    },
   );
 });
 
