@@ -18,7 +18,7 @@ export function clampVersionToMinimum(
     return versionRange;
   }
 
-  const parsedVersionRange = parseVersionRange(versionRange);
+  const parsedVersionRange = parseSimpleVersionRange(versionRange);
   if (!parsedVersionRange) {
     return minimumVersion;
   }
@@ -61,7 +61,7 @@ export function compareVersions(v1: string, v2: string): number {
  * @returns The extracted version number (e.g., "3.21.4") or null if invalid
  */
 export function extractVersion(versionRange: string): null | string {
-  const parsedVersionRange = parseVersionRange(versionRange);
+  const parsedVersionRange = parseSimpleVersionRange(versionRange);
   return parsedVersionRange?.version ?? null;
 }
 
@@ -75,7 +75,7 @@ export function meetsMinimumVersion(
   versionRange: string,
   minimumVersion: string,
 ): boolean {
-  const parsedVersionRange = parseVersionRange(versionRange);
+  const parsedVersionRange = parseSimpleVersionRange(versionRange);
   if (!parsedVersionRange) {
     return false;
   }
@@ -88,7 +88,7 @@ export function meetsMinimumVersion(
   return compareVersions(parsedVersionRange.version, minimumVersion) >= 0;
 }
 
-function isValidVersionNumber(versionNumber: string): boolean {
+function isValidSemverFormat(versionNumber: string): boolean {
   const versionParts = versionNumber.split('.');
   if (versionParts.length < 1 || versionParts.length > 3) {
     return false;
@@ -97,7 +97,9 @@ function isValidVersionNumber(versionNumber: string): boolean {
   return versionParts.every((part) => /^\d+$/.test(part));
 }
 
-function parseVersionRange(versionRange: string): null | ParsedVersionRange {
+function parseSimpleVersionRange(
+  versionRange: string,
+): null | ParsedVersionRange {
   let normalizedRange = versionRange.trim();
   let operator = '';
   const knownOperators = ['>=', '<=', '>', '<', '^', '~', '='];
@@ -110,7 +112,7 @@ function parseVersionRange(versionRange: string): null | ParsedVersionRange {
     }
   }
 
-  if (!isValidVersionNumber(normalizedRange)) {
+  if (!isValidSemverFormat(normalizedRange)) {
     return null;
   }
 
