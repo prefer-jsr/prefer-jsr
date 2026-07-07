@@ -1,4 +1,24 @@
 /**
+ * Clamp a version range to a minimum version, preserving the range operator.
+ * If the range already meets the minimum, it is returned unchanged.
+ * @param versionRange The version range (e.g., "^2.0.0")
+ * @param minimumVersion The minimum required version (e.g., "3.0.0")
+ * @returns The clamped version range (e.g., "^3.0.0")
+ */
+export function clampVersionToMinimum(
+  versionRange: string,
+  minimumVersion: string,
+): string {
+  if (meetsMinimumVersion(versionRange, minimumVersion)) {
+    return versionRange;
+  }
+  // Preserve the operator prefix (^, ~, >=, <=, >, <, =) and replace the version
+  const operatorMatch = versionRange.match(/^([\^~><=]*)/);
+  const operator = operatorMatch ? operatorMatch[1] : '';
+  return `${operator}${minimumVersion}`;
+}
+
+/**
  * Compare two semantic version strings
  * @param v1 First version (e.g., "3.21.4")
  * @param v2 Second version (e.g., "3.0.0")
@@ -47,24 +67,4 @@ export function meetsMinimumVersion(
   }
 
   return compareVersions(version, minimumVersion) >= 0;
-}
-
-/**
- * Clamp a version range to a minimum version, preserving the range operator.
- * If the range already meets the minimum, it is returned unchanged.
- * @param versionRange The version range (e.g., "^2.0.0")
- * @param minimumVersion The minimum required version (e.g., "3.0.0")
- * @returns The clamped version range (e.g., "^3.0.0")
- */
-export function clampVersionToMinimum(
-  versionRange: string,
-  minimumVersion: string,
-): string {
-  if (meetsMinimumVersion(versionRange, minimumVersion)) {
-    return versionRange;
-  }
-  // Preserve the operator prefix (^, ~, >=, <=, >, <, =) and replace the version
-  const operatorMatch = versionRange.match(/^([\^~><=]*)/);
-  const operator = operatorMatch ? operatorMatch[1] : '';
-  return `${operator}${minimumVersion}`;
 }
