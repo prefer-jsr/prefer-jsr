@@ -333,7 +333,8 @@ describe('prefer-jsr rule', () => {
           },
         }),
       },
-      // include: package below minimum version IS reported when explicitly included
+      // include: package below minimum version IS reported when explicitly included,
+      // and fix version is clamped to the minimum version
       {
         filename: 'package.json',
         code: JSON.stringify({
@@ -348,13 +349,38 @@ describe('prefer-jsr rule', () => {
             data: {
               npmPackage: 'zod',
               jsrPackage: '@zod/zod',
-              jsrDependency: 'jsr:^2.0.0',
+              jsrDependency: 'jsr:^3.0.0',
             },
           },
         ],
         output: JSON.stringify({
           dependencies: {
-            '@zod/zod': 'jsr:^2.0.0',
+            '@zod/zod': 'jsr:^3.0.0',
+          },
+        }),
+      },
+      // include: package not in npm2jsr map is reported with same name and version
+      {
+        filename: 'package.json',
+        code: JSON.stringify({
+          dependencies: {
+            'my-custom-package': '^1.2.3',
+          },
+        }),
+        options: [{ include: ['my-custom-package'] }],
+        errors: [
+          {
+            messageId: 'preferJsr',
+            data: {
+              npmPackage: 'my-custom-package',
+              jsrPackage: 'my-custom-package',
+              jsrDependency: 'jsr:^1.2.3',
+            },
+          },
+        ],
+        output: JSON.stringify({
+          dependencies: {
+            'my-custom-package': 'jsr:^1.2.3',
           },
         }),
       },

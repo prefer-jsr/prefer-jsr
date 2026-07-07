@@ -4,7 +4,10 @@ import type { AST } from 'jsonc-eslint-parser';
 
 import { getJsrPackageInfo, toJsrDependency } from '@prefer-jsr/npm2jsr';
 
-import { meetsMinimumVersion } from '../utils/version-compare.js';
+import {
+  clampVersionToMinimum,
+  meetsMinimumVersion,
+} from '../utils/version-compare.js';
 
 interface PreferJsrOptions {
   /**
@@ -65,13 +68,34 @@ export const preferJsrRule: Rule.RuleModule = {
         return;
       }
 
+      const forceInclude = include.has(npmPackage);
+
       // Check built-in mappings
       const packageInfo = getJsrPackageInfo(npmPackage);
-      if (!packageInfo) {
+
+      // If not in the map and not force-included, nothing to do
+      if (!packageInfo && !forceInclude) {
         return;
       }
 
-      const forceInclude = include.has(npmPackage);
+      // Force-included package not in the map: report using the same npm name and version.
+      // Since there is no known JSR equivalent, the package name is assumed to match on JSR.
+      if (!packageInfo) {
+        const jsrDependency = toJsrDependency(version);
+        context.report({
+          data: {
+            jsrDependency,
+            jsrPackage: npmPackage,
+            npmPackage,
+          },
+          fix(fixer) {
+            return fixer.replaceText(versionNode, `"${jsrDependency}"`);
+          },
+          messageId: 'preferJsr',
+          node: versionNode,
+        });
+        return;
+      }
 
       // Skip if version is below the minimum (unless force-included)
       if (
@@ -87,7 +111,12 @@ export const preferJsrRule: Rule.RuleModule = {
       }
 
       const jsrEquivalent = packageInfo.jsrPackage;
-      const jsrDependency = toJsrDependency(version);
+
+      // When force-included and the version is below the minimum, clamp to the minimum
+      const effectiveVersion = forceInclude
+        ? clampVersionToMinimum(version, packageInfo.minimumVersion)
+        : version;
+      const jsrDependency = toJsrDependency(effectiveVersion);
 
       context.report({
         data: {
