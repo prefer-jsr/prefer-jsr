@@ -4,7 +4,7 @@ const checkout = step({
   uses: 'actions/checkout@v6',
   with: {
     'fetch-depth': 0,
-    token: '${{ secrets.RELEASE_PAT_TOKEN }}',
+    token: '${{ github.token }}',
   },
 });
 
@@ -38,14 +38,14 @@ const configureGit = step({
   name: 'Configure Git',
   run: `git config user.name "cylewaitforit"
 git config user.email "cyle@cylewaitfor.it"
-git remote set-url origin https://x-access-token:\${{ secrets.RELEASE_PAT_TOKEN }}@github.com/\${{ github.repository }}.git`,
+git remote set-url origin https://x-access-token:\${{ github.token }}@github.com/\${{ github.repository }}.git`,
 });
 
 const versionPackages = step({
   env: {
-    GH_TOKEN: '${{ secrets.RELEASE_PAT_TOKEN }}',
+    GH_TOKEN: '${{ github.token }}',
   },
-  name: 'Version packages and create releases',
+  name: 'Version packages and create draft releases',
   run: 'node --experimental-strip-types tools/scripts/version.ts',
 });
 

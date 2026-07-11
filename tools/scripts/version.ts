@@ -1,16 +1,26 @@
 #!/usr/bin/env node
 
 import { execSync } from 'node:child_process';
+import { mkdtemp, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { releaseChangelog, releaseVersion } from 'nx/release/index.js';
 
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { syncJsrJson } from '../../packages/sync-jsr-json/src/index.ts';
 
+function createDraftRelease(tag: string, notesPath: string): void {
+  execSync(
+    `gh release create "${tag}" --draft --title "${tag}" --notes-file "${notesPath}" --target "${process.env.GITHUB_SHA ?? 'HEAD'}"`,
+    { stdio: 'inherit' },
+  );
+}
+
 /**
  * Type guard for exec sync errors with status code
  */
 function isExecError(
-  error: unknown
+  error: unknown,
 ): error is Error & { code?: string; status?: number } {
   return error instanceof Error;
 }
@@ -22,10 +32,10 @@ function isExecError(
  * 1. Runs nx release version to update package.json files
  * 2. Syncs jsr.json versions to match package.json
  * 3. Amends the release commit to include jsr.json changes
- * 4. Generates changelogs and creates GitHub releases
+ * 4. Generates changelogs and creates draft GitHub releases
  *
- * Publishing is handled separately by the publish workflow
- * which is triggered when GitHub releases are created.
+ * Publishing is handled separately by the publish workflow,
+ * which is triggered when a draft release is published.
  */
 (async () => {
   // Parse command line arguments
@@ -78,18 +88,37 @@ function isExecError(
     }
   }
 
-  // Step 4: Generate changelogs and create GitHub releases
-  console.log('\n4️⃣  Generating changelogs and creating GitHub releases...');
-  await releaseChangelog({
+  // Step 4: Generate changelogs and create draft GitHub releases
+  console.log(
+    '\n4️⃣  Generating changelogs and creating draft GitHub releases...',
+  );
+  const changelogResult = await releaseChangelog({
+    createRelease: false,
     dryRun: options.dryRun,
     verbose: options.verbose,
     version: workspaceVersion,
     versionData: projectsVersionData,
   });
 
+  if (!options.dryRun && changelogResult.projectChangelogs) {
+    const notesDir = await mkdtemp(join(tmpdir(), 'prefer-jsr-release-notes-'));
+
+    for (const [projectName, changelog] of Object.entries(
+      changelogResult.projectChangelogs,
+    )) {
+      const tag = changelog.releaseVersion.gitTag;
+      const notesPath = join(notesDir, `${projectName}.md`);
+
+      await writeFile(notesPath, changelog.contents, 'utf8');
+
+      console.log(`\n   - Creating draft GitHub release for ${tag}...`);
+      createDraftRelease(tag, notesPath);
+    }
+  }
+
   console.log('\n✅ Version and changelog process completed successfully!');
   console.log(
-    '📝 Note: Publishing to npm and JSR will be triggered automatically when GitHub releases are created.'
+    '📝 Note: Publishing to npm and JSR will be triggered when a draft GitHub release is published.',
   );
 
   process.exit(0);
