@@ -12,12 +12,12 @@ catalogs:
     eslint-plugin-perfectionist: '^5.9.0'
 
   nx:
-    '@nx/eslint': 22.6.5
-    '@nx/eslint-plugin': 22.6.5
-    '@nx/js': 22.6.5
-    '@nx/vite': 22.6.5
-    '@nx/vitest': 22.6.5
-    nx: 22.6.5
+    '@nx/eslint': 23.0.1
+    '@nx/eslint-plugin': 23.0.1
+    '@nx/js': 23.0.1
+    '@nx/vite': 23.0.1
+    '@nx/vitest': 23.0.1
+    nx: 23.0.1
 
   vitest:
     '@vitest/coverage-v8': '^4.1.4'
