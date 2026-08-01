@@ -154,7 +154,27 @@ This rule warns when a dependency in `package.json` has a JSR equivalent availab
 
 The rule accepts an options object with the following properties:
 
-- `ignore` (array): List of package names to ignore
+| Option | Type | Description |
+|--------|------|-------------|
+| `exclude` | `string[]` | Package names to **always** skip, regardless of any other setting (overrides `strict` and `include`). |
+| `include` | `string[]` | Package names to **force-include** in the check, even if they would normally be skipped (e.g. they have a bin entry or are below the minimum version). Overridden only by `exclude`. |
+| `strict` | `boolean` | When `true`, report packages that have a bin entry (`hasBin: true`) as well. By default those packages are skipped to avoid breaking CLI tools. |
+| `ignore` | `string[]` | *(Deprecated — use `exclude` instead.)* Package names to skip. |
+
+**Option priority** (highest wins):
+
+1. `exclude` — absolute skip; overrides everything
+2. `include` — force-include; overrides `hasBin` skip and minimum-version gate
+3. `strict` — globally enables reporting for `hasBin` packages
+4. Default — skip `hasBin` packages silently
+
+**`hasBin` behaviour**
+
+Packages whose mapping entry has `hasBin: true` (e.g. CLI tools like `typescript`) are skipped by default because their JSR equivalent may not provide the same binary. Use `strict: true` to report them anyway, or add individual packages to `include` to force-include them.
+
+**Version clamping for `include`**
+
+When a package listed in `include` is in the mapping and the installed version is below the mapping's `minimumVersion`, the auto-fix clamps the suggested version up to `minimumVersion` while preserving the range operator (e.g. `^`). For packages not in the mapping, the fix keeps the original version and just prepends `jsr:`.
 
 #### Examples
 
@@ -168,13 +188,50 @@ The rule accepts an options object with the following properties:
 }
 ```
 
-**Ignoring specific packages:**
+**Excluding specific packages:**
 
 ```js
 {
   rules: {
     '@prefer-jsr/prefer-jsr': ['error', {
-      ignore: ['legacy-package', 'special-case']
+      exclude: ['some-cli-tool', 'another-package'],
+    }],
+  },
+}
+```
+
+**Strict mode — report CLI/bin packages too:**
+
+```js
+{
+  rules: {
+    '@prefer-jsr/prefer-jsr': ['error', {
+      strict: true,
+    }],
+  },
+}
+```
+
+**Force-including a specific package (overrides `hasBin` skip):**
+
+```js
+{
+  rules: {
+    '@prefer-jsr/prefer-jsr': ['error', {
+      include: ['typescript'],
+    }],
+  },
+}
+```
+
+**Combined — strict mode with a safety exclusion:**
+
+```js
+{
+  rules: {
+    '@prefer-jsr/prefer-jsr': ['error', {
+      strict: true,
+      exclude: ['some-package-i-must-keep-on-npm'],
     }],
   },
 }
