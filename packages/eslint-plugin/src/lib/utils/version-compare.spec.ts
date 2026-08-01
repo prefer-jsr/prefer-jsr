@@ -36,6 +36,17 @@ describe('version-compare', () => {
       expect(extractVersion('')).toBe(null);
       expect(extractVersion('1.2.3.4')).toBe(null);
     });
+
+    it('should handle prerelease versions by returning the numeric part', () => {
+      expect(extractVersion('^3.0.0-beta.1')).toBe('3.0.0');
+      expect(extractVersion('~2.0.0-alpha')).toBe('2.0.0');
+      expect(extractVersion('1.0.0-rc.1')).toBe('1.0.0');
+    });
+
+    it('should handle composite constraints by using the lower bound', () => {
+      expect(extractVersion('>=3.0.0 <4.0.0')).toBe('3.0.0');
+      expect(extractVersion('>=1.0.0 <2.0.0')).toBe('1.0.0');
+    });
   });
 
   describe('compareVersions', () => {
@@ -97,6 +108,16 @@ describe('version-compare', () => {
       expect(meetsMinimumVersion('^7.4.0', '6.0.0')).toBe(true);
       expect(meetsMinimumVersion('^5.0.0', '6.0.0')).toBe(false);
     });
+
+    it('should handle prerelease versions using the numeric part for comparison', () => {
+      expect(meetsMinimumVersion('^3.0.0-beta.1', '3.0.0')).toBe(true);
+      expect(meetsMinimumVersion('^2.0.0-alpha', '3.0.0')).toBe(false);
+    });
+
+    it('should handle composite constraints using the lower bound', () => {
+      expect(meetsMinimumVersion('>=3.0.0 <4.0.0', '3.0.0')).toBe(true);
+      expect(meetsMinimumVersion('>=2.0.0 <3.0.0', '3.0.0')).toBe(false);
+    });
   });
 
   describe('clampVersionToMinimum', () => {
@@ -109,6 +130,10 @@ describe('version-compare', () => {
     it('should convert upper-bound operators to lower-bound clamp', () => {
       expect(clampVersionToMinimum('<2.0.0', '3.0.0')).toBe('>=3.0.0');
       expect(clampVersionToMinimum('<=2.0.0', '3.0.0')).toBe('>=3.0.0');
+    });
+
+    it('should convert strict greater-than to inclusive (> → >=) when clamping', () => {
+      expect(clampVersionToMinimum('>2.0.0', '3.0.0')).toBe('>=3.0.0');
     });
 
     it('should keep ranges unchanged when they already meet minimum', () => {

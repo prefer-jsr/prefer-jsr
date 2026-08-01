@@ -28,8 +28,10 @@ export function clampVersionToMinimum(
     return `>=${minimumVersion}`;
   }
 
-  // Preserve operators that maintain the minimum as a lower bound (^, ~, >=, >, =, exact).
-  const operator = parsedVersionRange.operator;
+  // Preserve operators that maintain the minimum as a lower bound (^, ~, >=, =, exact).
+  // Convert '>' to '>=' so minimumVersion itself is included (it is the first supported release).
+  const operator =
+    parsedVersionRange.operator === '>' ? '>=' : parsedVersionRange.operator;
   return `${operator}${minimumVersion}`;
 }
 
@@ -89,7 +91,9 @@ export function meetsMinimumVersion(
 }
 
 function isValidSemverFormat(versionNumber: string): boolean {
-  const versionParts = versionNumber.split('.');
+  // Strip prerelease (-alpha, -beta.1) and build metadata (+001) before validating
+  const numericPart = versionNumber.split(/[-+]/)[0];
+  const versionParts = numericPart.split('.');
   if (versionParts.length < 1 || versionParts.length > 3) {
     return false;
   }
@@ -112,12 +116,18 @@ function parseSimpleVersionRange(
     }
   }
 
+  // For composite constraints like ">=3.0.0 <4.0.0", take only the first token
+  normalizedRange = normalizedRange.split(/\s+/)[0];
+
   if (!isValidSemverFormat(normalizedRange)) {
     return null;
   }
 
+  // Strip prerelease/build metadata for numeric comparison (e.g. "3.0.0-beta.1" → "3.0.0")
+  const numericVersion = normalizedRange.split(/[-+]/)[0];
+
   return {
     operator,
-    version: normalizedRange,
+    version: numericVersion,
   };
 }
