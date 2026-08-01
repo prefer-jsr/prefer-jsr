@@ -4,13 +4,33 @@ import type { AST } from 'jsonc-eslint-parser';
 
 import { getJsrPackageInfo, toJsrDependency } from '@prefer-jsr/npm2jsr';
 
-import { meetsMinimumVersion } from '../utils/version-compare.js';
+import {
+  clampVersionToMinimum,
+  meetsMinimumVersion,
+} from '../utils/version-compare.js';
 
 interface PreferJsrOptions {
   /**
-   * Packages to ignore (won't suggest JSR alternatives)
+   * Packages to force-exclude from the check, regardless of any other
+   * settings including `strict` and `include`.
+   */
+  exclude?: string[];
+  /**
+   * Packages to ignore (won't suggest JSR alternatives).
+   * @deprecated Use `exclude` instead.
    */
   ignore?: string[];
+  /**
+   * Packages to force-include in the check, even if they would normally be
+   * excluded by other rules (e.g. `hasBin` or below minimum version).
+   * Can be overridden by `exclude`.
+   */
+  include?: string[];
+  /**
+   * When true, suggest JSR alternatives even for packages that have a bin
+   * entry (i.e. packages with `hasBin: true` in the mapping).
+   */
+  strict?: boolean;
 }
 
 export const preferJsrRule: Rule.RuleModule = {
@@ -23,7 +43,11 @@ export const preferJsrRule: Rule.RuleModule = {
 
     // Get rule options
     const options: PreferJsrOptions = context.options[0] || {};
+    // eslint-disable-next-line @typescript-eslint/no-deprecated -- This should be removed in the next breaking changes.
     const ignore = new Set(options.ignore || []);
+    const strict = options.strict ?? false;
+    const include = new Set(options.include || []);
+    const exclude = new Set(options.exclude || []);
 
     /**
      * Common logic for checking and reporting JSR equivalents
@@ -32,10 +56,10 @@ export const preferJsrRule: Rule.RuleModule = {
       npmPackage: string,
       version: string,
       packageNameNode: Rule.Node,
-      versionNode: Rule.Node
+      versionNode: Rule.Node,
     ) {
-      // Skip if package is in ignore list
-      if (ignore.has(npmPackage)) {
+      // Skip if package is in ignore list (legacy) or exclude list
+      if (ignore.has(npmPackage) || exclude.has(npmPackage)) {
         return;
       }
 
@@ -44,17 +68,55 @@ export const preferJsrRule: Rule.RuleModule = {
         return;
       }
 
-      // Check built-in mappings with version awareness
+      const forceInclude = include.has(npmPackage);
+
+      // Check built-in mappings
       const packageInfo = getJsrPackageInfo(npmPackage);
+
+      // If not in the map and not force-included, nothing to do
+      if (!packageInfo && !forceInclude) {
+        return;
+      }
+
+      // Force-included package not in the map: report using the same npm name and version.
+      // Since there is no known JSR equivalent, the package name is assumed to match on JSR.
+      if (!packageInfo) {
+        const jsrDependency = toJsrDependency(version);
+        context.report({
+          data: {
+            jsrDependency,
+            jsrPackage: npmPackage,
+            npmPackage,
+          },
+          fix(fixer) {
+            return fixer.replaceText(versionNode, `"${jsrDependency}"`);
+          },
+          messageId: 'preferJsr',
+          node: versionNode,
+        });
+        return;
+      }
+
+      // Skip if version is below the minimum (unless force-included)
       if (
-        !packageInfo ||
+        !forceInclude &&
         !meetsMinimumVersion(version, packageInfo.minimumVersion)
       ) {
         return;
       }
 
+      // Skip hasBin packages unless strict mode is on or the package is force-included
+      if (packageInfo.hasBin && !strict && !forceInclude) {
+        return;
+      }
+
       const jsrEquivalent = packageInfo.jsrPackage;
-      const jsrDependency = toJsrDependency(version);
+
+      // When force-included and the version is below the minimum, clamp to the minimum
+      const effectiveVersion = forceInclude
+        ? clampVersionToMinimum(version, packageInfo.minimumVersion)
+        : version;
+      const jsrDependency = toJsrDependency(effectiveVersion);
 
       context.report({
         data: {
@@ -105,7 +167,7 @@ export const preferJsrRule: Rule.RuleModule = {
                 npmPackage,
                 version,
                 member.name as unknown as Rule.Node,
-                member.value as unknown as Rule.Node
+                member.value as unknown as Rule.Node,
               );
             }
           }
@@ -141,7 +203,7 @@ export const preferJsrRule: Rule.RuleModule = {
             npmPackage,
             version,
             node.key as unknown as Rule.Node,
-            node.value as unknown as Rule.Node
+            node.value as unknown as Rule.Node,
           );
         }
       },
@@ -163,13 +225,34 @@ export const preferJsrRule: Rule.RuleModule = {
       {
         additionalProperties: false,
         properties: {
-          ignore: {
+          exclude: {
             description:
-              "Array of package names to ignore (won't suggest JSR alternatives)",
+              'Array of package names to force-exclude from the check regardless of any other settings, including `strict` and `include`.',
             items: {
               type: 'string',
             },
             type: 'array',
+          },
+          ignore: {
+            description:
+              "Array of package names to ignore (won't suggest JSR alternatives). Deprecated: use `exclude` instead.",
+            items: {
+              type: 'string',
+            },
+            type: 'array',
+          },
+          include: {
+            description:
+              'Array of package names to force-include in the check, even if excluded by other criteria.',
+            items: {
+              type: 'string',
+            },
+            type: 'array',
+          },
+          strict: {
+            description:
+              'When true, suggest JSR alternatives even for packages that have a bin entry (hasBin: true).',
+            type: 'boolean',
           },
         },
         type: 'object',
