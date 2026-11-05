@@ -136,6 +136,16 @@ describe('version-compare', () => {
       expect(clampVersionToMinimum('>2.0.0', '3.0.0')).toBe('>=3.0.0');
     });
 
+    it('should preserve compatible constraints when clamping composite ranges', () => {
+      expect(clampVersionToMinimum('>=2.0.0 <4.0.0', '3.0.0')).toBe(
+        '>=3.0.0 <4.0.0',
+      );
+    });
+
+    it('should reject composite ranges that conflict with the minimum', () => {
+      expect(clampVersionToMinimum('>=2.0.0 <3.0.0', '3.0.0')).toBe(null);
+    });
+
     it('should keep ranges unchanged when they already meet minimum', () => {
       expect(clampVersionToMinimum('^3.0.0', '3.0.0')).toBe('^3.0.0');
       expect(clampVersionToMinimum('^4.0.0', '3.0.0')).toBe('^4.0.0');

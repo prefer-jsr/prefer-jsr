@@ -306,6 +306,16 @@ describe('prefer-jsr rule', () => {
         }),
         options: [{ include: ['gagen'], exclude: ['gagen'] }],
       },
+      // Do not suggest a clamp that makes a composite range unsatisfiable
+      {
+        filename: 'package.json',
+        code: JSON.stringify({
+          dependencies: {
+            zod: '>=2.0.0 <3.0.0',
+          },
+        }),
+        options: [{ include: ['zod'] }],
+      },
     ],
     invalid: [
       // include: hasBin package IS reported when explicitly included
@@ -356,6 +366,31 @@ describe('prefer-jsr rule', () => {
         output: JSON.stringify({
           dependencies: {
             '@zod/zod': 'jsr:^3.0.0',
+          },
+        }),
+      },
+      // Preserve compatible upper bounds when clamping composite ranges
+      {
+        filename: 'package.json',
+        code: JSON.stringify({
+          dependencies: {
+            zod: '>=2.0.0 <4.0.0',
+          },
+        }),
+        options: [{ include: ['zod'] }],
+        errors: [
+          {
+            messageId: 'preferJsr',
+            data: {
+              npmPackage: 'zod',
+              jsrPackage: '@zod/zod',
+              jsrDependency: 'jsr:>=3.0.0 <4.0.0',
+            },
+          },
+        ],
+        output: JSON.stringify({
+          dependencies: {
+            '@zod/zod': 'jsr:>=3.0.0 <4.0.0',
           },
         }),
       },

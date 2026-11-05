@@ -116,6 +116,9 @@ export const preferJsrRule: Rule.RuleModule = {
       const effectiveVersion = forceInclude
         ? clampVersionToMinimum(version, packageInfo.minimumVersion)
         : version;
+      if (effectiveVersion === null) {
+        return;
+      }
       const jsrDependency = toJsrDependency(effectiveVersion);
 
       context.report({

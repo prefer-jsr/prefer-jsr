@@ -154,12 +154,12 @@ This rule warns when a dependency in `package.json` has a JSR equivalent availab
 
 The rule accepts an options object with the following properties:
 
-| Option | Type | Description |
-|--------|------|-------------|
-| `exclude` | `string[]` | Package names to **always** skip, regardless of any other setting (overrides `strict` and `include`). |
+| Option    | Type       | Description                                                                                                                                                                          |
+| --------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `exclude` | `string[]` | Package names to **always** skip, regardless of any other setting (overrides `strict` and `include`).                                                                                |
 | `include` | `string[]` | Package names to **force-include** in the check, even if they would normally be skipped (e.g. they have a bin entry or are below the minimum version). Overridden only by `exclude`. |
-| `strict` | `boolean` | When `true`, report packages that have a bin entry (`hasBin: true`) as well. By default those packages are skipped to avoid breaking CLI tools. |
-| `ignore` | `string[]` | *(Deprecated — use `exclude` instead.)* Package names to skip. |
+| `strict`  | `boolean`  | When `true`, report packages that have a bin entry (`hasBin: true`) as well. By default those packages are skipped to avoid breaking CLI tools.                                      |
+| `ignore`  | `string[]` | _(Deprecated — use `exclude` instead.)_ Package names to skip.                                                                                                                       |
 
 **Option priority** (highest wins):
 
