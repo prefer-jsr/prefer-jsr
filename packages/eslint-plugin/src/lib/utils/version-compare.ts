@@ -8,12 +8,12 @@ interface ParsedVersionRange {
  * If the range already meets the minimum, it is returned unchanged.
  * @param versionRange The version range (e.g., "^2.0.0")
  * @param minimumVersion The minimum required version (e.g., "3.0.0")
- * @returns The clamped version range (e.g., "^3.0.0")
+ * @returns The clamped version range (e.g., "^3.0.0"), or null if no safe clamp exists
  */
 export function clampVersionToMinimum(
   versionRange: string,
   minimumVersion: string,
-): string {
+): null | string {
   if (meetsMinimumVersion(versionRange, minimumVersion)) {
     return versionRange;
   }
@@ -23,16 +23,34 @@ export function clampVersionToMinimum(
     return minimumVersion;
   }
 
-  // Upper-bound ranges still allow versions below the minimum, so clamp to a lower bound.
-  if (['<', '<='].includes(parsedVersionRange.operator)) {
-    return `>=${minimumVersion}`;
+  const constraints = versionRange.trim().split(/\s+/).slice(1);
+  for (const constraint of constraints) {
+    const parsedConstraint = parseSimpleVersionRange(constraint);
+    if (!parsedConstraint) {
+      return null;
+    }
+
+    const comparison = compareVersions(
+      parsedConstraint.version,
+      minimumVersion,
+    );
+    if (
+      (['<', '<='].includes(parsedConstraint.operator) &&
+        (comparison < 0 ||
+          (comparison === 0 && parsedConstraint.operator === '<'))) ||
+      (parsedConstraint.operator === '=' && comparison < 0) ||
+      ['^', '~'].includes(parsedConstraint.operator)
+    ) {
+      return null;
+    }
   }
 
-  // Preserve operators that maintain the minimum as a lower bound (^, ~, >=, =, exact).
+  // Upper-bound ranges still allow versions below the minimum, so clamp to a lower bound.
   // Convert '>' to '>=' so minimumVersion itself is included (it is the first supported release).
-  const operator =
-    parsedVersionRange.operator === '>' ? '>=' : parsedVersionRange.operator;
-  return `${operator}${minimumVersion}`;
+  const operator = ['<', '<=', '>'].includes(parsedVersionRange.operator)
+    ? '>='
+    : parsedVersionRange.operator;
+  return [operator + minimumVersion, ...constraints].join(' ');
 }
 
 /**
