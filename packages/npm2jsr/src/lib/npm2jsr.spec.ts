@@ -26,6 +26,16 @@ describe('npm2jsr', () => {
       expect(eslintInfo?.minimumVersion).toBe('6.0.0');
       expect(eslintInfo?.sourceUrl).toBe('https://github.com/eslint/markdown');
     });
+
+    it('should mark packages with a bin entry using hasBin flag', () => {
+      const gagenInfo = npmToJsrMapping.get('gagen');
+      expect(gagenInfo?.hasBin).toBe(true);
+    });
+
+    it('should not set hasBin for packages without a bin entry', () => {
+      const zodInfo = npmToJsrMapping.get('zod');
+      expect(zodInfo?.hasBin).toBeUndefined();
+    });
   });
 
   describe('getJsrEquivalent', () => {
