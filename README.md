@@ -140,7 +140,8 @@ Releases are automated via GitHub Actions and published to both npm and JSR.
 
 - Versions are determined from conventional commits
 - Each package has independent versioning
-- Releases are triggered automatically on push to `main`
+- Draft releases are created automatically on push to `main`
+- Publishing runs when a draft release is published in GitHub
 
 For more information, see [RELEASING.md](./RELEASING.md).
 
@@ -167,7 +168,8 @@ pnpm knip
 GitHub Actions workflows automatically run on every push:
 
 - **CI** (`.github/workflows/ci.yml`): Runs lint, test, build, typecheck, format check, and knip
-- **Release** (`.github/workflows/release.yml`): Automatically versions and publishes packages on push to `main`
+- **Release** (`.github/workflows/release.yml`): Automatically versions packages and creates draft releases on push to `main`
+- **Publish** (`.github/workflows/publish.yml`): Publishes a package when a GitHub release is published
 
 ## Contributing
 

@@ -2,11 +2,14 @@ packages:
   - 'packages/*'
 
 catalogs:
+  default:
+    gagen: ^0.5.0
+
   eslint:
     '@eslint/json': ^1.2.0
     eslint: ^9.39.4
     eslint-plugin-eslint-plugin: ^7.3.2
-    eslint-plugin-perfectionist: '^5.8.0'
+    eslint-plugin-perfectionist: '^5.9.0'
 
   nx:
     '@nx/eslint': 22.6.5

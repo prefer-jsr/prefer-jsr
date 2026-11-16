@@ -8,7 +8,7 @@ The release configuration in `nx.json` includes:
 
 - **Independent versioning**: Each package has its own version
 - **Conventional commits**: Versions are determined from commit messages
-- **GitHub releases**: Automatically creates GitHub releases with changelogs
+- **Draft GitHub releases**: Creates draft GitHub releases with changelogs
 - **Pre-release checks**: Runs `build`, `test`, `lint`, and `typecheck` before versioning
 
 ## First Release
@@ -65,7 +65,6 @@ After the first release is done manually, subsequent releases are automatically 
 ### How it works
 
 1. **CI runs first** (`.github/workflows/ci.yml`) on every push to main:
-
    - Runs lint, test, build, typecheck
    - Ensures quality before release
 
@@ -73,10 +72,11 @@ After the first release is done manually, subsequent releases are automatically 
    - Detects changes since last release using git tags
    - Determines new versions from conventional commits
    - Updates package.json and generates changelogs
-   - Creates git tags
+   - Creates git tags and draft GitHub releases
+
+3. **Publish workflow runs** (`.github/workflows/publish.yml`) when a draft release is published:
    - Publishes to npm with provenance
    - Publishes to JSR
-   - Creates GitHub releases
 
 ### Publishing Targets
 
@@ -97,7 +97,7 @@ The release script uses the **Nx Release programmatic API** to:
 2. Sync jsr.json versions to match package.json
 3. Amend the release commit to include jsr.json changes
 4. Call `releaseChangelog()` to generate changelogs
-5. Call `releasePublish()` to publish to npm
+5. Create draft GitHub releases from generated changelog content
 
 This approach provides maximum control over the release process while maintaining integration with Nx Release's conventional commit handling and changelog generation.
 
@@ -118,14 +118,12 @@ Before automated releases work:
    This creates the initial git tags that CI relies on.
 
 2. **Configure NPM_TOKEN secret**:
-
    - Go to [npm Access Tokens](https://www.npmjs.com/settings/tokens)
    - Create an "Automation" token
    - Add to GitHub: Settings → Secrets and variables → Actions → New repository secret
    - Name: `NPM_TOKEN`, Value: your token
 
 3. **Configure JSR_TOKEN secret**:
-
    - Go to [JSR](https://jsr.io/) and sign in with GitHub
    - Navigate to your account settings → Access Tokens
    - Create a new token with publish permissions
@@ -137,9 +135,9 @@ Before automated releases work:
    - Enable "Read and write permissions"
    - Enable "Allow GitHub Actions to create and approve pull requests"
 
-### Manual Workflow Trigger
+### Manual Publish Step
 
-You can trigger a release manually from GitHub Actions UI using "workflow_dispatch".
+After the release workflow creates draft releases, publish each draft in GitHub to trigger package publishing.
 
 ### Advanced: Separate Version and Publish
 

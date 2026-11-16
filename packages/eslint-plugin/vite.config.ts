@@ -1,8 +1,9 @@
+import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
 import { defineConfig } from 'vite';
 
 export default defineConfig(() => ({
   cacheDir: '../../node_modules/.vite/packages/eslint-plugin',
-  plugins: [],
+  plugins: [nxViteTsPaths()],
   root: __dirname,
   // Uncomment this if you are using workers.
   // worker: {
