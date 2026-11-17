@@ -1,4 +1,4 @@
-![npm1jsr](./assets/npm2jsr.svg)
+![npm2jsr](./assets/npm2jsr.svg)
 
 # @prefer-jsr/npm2jsr &middot; [![JSR](https://jsr.io/badges/@prefer-jsr/npm2jsr)](https://jsr.io/@prefer-jsr/npm2jsr)
 
